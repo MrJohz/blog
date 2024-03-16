@@ -1,0 +1,179 @@
+// COLORS:
+// https://coolors.co/96e3d0-afaa18-092327-efd2cb-d65780
+
+:root {
+  --border-radius: 2px;
+  --main-background: #eff2ee;
+  --highlight-background: #afaa18;
+  --text-color: #092327;
+  --article-color: #96e3d0;
+  --link-deco-color: #d65780;
+  font-size: 18px;
+}
+
+@mixin small-screen {
+  @media (max-width: 1000px) {
+    @content;
+  }
+}
+
+@mixin shadow($size, $goful: false) {
+  box-shadow: $size/2 $size/2 2px 0px #092327aa,
+    $size / 3 $size / 3 $size 0px #092327aa;
+  @if $goful {
+    @include small-screen {
+      box-shadow: 0 $size var(--border-radius) 0px #092327aa,
+        $size / 3 $size / 3 $size 0px #092327aa;
+    }
+  }
+}
+
+html,
+body {
+  display: flex;
+  flex-direction: column;
+}
+body {
+  background-color: var(--main-background);
+  color: var(--text-color);
+  align-items: center;
+  padding: 2rem;
+  gap: 4.5rem;
+}
+
+.header {
+  width: max-content;
+  background-color: var(--highlight-background);
+  @include shadow(0.5rem);
+  padding: 2rem;
+  border-radius: var(--border-radius);
+  color: var(--text-color);
+
+  h1 {
+    margin: 0;
+    padding: 0;
+    font-size: clamp(2rem, 6vw, 4rem);
+  }
+
+  &:has(a:hover) {
+    background-color: var(--link-deco-color);
+  }
+}
+
+:is(h1, h2) a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+main {
+  display: contents;
+}
+
+article {
+  width: 50rem;
+  background-color: var(--article-color);
+  @include shadow(0.5rem, $goful: true);
+  color: var(--text-color);
+  padding: 2rem;
+  padding-top: 3rem;
+  border-radius: var(--border-radius);
+  position: relative;
+  margin-top: 1.5rem;
+
+  @include small-screen {
+    width: 100vw;
+    margin-top: unset;
+  }
+
+  & > header {
+    position: absolute;
+    top: -1.5rem;
+    left: -2.5rem;
+    background-color: var(--highlight-background);
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    justify-self: start;
+    margin: 0;
+    @include shadow(0.25rem);
+    padding-inline: 1rem;
+    padding-block: 0.5rem;
+    height: 3rem;
+    border-radius: var(--border-radius);
+    h1 {
+      margin: unset;
+    }
+    @include small-screen {
+      position: relative;
+      max-width: max-content;
+      margin-top: -2rem;
+      height: unset;
+    }
+  }
+  blockquote {
+    position: relative;
+    margin-inline: 2em;
+    padding-block: 0.5em;
+
+    &::before {
+      content: "";
+      display: block;
+      position: absolute;
+      top: 0;
+      height: 100%;
+      width: 0.25em;
+      background-color: var(--text-color);
+      border-radius: var(--border-radius);
+      left: -1em;
+    }
+  }
+  pre {
+    padding: 1em;
+    border-radius: var(--border-radius);
+    overflow-x: auto;
+  }
+  a {
+    color: var(--text-color);
+    text-decoration: underline;
+    text-decoration-color: var(--link-deco-color);
+    text-decoration-thickness: 3px;
+    text-decoration-skip-ink: none;
+    transition: text-decoration-thickness 75ms, text-underline-offset 75ms;
+    text-underline-offset: 0;
+    &:hover {
+      text-decoration-thickness: calc(1em + 3px);
+      text-underline-offset: calc(-1em);
+    }
+  }
+}
+
+:where(article, article blockquote) > *:nth-child(2) {
+  --flow-space: 0;
+}
+
+:where(article, article blockquote) > * {
+  margin: unset;
+}
+
+/*! Courtesy Andy Bell https://piccalil.li/blog/my-favourite-3-lines-of-css/ */
+:is(article, article blockquote) > * + * {
+  margin-block-start: var(--flow-space, 1.5em);
+}
+
+:is(article, article blockquote) :where(h2, h3, h4) {
+  display: flex;
+  width: max-content;
+  margin-left: -2.5rem;
+  background-color: var(--highlight-background);
+  align-items: center;
+  justify-content: center;
+  @include shadow(0.25rem);
+  padding-inline: 1rem;
+  height: 2rem;
+}
+:is(article, article blockquote) :where(h1, h2, h3, h4) a {
+  text-decoration: none;
+}
+:is(article, article blockquote) :where(h2, h3, h4, header):has(a:hover) {
+  background-color: var(--link-deco-color);
+}

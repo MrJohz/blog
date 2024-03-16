@@ -1,0 +1,15 @@
+{{- range resources.Match "css/*.css" }}
+  {{- if eq hugo.Environment "development" }}
+    <link rel="stylesheet" href="{{ .RelPermalink }}" />
+  {{- else }}
+    {{- with . | minify | fingerprint }}<style>{{.Content | safeCSS}}</style>{{- end }}
+  {{- end }}
+{{- end }}
+{{- range resources.Match "css/*.scss" }}
+  {{- if eq hugo.Environment "development" }}
+    {{- with . | toCSS }}<link rel="stylesheet" href="{{ .RelPermalink }}" />{{- end }}
+  {{- else }}
+    {{- with . | toCSS | minify | fingerprint }}<style>{{.Content | safeCSS}}</style>{{- end }}
+  {{- end }}
+{{- end }}
+      

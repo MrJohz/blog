@@ -1,0 +1,6 @@
+baseURL = 'https://example.org/'
+languageCode = 'en-us'
+title = "Jonathan's Blog"
+theme = "johz"
+
+disableKinds = ["taxonomy", "term"]
