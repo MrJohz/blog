@@ -16,7 +16,7 @@
 
   @media (prefers-color-scheme: dark) {
     --main-background: #092327;
-    --highlight-background: #7a3900;
+    --highlight-background: #645986;
     --text-color: #dee4dc;
     --article-color: #1a614f;
     --link-deco-color: #942447;
@@ -24,38 +24,46 @@
   font-size: 18px;
 }
 
-@mixin small-screen {
-  @media (max-width: 1000px) {
-    @content;
+@mixin screen($size) {
+  @if ($size == big) {
+    @media (min-width: 600px) {
+      @content;
+    }
+  }
+  @if ($size == small) {
+    @media (max-width: 599px) {
+      @content;
+    }
   }
 }
 
-@mixin shadow($size, $goful: false) {
+@mixin full-shadow($size) {
+  box-shadow: 0 $size/2 var(--border-radius) 0px #000000aa,
+    $size / 3 $size / 3 $size 0px #000000aa;
+}
+
+@mixin shadow($size) {
   box-shadow: $size/2 $size/2 2px 0px #000000aa,
     $size / 3 $size / 3 $size 0px #000000aa;
-  @if $goful {
-    @include small-screen {
-      box-shadow: 0 $size/2 var(--border-radius) 0px #000000aa,
-        $size / 3 $size / 3 $size 0px #000000aa;
-    }
-  }
 }
 
 html,
 body {
   display: flex;
   flex-direction: column;
+  width: 100vw;
 }
+
 body {
   background-color: var(--main-background);
   color: var(--text-color);
   align-items: center;
-  padding: 2rem;
-  gap: 4.5rem;
+  padding-block: 1.5rem;
+  gap: 2rem;
 
-  @include small-screen {
-    padding: 1.5rem;
-    gap: 2.5rem;
+  @include screen(big) {
+    padding-block: 2rem;
+    gap: 3rem;
   }
 }
 
@@ -63,13 +71,8 @@ body {
   width: max-content;
   background-color: var(--highlight-background);
   @include shadow(0.5rem);
-  padding: 2rem;
+  padding: 1rem;
   border-radius: var(--border-radius);
-  color: var(--text-color);
-
-  @include small-screen {
-    padding: 1.5rem;
-  }
 
   h1 {
     margin: 0;
@@ -82,121 +85,123 @@ body {
   }
 }
 
-:is(h1, h2) a {
-  color: inherit;
-  text-decoration: inherit;
-}
-
 main {
   display: contents;
 }
 
 article {
-  width: 50rem;
+  @include screen(small) {
+    @include full-shadow(0.5rem);
+    width: 100%;
+  }
+  @include screen(big) {
+    @include shadow(0.5rem);
+    width: calc(min(85%, 40rem));
+  }
   background-color: var(--article-color);
-  @include shadow(0.5rem, $goful: true);
-  color: var(--text-color);
-  padding: 2rem;
-  padding-top: 3rem;
-  border-radius: var(--border-radius);
-  position: relative;
-  margin-top: 1.5rem;
+  padding: 1.5rem;
+  margin-top: 2.5rem;
 
-  @include small-screen {
-    width: 100vw;
-    margin-top: unset;
-  }
-
-  & > header {
-    position: absolute;
-    top: -1.5rem;
-    left: -2.5rem;
-    background-color: var(--highlight-background);
-    display: flex;
-    align-items: center;
-    justify-content: start;
-    justify-self: start;
-    margin: 0;
+  header {
     @include shadow(0.25rem);
-    padding-inline: 1rem;
-    padding-block: 0.5rem;
-    height: 3rem;
-    border-radius: var(--border-radius);
-    h1 {
-      margin: unset;
+    background-color: var(--highlight-background);
+    border-top-right-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
+    max-width: max-content;
+    margin-top: -2.5rem;
+    margin-left: calc(-1.5rem - var(--border-radius));
+    padding: 0.5rem;
+    padding-left: calc(0.5rem + var(--border-radius));
+
+    @include screen(big) {
+      margin-left: -3.5rem;
     }
-    @include small-screen {
+
+    &:has(a:hover) {
+      background-color: var(--link-deco-color);
+    }
+  }
+
+  .content {
+    &,
+    & > * + * {
+      margin-block-start: var(--flow-space, 1.5em);
+    }
+
+    blockquote {
       position: relative;
-      max-width: max-content;
-      margin-top: -2rem;
-      height: unset;
-    }
-  }
-  blockquote {
-    position: relative;
-    margin-inline: 2em;
-    padding-block: 0.5em;
+      margin-inline: 2em;
+      padding-block: 0.5em;
 
-    &::before {
-      content: "";
-      display: block;
-      position: absolute;
-      top: 0;
-      height: 100%;
-      width: 0.25em;
-      background-color: var(--text-color);
+      &::before {
+        content: "";
+        display: block;
+        position: absolute;
+        top: 0;
+        height: 100%;
+        width: 0.25em;
+        background-color: var(--text-color);
+        border-radius: var(--border-radius);
+        left: -1em;
+      }
+    }
+
+    a {
+      color: var(--text-color);
+      text-decoration: underline;
+      text-decoration-color: var(--link-deco-color);
+      text-decoration-thickness: 3px;
+      text-decoration-skip-ink: none;
+      transition: text-decoration-thickness 75ms, text-underline-offset 75ms;
+      text-underline-offset: 0;
+      &:hover {
+        text-decoration-thickness: calc(1em + 3px);
+        text-underline-offset: calc(-1em);
+      }
+    }
+
+    pre {
+      overflow-x: auto;
+      margin-inline: -0.5rem;
+      padding: 0.5rem;
       border-radius: var(--border-radius);
-      left: -1em;
+      background-color: #fff5;
+    }
+
+    h2 {
+      font-size: 1.3rem;
+    }
+    h3 {
+      font-size: 1.1rem;
+    }
+    h4 {
+      font-size: 1rem;
+    }
+
+    :is(h2, h3, h4) {
+      @include shadow(0.25rem);
+      background-color: var(--highlight-background);
+      border-top-right-radius: var(--border-radius);
+      border-bottom-right-radius: var(--border-radius);
+      max-width: max-content;
+      margin-left: calc(-1.5rem - var(--border-radius));
+      padding: 0.5em;
+      padding-left: calc(0.5rem + var(--border-radius));
+
+      --flow-space: 2em;
+
+      @include screen(big) {
+        margin-left: -2rem;
+      }
+
+      &:has(a:hover) {
+        background-color: var(--link-deco-color);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: inherit;
+      }
     }
   }
-  pre {
-    padding: 1em;
-    border-radius: var(--border-radius);
-    overflow-x: auto;
-  }
-  a {
-    color: var(--text-color);
-    text-decoration: underline;
-    text-decoration-color: var(--link-deco-color);
-    text-decoration-thickness: 3px;
-    text-decoration-skip-ink: none;
-    transition: text-decoration-thickness 75ms, text-underline-offset 75ms;
-    text-underline-offset: 0;
-    &:hover {
-      text-decoration-thickness: calc(1em + 3px);
-      text-underline-offset: calc(-1em);
-    }
-  }
-}
-
-:where(article, article blockquote) > *:nth-child(2) {
-  --flow-space: 0;
-}
-
-:where(article, article blockquote) > * {
-  margin: unset;
-}
-
-/*! Courtesy Andy Bell https://piccalil.li/blog/my-favourite-3-lines-of-css/ */
-:is(article, article blockquote) > * + * {
-  margin-block-start: var(--flow-space, 1.5em);
-}
-
-:is(article, article blockquote) :where(h2, h3, h4) {
-  display: flex;
-  width: max-content;
-  margin-left: -2.5rem;
-  background-color: var(--highlight-background);
-  align-items: center;
-  justify-content: center;
-  @include shadow(0.25rem);
-  padding-inline: 1rem;
-  height: 2rem;
-}
-:is(article, article blockquote) :where(h2, h3, h4, header):has(a:hover) {
-  background-color: var(--link-deco-color);
-}
-
-:is(h1, h2, h3, h4) a {
-  text-decoration: none;
 }

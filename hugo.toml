@@ -4,3 +4,7 @@ title = "Jonathan's Blog"
 theme = "johz"
 
 disableKinds = ["taxonomy", "term"]
+
+[markup]
+[markup.highlight]
+noClasses = false
