@@ -1,4 +1,5 @@
-{{ define "main" }} {{ .Content }} {{ range site.RegularPages }}
+{{ define "main" }} {{ .Content }} {{ range where site.RegularPages "Section"
+"posts" }}
 <article>
   <header>
     <h1>

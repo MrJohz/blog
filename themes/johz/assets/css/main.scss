@@ -4,10 +4,23 @@
 :root {
   --border-radius: 2px;
   --main-background: #eff2ee;
-  --highlight-background: #afaa18;
+  // --highlight-background: #ffda22;
+  // --highlight-background: #dbcbd8;
+  // --highlight-background: #f25f5c;
+  --highlight-background: #de85ff;
+  // --highlight-background: #96e3d0;
   --text-color: #092327;
   --article-color: #96e3d0;
+  // --article-color: #DBCBD8;
   --link-deco-color: #d65780;
+
+  @media (prefers-color-scheme: dark) {
+    --main-background: #092327;
+    --highlight-background: #7a3900;
+    --text-color: #dee4dc;
+    --article-color: #1a614f;
+    --link-deco-color: #942447;
+  }
   font-size: 18px;
 }
 
@@ -18,12 +31,12 @@
 }
 
 @mixin shadow($size, $goful: false) {
-  box-shadow: $size/2 $size/2 2px 0px #092327aa,
-    $size / 3 $size / 3 $size 0px #092327aa;
+  box-shadow: $size/2 $size/2 2px 0px #000000aa,
+    $size / 3 $size / 3 $size 0px #000000aa;
   @if $goful {
     @include small-screen {
-      box-shadow: 0 $size var(--border-radius) 0px #092327aa,
-        $size / 3 $size / 3 $size 0px #092327aa;
+      box-shadow: 0 $size/2 var(--border-radius) 0px #000000aa,
+        $size / 3 $size / 3 $size 0px #000000aa;
     }
   }
 }
@@ -39,6 +52,11 @@ body {
   align-items: center;
   padding: 2rem;
   gap: 4.5rem;
+
+  @include small-screen {
+    padding: 1.5rem;
+    gap: 2.5rem;
+  }
 }
 
 .header {
@@ -48,6 +66,10 @@ body {
   padding: 2rem;
   border-radius: var(--border-radius);
   color: var(--text-color);
+
+  @include small-screen {
+    padding: 1.5rem;
+  }
 
   h1 {
     margin: 0;
@@ -171,9 +193,10 @@ article {
   padding-inline: 1rem;
   height: 2rem;
 }
-:is(article, article blockquote) :where(h1, h2, h3, h4) a {
-  text-decoration: none;
-}
 :is(article, article blockquote) :where(h2, h3, h4, header):has(a:hover) {
   background-color: var(--link-deco-color);
+}
+
+:is(h1, h2, h3, h4) a {
+  text-decoration: none;
 }
