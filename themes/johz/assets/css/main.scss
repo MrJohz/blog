@@ -2,7 +2,6 @@
 // https://coolors.co/96e3d0-afaa18-092327-efd2cb-d65780
 
 :root {
-  --border-radius: 2px;
   --main-background: #eff2ee;
   // --highlight-background: #ffda22;
   // --highlight-background: #dbcbd8;
@@ -13,6 +12,7 @@
   --article-color: #96e3d0;
   // --article-color: #DBCBD8;
   --link-deco-color: #d65780;
+  --text-highlight-background: #fff5;
 
   @media (prefers-color-scheme: dark) {
     --main-background: #092327;
@@ -20,7 +20,10 @@
     --text-color: #dee4dc;
     --article-color: #1a614f;
     --link-deco-color: #942447;
+    --text-highlight-background: #fff2;
   }
+
+  --border-radius: 2px;
   font-size: 18px;
 }
 
@@ -54,34 +57,73 @@ body {
   width: 100vw;
 }
 
+body.dark {
+  --main-background: #092327;
+  --highlight-background: #645986;
+  --text-color: #dee4dc;
+  --article-color: #1a614f;
+  --link-deco-color: #942447;
+  --text-highlight-background: #fff2;
+}
+
+body.light {
+  --main-background: #eff2ee;
+  --highlight-background: #de85ff;
+  --text-color: #092327;
+  --article-color: #96e3d0;
+  --link-deco-color: #d65780;
+  --text-highlight-background: #fff5;
+}
+
 body {
   background-color: var(--main-background);
   color: var(--text-color);
   align-items: center;
   padding-block: 1.5rem;
-  gap: 2rem;
+  gap: 1.5rem;
 
   @include screen(big) {
-    padding-block: 2rem;
+    padding-block: 3rem;
     gap: 3rem;
   }
 }
 
 .header {
-  width: max-content;
-  background-color: var(--highlight-background);
-  @include shadow(0.5rem);
-  padding: 1rem;
-  border-radius: var(--border-radius);
+  display: flex;
+  flex-direction: column;
+  margin-right: 2rem;
 
   h1 {
-    margin: 0;
-    padding: 0;
     font-size: clamp(2rem, 6vw, 4rem);
+    z-index: 2;
+
+    width: max-content;
+    background-color: var(--highlight-background);
+    @include shadow(0.5rem);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+
+    &:has(a:hover) {
+      background-color: var(--link-deco-color);
+    }
   }
 
-  &:has(a:hover) {
-    background-color: var(--link-deco-color);
+  nav {
+    align-self: flex-end;
+    width: max-content;
+    background-color: var(--article-color);
+    @include shadow(0.5rem);
+    padding: 2.75rem 1.5rem 0.75rem;
+    border-radius: var(--border-radius);
+    margin-top: -2rem;
+    margin-right: -2rem;
+
+    ul {
+      display: flex;
+      list-style: none;
+      padding: 0;
+      gap: 1rem;
+    }
   }
 }
 
@@ -100,7 +142,7 @@ article {
   }
   background-color: var(--article-color);
   padding: 1.5rem;
-  margin-top: 2.5rem;
+  margin-top: 1.5rem;
 
   header {
     @include shadow(0.25rem);
@@ -146,26 +188,14 @@ article {
       }
     }
 
-    a {
-      color: var(--text-color);
-      text-decoration: underline;
-      text-decoration-color: var(--link-deco-color);
-      text-decoration-thickness: 3px;
-      text-decoration-skip-ink: none;
-      transition: text-decoration-thickness 75ms, text-underline-offset 75ms;
-      text-underline-offset: 0;
-      &:hover {
-        text-decoration-thickness: calc(1em + 3px);
-        text-underline-offset: calc(-1em);
-      }
-    }
-
     pre {
       overflow-x: auto;
-      margin-inline: -0.5rem;
-      padding: 0.5rem;
+      margin-inline: -1.5rem;
+      padding: 1.5rem;
       border-radius: var(--border-radius);
-      background-color: #fff5;
+      background-color: var(--text-highlight-background);
+      @include screen(big) {
+      }
     }
 
     h2 {
@@ -203,5 +233,20 @@ article {
         text-decoration: inherit;
       }
     }
+  }
+}
+
+nav a,
+.content a {
+  color: var(--text-color);
+  text-decoration: underline;
+  text-decoration-color: var(--link-deco-color);
+  text-decoration-thickness: 3px;
+  text-decoration-skip-ink: none;
+  transition: text-decoration-thickness 75ms, text-underline-offset 75ms;
+  text-underline-offset: 0;
+  &:hover {
+    text-decoration-thickness: calc(1em + 3px);
+    text-underline-offset: calc(-1em);
   }
 }

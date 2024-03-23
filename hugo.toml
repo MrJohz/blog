@@ -5,6 +5,23 @@ theme = "johz"
 
 disableKinds = ["taxonomy", "term"]
 
+[menus]
+[[menus.main]]
+name = "About"
+pageRef = "/about"
+weight = 10
+
+[[menus.main]]
+name = "Github"
+url = "https://github.com/MrJohz/"
+weight = 20
+
+[[menus.main]]
+name = "Theme"
+url = "javascript:toggletheme()"
+weight = 30
+
+
 [markup]
 [markup.highlight]
 noClasses = false

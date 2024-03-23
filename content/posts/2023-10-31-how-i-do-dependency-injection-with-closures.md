@@ -8,7 +8,7 @@ tags = ["dependency injection", "javascript", "programming", "python", "tips"]
 
 A [discussion](https://www.reddit.com/r/Python/comments/17k9oai/autowired_my_minimalistic_approach_to_dependency/k77cv83/?context=10000) came up on Reddit recently about DI, where I mentioned that one way that I've done DI recently for web frameworks that don't naturally support it to using closures. Someone asked for an example, so I figured I'd explain what that looks like and where it might work (or not work). The original question was about Python, but I'll give Python and Javascript examples.
 
-I'm going to start with some context of my dependency injection philosophy, but if you want to skip that, you can jump straight to some examples [here](#di-closures).
+I'm going to start with some context of my dependency injection philosophy, but if you want to skip that, you can jump straight to some examples [here](#di--closures).
 
 ## Why DI
 

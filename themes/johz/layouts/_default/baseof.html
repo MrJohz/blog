@@ -10,12 +10,6 @@
     <header class="header">{{ partial "header.html" . }}</header>
     <main>{{ block "main" . }}{{ end }}</main>
     <footer>{{ partial "footer.html" . }}</footer>
-    <script type="speculationrules">
-      {
-        "prerender": [
-          { "where": { "href_matches": "/*" }, "eagerness": "moderate" }
-        ]
-      }
-    </script>
+    <script type="speculationrules">{"prerender": [{ "where": { "href_matches": "/*" }, "eagerness": "moderate" }]}</script>
   </body>
 </html>
