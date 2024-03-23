@@ -1,0 +1,53 @@
++++
+title = "I (Re)designed My Blog"
+date = 2024-03-23
+tags = ["design", "blogging", "frontend"]
++++
+
+I’ve updated my blog. And of course, the first thing you blog about with a new blog design is how you updated your blog. This is that post.
+
+## Design
+
+Confession: I am not a designer. You may have noticed that by, for example, stumbling upon this blog post. But I enjoy trying to figure out how design works, even my methods are chaotic and ineffectual!
+
+Most of the design of the blog came together over the course of a Saturday afternoon. I sketched out the basic idea — chunky box in the middle, overlapping highlights for the post headings, etc. Originally, there were going to be more angles, but I couldn’t get that working with the shadows like I wanted, and so dropped that with the plan to come back to it later. But then I ended up happy enough with things looking the way they are.
+
+Like I say, I’m not an expert in this arena, but it was nice to feel like I’m slowly getting more of an understanding of what sort of things work well together. For example, I knew I wanted a fairly chunky shadow at the lower-right of each of the boxes. But previously, when I’d done that, it had felt a bit odd — the shadow was too simplistic, and it didn’t look real enough. This time, I’ve used layered shadows so that there is some shadow on all sides, but the bulk of the shadow still appears where I want it. This is more like how shadows work in the real world, where there are usually multiple lights creating multiple shadows with different strengths and shapes.
+
+The colours are generated in the way that I often create colours for personal use: I played around with https://coolors.co/ until I got some shades that looked nice enough, then showed them to other people. I really wanted this to be quite a colourful blog — I find the tech blogs that I enjoy reading the most often have both interesting content, and interesting visuals. I don’t know if I’ll manage the former, but hopefully I can manage the latter.
+
+## Implementation
+
+I’m not a designer, but I am a developer, so here I was on more solid ground. Most of my day-to-day work involves more complex projects than just a static blog, but it was nice to get back to basics again. Often, I think about new browser features in terms of the web apps that I’m building, but most of these tools add as much benefit or more to the simplest of sites, and it was exciting to play around with them in that context.
+
+Overall, my goal was to have something that would load as quickly as possible, the first time you open the page. Sure, at a certain point you’re just quibbling over a few 10-100s of milliseconds, but I always like the challenge of efficiency. I assume most people are going to be clicking on this site from a link submitted to Reddit or Hacker News or the like, which means it’s unlikely that they’ll have anything cached. Therefore my focus was mainly on getting a small number of bytes sent to the reader as quickly as possible.
+
+### Static Site Generation
+
+For a blog like this, a static site generator is completely sufficient — there’s no dynamic content (Reddit threads can be my comments section!) and server static files will almost always be faster than something rendered dynamically. I find most SSGs tend to fall into two categories: the old-school, [Jekyll](https://jekyllrb.com/)-style “convention over configuration” style, and the modern, Javascript-based style that tends towards hydration. I’m not a huge fan of either option, but the former seems more suitable to a project like this with minimal frontend Javascript necessary, and I’ve used [Hugo](https://gohugo.io/) before, so I went with that.
+
+I feel like there’s a lot more to Hugo than I’ve ended up using — I’ve done a bit of custom templating, changed how headers get rendered in Markdown, and configured a couple of options, and that’s about it. It’s not necessarily perfect, with little things like being unable to specify custom footnotes, or having the live reload break when I started using Sass instead of CSS, but it is entirely sufficient for my needs.
+
+### Hosting
+
+For actually serving the site, I ended up going with Cloudflare’s free [Pages](https://pages.cloudflare.com/) setup. It’s free, very easy to setup, and hooks directly into Github, so I just need to push changes to a repository and everything will get built automatically. It’s also distributed via Cloudflare’s CDN, which means everything should be served fairly locally to the users, reducing the time it takes to make connections and download data. I could have tried out different providers to see which one actually produced the fastest results, but in the end I just trusted Cloudflare’s marketing team, the little corporate suck-up that I am. In practice, I suspect I’d have got similar results from a range of different providers, including via Github directly — as they say on the BBC, other products are available!
+
+Cloudflare also handles caching, compression, and other useful things like that.
+
+### Templates, Styling, and Javascript
+
+I confess, it’s been a while since I dusted off my [CSS Zen Garden](https://csszengarden.com/) skills. Normally, I take a bottom-up approach to building sites: take a specific unit of design, like a button, and create a component out of it, then create more components that use that button, and so on and so forth. Maybe I could have done that here, but given the templating tools provided by Hugo, I figured it would be easier to take the top-down approach and try holistically styling the entire document.
+
+The first version turned out nicely, although getting it to still work nicely on mobile turned out to be harder than I expected due to some odd margins that ended up getting more complicated than they needed to be to get different elements to stay in their place. But the second, mobile-first version turned out better and looked pretty much identical to the first on larger screens. Lesson learned for the n+1th time: it’s usually easier to start from mobile and work up, than start from desktop and work down.
+
+I mentioned new web APIs earlier. The most obvious (but not that new any more) is flexbox, which makes laying things out so much simpler than it used to be. CSS variables made it easier to defined colours and consistent style elements, and also made it easier to implement dark mode (just by changing the values of certain variables, rather than adding media queries all over the place). I’ve used `[:is()](https://developer.mozilla.org/en-US/docs/Web/CSS/:is)` and `[:has()](https://developer.mozilla.org/en-US/docs/Web/CSS/:has)` pretty extensively — `:is()` is pretty widely supported on modern browsers, and while there’s less support for `:has()`, it’s available in the latest versions of all major browsers, and I assume my readership will stay fairly up-to-date there. `:has()` is particularly nice, as it allows parent elements to be updated depending on a child selector, which I’ve used to reduce duplicate code for the light mode/dark mode colour switcher, and for the header elements — note how the headers only react when you hover over the actual link, not when you hover over the surrounding box.
+
+I almost used the new [CSS nesting](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_nesting) feature, which I’d normally have used the Sass preprocessor for. It is almost as supported as `:has()`, but I ended up using Sass for a couple of mixins anyway, at which point I already had the nesting via Sass and didn’t need to use the native CSS nesting. But I’m excited to give it a go at some point.
+
+All assets are inlined in the `<head>` tags. This means they can’t be cached separately to the document, but like I said earlier, the goal is for a quick first-time load, and being able to cut out a handful of HTTP requests seemed useful. For CSS, that’s fine as long as there’s not too much CSS involved, and for Javascript, the new `type="module"` ensures that the script will get parsed and executed asynchronously, preventing anything from blocking the rendering. And given that Javascript is only used to get the “Light/Dark” toggle switch to work, users without Javascript should have no issues using the site.
+
+## Conclusion
+
+As I said at the start, this really is just that classic page that you write when you’ve made your blog look really pretty and you want it to have at least one post on it. I’ve imported some of my older posts here, so it’s not quite as barren as all that, but I still wanted to write this post, mainly so future me can be embarrassed by my choices.
+
+At some point, I’d like to pull the theme for this blog out into a separate repository and make it properly open source. I can’t imagine it’ll get used by anyone else, but I know people like poking around with the internals of websites like this to figure out what’s going on.
