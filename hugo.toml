@@ -17,7 +17,7 @@ url = "https://github.com/MrJohz/"
 weight = 20
 
 [[menus.main]]
-name = "Theme"
+name = "Light/Dark"
 url = "javascript:toggletheme()"
 weight = 30
 
