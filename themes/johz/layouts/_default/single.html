@@ -6,3 +6,7 @@
   <div class="content">{{ .Content }}</div>
 </article>
 {{ end }}
+
+{{ define "head" }}
+<meta type="description" content="{{ .Summary | plainify }}">
+{{ end }}
