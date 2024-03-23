@@ -2,27 +2,43 @@
 // https://coolors.co/96e3d0-afaa18-092327-efd2cb-d65780
 
 :root {
-  --main-background: #eff2ee;
-  // --highlight-background: #ffda22;
-  // --highlight-background: #dbcbd8;
-  // --highlight-background: #f25f5c;
-  --highlight-background: #de85ff;
-  // --highlight-background: #96e3d0;
-  --text-color: #092327;
-  --article-color: #96e3d0;
-  // --article-color: #DBCBD8;
-  --link-deco-color: #d65780;
-  --text-highlight-background: #fff5;
+  &,
+  &:has(body.light) {
+    --main-background: #eff2ee;
+    // --highlight-background: #ffda22;
+    // --highlight-background: #dbcbd8;
+    // --highlight-background: #f25f5c;
+    --highlight-background: #de85ff;
+    // --highlight-background: #96e3d0;
+    --text-color: #092327;
+    --article-color: #96e3d0;
+    // --article-color: #DBCBD8;
+    --link-deco-color: #d65780;
+    --text-highlight-background: #fff5;
+    color-scheme: light;
+  }
 
-  @media (prefers-color-scheme: dark) {
-    --main-background: #092327;
+  &:has(body.dark) {
+    --main-background: #202b2ce8;
     --highlight-background: #645986;
     --text-color: #dee4dc;
     --article-color: #1a614f;
     --link-deco-color: #942447;
     --text-highlight-background: #fff2;
+    color-scheme: dark;
   }
 
+  @media (prefers-color-scheme: dark) {
+    --main-background: #202b2ce8;
+    --highlight-background: #645986;
+    --text-color: #dee4dc;
+    --article-color: #1a614f;
+    --link-deco-color: #942447;
+    --text-highlight-background: #fff2;
+    color-scheme: dark;
+  }
+
+  --shadow-color: #0006;
   --border-radius: 2px;
   font-size: 18px;
 }
@@ -41,13 +57,13 @@
 }
 
 @mixin full-shadow($size) {
-  box-shadow: 0 $size/2 var(--border-radius) 0px #000000aa,
-    $size / 3 $size / 3 $size 0px #000000aa;
+  box-shadow: 0 $size/2 10px 0px var(--shadow-color),
+    $size / 3 $size / 3 $size 0px var(--shadow-color);
 }
 
 @mixin shadow($size) {
-  box-shadow: $size/2 $size/2 2px 0px #000000aa,
-    $size / 3 $size / 3 $size 0px #000000aa;
+  box-shadow: $size/2 $size/2 10px 0px var(--shadow-color),
+    $size * 0.75 $size * 0.75 $size 0px var(--shadow-color);
 }
 
 html,
@@ -55,24 +71,6 @@ body {
   display: flex;
   flex-direction: column;
   width: 100%;
-}
-
-body.dark {
-  --main-background: #092327;
-  --highlight-background: #645986;
-  --text-color: #dee4dc;
-  --article-color: #1a614f;
-  --link-deco-color: #942447;
-  --text-highlight-background: #fff2;
-}
-
-body.light {
-  --main-background: #eff2ee;
-  --highlight-background: #de85ff;
-  --text-color: #092327;
-  --article-color: #96e3d0;
-  --link-deco-color: #d65780;
-  --text-highlight-background: #fff5;
 }
 
 body {
@@ -99,7 +97,7 @@ body {
 
     width: max-content;
     background-color: var(--highlight-background);
-    @include shadow(0.5rem);
+    @include shadow(0.25rem);
     padding: 1rem;
     border-radius: var(--border-radius);
 
@@ -112,7 +110,7 @@ body {
     align-self: flex-end;
     width: max-content;
     background-color: var(--article-color);
-    @include shadow(0.5rem);
+    @include shadow(0.25rem);
     padding: 2.75rem 1.5rem 0.75rem;
     border-radius: var(--border-radius);
     margin-top: -2rem;
@@ -133,11 +131,11 @@ main {
 
 article {
   @include screen(small) {
-    @include full-shadow(0.5rem);
+    @include full-shadow(0.25rem);
     width: 100%;
   }
   @include screen(big) {
-    @include shadow(0.5rem);
+    @include shadow(0.25rem);
     width: calc(min(85%, 40rem));
   }
   background-color: var(--article-color);
