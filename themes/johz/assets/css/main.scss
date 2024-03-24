@@ -111,10 +111,11 @@ body {
     width: max-content;
     background-color: var(--article-color);
     @include shadow(0.25rem);
-    padding: 2.75rem 1.5rem 0.75rem;
+    padding: 2.75rem 1.5em 0.75em;
     border-radius: var(--border-radius);
     margin-top: -2rem;
     margin-right: -2rem;
+    font-size: clamp(0.8em, 1.5vw, 1rem);
 
     ul {
       display: flex;
@@ -139,7 +140,7 @@ article {
     width: calc(min(85%, 40rem));
   }
   background-color: var(--article-color);
-  padding: 1.5rem;
+  padding: 1.5rem 2rem 2rem;
   margin-top: 1.5rem;
 
   header {
@@ -149,12 +150,12 @@ article {
     border-bottom-right-radius: var(--border-radius);
     max-width: max-content;
     margin-top: -2.5rem;
-    margin-left: calc(-1.5rem - var(--border-radius));
+    margin-left: calc(-2rem - var(--border-radius));
     padding: 0.5rem;
     padding-left: calc(0.5rem + var(--border-radius));
 
     @include screen(big) {
-      margin-left: -3.5rem;
+      margin-left: -4rem;
     }
 
     &:has(a:hover) {
@@ -164,14 +165,35 @@ article {
 
   .content {
     &,
-    & > * + * {
+    & > * + *,
+    & > blockquote > * + * {
       margin-block-start: var(--flow-space, 1.5em);
+    }
+
+    ul,
+    ol {
+      padding-left: 0em;
+    }
+    li > ul,
+    li > ol,
+    li > blockquote {
+      padding-left: 1.5em;
     }
 
     blockquote {
       position: relative;
-      margin-inline: 2em;
+      margin-inline: 0em;
       padding-block: 0.5em;
+
+      & > blockquote,
+      & > ul,
+      & > li {
+        margin-inline-start: 1.5em;
+      }
+
+      & pre {
+        margin-inline-start: -0.5em;
+      }
 
       &::before {
         content: "";
@@ -182,18 +204,23 @@ article {
         width: 0.25em;
         background-color: var(--text-color);
         border-radius: var(--border-radius);
-        left: -1em;
+        left: calc(-1em + 3px);
       }
     }
 
     pre {
       overflow-x: auto;
-      margin-inline: -1.5rem;
-      padding: 1.5rem;
+      margin-inline: -2em;
+      padding: 1.5em 2em;
       border-radius: var(--border-radius);
       background-color: var(--text-highlight-background);
       @include screen(big) {
       }
+    }
+
+    p {
+      text-wrap: pretty;
+      hanging-punctuation: first force-end last;
     }
 
     h2 {
@@ -212,14 +239,14 @@ article {
       border-top-right-radius: var(--border-radius);
       border-bottom-right-radius: var(--border-radius);
       max-width: max-content;
-      margin-left: calc(-1.5rem - var(--border-radius));
+      margin-left: calc(-2rem - var(--border-radius));
       padding: 0.5em;
       padding-left: calc(0.5rem + var(--border-radius));
 
       --flow-space: 2em;
 
       @include screen(big) {
-        margin-left: -2rem;
+        margin-left: -2.5rem;
       }
 
       &:has(a:hover) {
@@ -239,12 +266,12 @@ nav a,
   color: var(--text-color);
   text-decoration: underline;
   text-decoration-color: var(--link-deco-color);
-  text-decoration-thickness: 3px;
+  text-decoration-thickness: 0.2em;
   text-decoration-skip-ink: none;
   transition: text-decoration-thickness 75ms, text-underline-offset 75ms;
   text-underline-offset: 0;
   &:hover {
-    text-decoration-thickness: calc(1em + 3px);
+    text-decoration-thickness: calc(1em + 0.2em);
     text-underline-offset: calc(-1em);
   }
 }
