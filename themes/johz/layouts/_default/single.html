@@ -1,12 +1,16 @@
+{{ define "head" }}
+<meta name="description" content="{{ .Summary | plainify }}">
+{{ end }}
+
 {{ define "main" }}
 <article>
   <header>
     <h1><a href="{{.RelPermalink}}">{{ .Title }}</a></h1>
   </header>
+  <div class="details">
+    Posted <time datetime="{{.PublishDate | time.Format "2006-01-02"}}">{{ humanize .PublishDate.Day }} {{.PublishDate | time.Format "January 2006"}}</time> in
+    {{range $k, $v := .GetTerms "tags"}}{{- if $k }}, {{end}}<a href="{{.RelPermalink}}">{{.Title}}</a>{{end}}
+  </div>
   <div class="content">{{ .Content }}</div>
 </article>
-{{ end }}
-
-{{ define "head" }}
-<meta name="description" content="{{ .Summary | plainify }}">
 {{ end }}

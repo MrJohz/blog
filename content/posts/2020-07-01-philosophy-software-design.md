@@ -1,7 +1,7 @@
 +++
 title = 'Book Review: A Philosophy of Software Design'
 date = 2020-07-01
-tags = ["bookreview", "programming", "software"]
+tags = ["book review", "programming", "software"]
 +++
 
 This review is largely in response to the article "[It's probably time to stop recommending Clean Code](https://qntm.org/clean)", and the ensuing [Reddit discussion](https://www.reddit.com/r/programming/comments/hhlvqq/its_probably_time_to_stop_recommending_clean_code/). A lot of really interesting points were brought up, but the big question that the author themself wasn't able to answer was: "What should we recommend instead?"

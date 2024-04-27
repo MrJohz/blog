@@ -3,7 +3,10 @@ languageCode = 'en-us'
 title = "Jonathan's Blog"
 theme = "johz"
 
-disableKinds = ["taxonomy", "term"]
+# disableKinds = ["term"]
+
+[taxonomies]
+tag = 'tags'
 
 [menus]
 [[menus.main]]
