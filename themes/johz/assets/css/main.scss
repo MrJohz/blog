@@ -4,36 +4,36 @@
 :root {
   &,
   &:has(body.light) {
-    --main-background: #eff2ee;
+    --main-background: #f3f8ff;
     // --highlight-background: #ffda22;
     // --highlight-background: #dbcbd8;
     // --highlight-background: #f25f5c;
-    --highlight-background: #de85ff;
+    --highlight-background: #afc1d6;
     // --highlight-background: #96e3d0;
     --text-color: #092327;
-    --article-color: #96e3d0;
+    --article-color: #cef9f2;
     // --article-color: #DBCBD8;
-    --link-deco-color: #d65780;
+    --link-deco-color: #ab92bf;
     --text-highlight-background: #fff5;
     color-scheme: light;
   }
 
   &:has(body.dark) {
-    --main-background: #202b2ce8;
-    --highlight-background: #645986;
-    --text-color: #dee4dc;
-    --article-color: #1a614f;
-    --link-deco-color: #942447;
+    --main-background: #181e1f;
+    --highlight-background: #07362f;
+    --text-color: #e7eee5;
+    --article-color: #202b2c;
+    --link-deco-color: #520023;
     --text-highlight-background: #fff2;
     color-scheme: dark;
   }
 
   @media (prefers-color-scheme: dark) {
-    --main-background: #202b2ce8;
-    --highlight-background: #645986;
-    --text-color: #dee4dc;
-    --article-color: #1a614f;
-    --link-deco-color: #942447;
+    --main-background: #181e1f;
+    --highlight-background: #07362f;
+    --text-color: #e7eee5;
+    --article-color: #202b2c;
+    --link-deco-color: #520023;
     --text-highlight-background: #fff2;
     color-scheme: dark;
   }
@@ -115,7 +115,6 @@ body {
     border-radius: var(--border-radius);
     margin-top: -2rem;
     margin-right: -2rem;
-    font-size: clamp(0.8em, 1.5vw, 1rem);
 
     ul {
       display: flex;
@@ -140,7 +139,7 @@ article {
     width: calc(min(85%, 40rem));
   }
   background-color: var(--article-color);
-  padding: 1.5rem 2rem 2rem;
+  padding: 1.5rem 1.5rem 2rem;
   margin-top: 1.5rem;
 
   header {
@@ -150,7 +149,7 @@ article {
     border-bottom-right-radius: var(--border-radius);
     max-width: max-content;
     margin-top: -2.5rem;
-    margin-left: calc(-2rem - var(--border-radius));
+    margin-left: calc(-1.5rem - var(--border-radius));
     padding: 0.5rem;
     padding-left: calc(0.5rem + var(--border-radius));
 
@@ -192,7 +191,7 @@ article {
       }
 
       & pre {
-        margin-inline-start: -0.5em;
+        margin-inline-start: -0.6em;
       }
 
       &::before {
@@ -210,9 +209,8 @@ article {
 
     pre {
       overflow-x: auto;
-      margin-inline: -2em;
+      margin-inline: -1.5em;
       padding: 1.5em 2em;
-      border-radius: var(--border-radius);
       background-color: var(--text-highlight-background);
       @include screen(big) {
       }
@@ -239,7 +237,7 @@ article {
       border-top-right-radius: var(--border-radius);
       border-bottom-right-radius: var(--border-radius);
       max-width: max-content;
-      margin-left: calc(-2rem - var(--border-radius));
+      margin-left: calc(-1.5rem - var(--border-radius));
       padding: 0.5em;
       padding-left: calc(0.5rem + var(--border-radius));
 
