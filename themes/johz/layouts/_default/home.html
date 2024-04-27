@@ -1,11 +1,19 @@
-{{ define "main" }} {{ .Content }} {{ range where site.RegularPages "Section"
-"posts" }}
+{{ define "main" }} {{ .Content }}
 <article>
   <header>
     <h1>
-      <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+      <a href="{{ .RelPermalink }}">Articles</a>
     </h1>
   </header>
-  <div class="content">{{ .Summary }}</p></div>
+  <div class="content">
+    <ul>
+      {{ range where site.RegularPages "Section" "posts" }}
+      <li>
+        <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a> —
+        <time datetime="{{.PublishDate | time.Format "2006-01-02"}}">{{.PublishDate | time.Format "2 January 2006"}}</time>
+      </li>
+      {{ end }}
+    </ul>
+  </div>
 </article>
-{{ end }} {{ end }}
+{{ end }}
