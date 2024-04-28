@@ -89,7 +89,7 @@ body {
 .header {
   display: flex;
   flex-direction: column;
-  margin-right: 2rem;
+  margin-inline-end: 2rem;
 
   h1 {
     font-size: clamp(2rem, 6vw, 4rem);
@@ -113,8 +113,8 @@ body {
     @include shadow(0.25rem);
     padding: 2.75rem 1.5em 0.75em;
     border-radius: var(--border-radius);
-    margin-top: -2rem;
-    margin-right: -2rem;
+    margin-block-start: -2rem;
+    margin-inline-end: -2rem;
 
     ul {
       display: flex;
@@ -140,7 +140,7 @@ article {
   }
   background-color: var(--article-color);
   padding: 1.5rem 1.5rem 2rem;
-  margin-top: 1.5rem;
+  margin-block-start: 1.5rem;
 
   header {
     @include shadow(0.25rem);
@@ -148,13 +148,13 @@ article {
     border-top-right-radius: var(--border-radius);
     border-bottom-right-radius: var(--border-radius);
     max-width: max-content;
-    margin-top: -2.5rem;
-    margin-left: calc(-1.5rem - var(--border-radius));
+    margin-block-start: -2.5rem;
+    margin-inline-start: calc(-1.5rem - var(--border-radius));
     padding: 0.5rem;
-    padding-left: calc(0.5rem + var(--border-radius));
+    padding-inline-start: calc(0.5rem + var(--border-radius));
 
     @include screen(big) {
-      margin-left: -4rem;
+      margin-inline-start: -4rem;
     }
 
     &:has(a:hover) {
@@ -170,7 +170,8 @@ article {
   .content {
     &,
     & > * + *,
-    & > blockquote > * + * {
+    & blockquote > * + *,
+    & li > * + * {
       margin-block-start: var(--flow-space, 1.5em);
     }
 
@@ -179,6 +180,9 @@ article {
       padding-inline-start: 1em;
       & > li:not(:first-of-type) {
         padding-block-start: 0.5em;
+        &:has(p) {
+          padding-block-start: 1em;
+        }
       }
     }
 
@@ -213,10 +217,9 @@ article {
     pre {
       overflow-x: auto;
       margin-inline: -1.5em;
-      padding: 1.5em 2em;
+      padding-block: 1.5em;
+      padding-inline: 2em;
       background-color: var(--text-highlight-background);
-      @include screen(big) {
-      }
     }
 
     p {
@@ -240,14 +243,14 @@ article {
       border-top-right-radius: var(--border-radius);
       border-bottom-right-radius: var(--border-radius);
       max-width: max-content;
-      margin-left: calc(-1.5rem - var(--border-radius));
+      margin-inline-start: calc(-1.5rem - var(--border-radius));
       padding: 0.5em;
-      padding-left: calc(0.5rem + var(--border-radius));
+      padding-inline-start: calc(0.5rem + var(--border-radius));
 
       --flow-space: 2em;
 
       @include screen(big) {
-        margin-left: -2.5rem;
+        margin-inline-start: -2.5rem;
       }
 
       &:has(a:hover) {
@@ -276,4 +279,11 @@ nav a,
     text-decoration-thickness: calc(1em + 0.2em);
     text-underline-offset: calc(-1em);
   }
+}
+
+.tags {
+  --flow-space: 0.5em;
+  margin-inline-start: 1em;
+  opacity: 0.8;
+  font-size: 0.9em;
 }

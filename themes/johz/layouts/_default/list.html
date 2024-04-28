@@ -1,20 +1,10 @@
-{{ define "main" }}
-{{ .Content }}
+{{ define "main" }} {{ .Content }}
 <article>
   <header>
     <h1>
       <a href="{{ .RelPermalink }}">{{ .Title }}</a>
     </h1>
   </header>
-  <div class="content">
-    <ul>
-      {{ range .Pages }}
-      <li>
-        <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a> —
-        <time datetime="{{.PublishDate | time.Format "2006-01-02"}}">{{humanize .PublishDate.Day}} {{.PublishDate | time.Format "January 2006"}}</time>
-      </li>
-      {{ end }}
-    </ul>
-  </div>
+  <div class="content">{{ partial "postlist.html" (dict "pages" .Pages) }}</div>
 </article>
 {{ end }}

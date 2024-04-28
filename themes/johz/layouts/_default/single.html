@@ -7,10 +7,12 @@
   <header>
     <h1><a href="{{.RelPermalink}}">{{ .Title }}</a></h1>
   </header>
+  {{if eq .Section "posts"}}
   <div class="details">
     Posted <time datetime="{{.PublishDate | time.Format "2006-01-02"}}">{{ humanize .PublishDate.Day }} {{.PublishDate | time.Format "January 2006"}}</time> in
     {{range $k, $v := .GetTerms "tags"}}{{- if $k }}, {{end}}<a href="{{.RelPermalink}}">{{.Title}}</a>{{end}}
   </div>
+  {{end}}
   <div class="content">{{ .Content }}</div>
 </article>
 {{ end }}

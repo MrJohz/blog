@@ -6,14 +6,8 @@
     </h1>
   </header>
   <div class="content">
-    <ul>
-      {{ range where site.RegularPages "Section" "posts" }}
-      <li>
-        <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a> —
-        <time datetime="{{.PublishDate | time.Format "2006-01-02"}}">{{humanize .PublishDate.Day}} {{.PublishDate | time.Format "January 2006"}}</time>
-      </li>
-      {{ end }}
-    </ul>
+    {{ partial "postlist.html" (dict "pages" (where site.RegularPages "Section"
+    "posts") ) }}
   </div>
 </article>
 {{ end }}

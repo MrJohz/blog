@@ -1,0 +1,22 @@
+{{- /*
+Renders a list of pages.
+.
+@context {Pages} pages A list of pages
+
+@example: {{ partial "menu.html" (dict "pages" .Pages) }}
+*/}}
+
+{{- $pages := .pages }}
+
+
+<ul>
+  {{ range $pages }}
+  <li>
+    <p>
+      <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a> —
+      <time datetime="{{.PublishDate | time.Format "2006-01-02"}}">{{humanize .PublishDate.Day}} {{.PublishDate | time.Format "January 2006"}}</time>
+    </p>
+    <p class="tags">{{range $k, $v := .GetTerms "tags"}}{{- if $k }}, {{end}}<a href="{{.RelPermalink}}">{{.Title}}</a>{{end}}</p>
+  </li>
+  {{ end }}
+</ul>

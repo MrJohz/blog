@@ -69,6 +69,14 @@ Then we do something else so that the markdown doesn't behave weird.
   - even some nested bullet points
     - how nested can we get?
 
+We can have lists with paragraphs in them
+
+- This is a list itemwith multiple paragraphs inside it
+
+  Here is paragraph two, for example
+
+  And this is paragraph 3
+
 Note that the current styles break down a bit with overly complex bullet points/numbered lists:
 
 - What happens when our list items become run on paragraphs
