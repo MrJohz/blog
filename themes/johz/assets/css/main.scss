@@ -39,7 +39,6 @@
   }
 
   --shadow-color: #0006;
-  --border-radius: 2px;
   font-size: 18px;
 }
 
@@ -99,7 +98,6 @@ body {
     background-color: var(--highlight-background);
     @include shadow(0.25rem);
     padding: 1rem;
-    border-radius: var(--border-radius);
 
     &:has(a:hover) {
       background-color: var(--link-deco-color);
@@ -112,7 +110,6 @@ body {
     background-color: var(--article-color);
     @include shadow(0.25rem);
     padding: 2.75rem 1.5em 0.75em;
-    border-radius: var(--border-radius);
     margin-block-start: -2rem;
     margin-inline-end: -2rem;
 
@@ -148,20 +145,16 @@ article {
     width: auto;
     margin: -1.5rem;
     padding-block-end: 2.5rem;
-    border-top-right-radius: var(--border-radius);
-    border-top-left-radius: var(--border-radius);
   }
 
   header {
     @include shadow(0.25rem);
     background-color: var(--highlight-background);
-    border-top-right-radius: var(--border-radius);
-    border-bottom-right-radius: var(--border-radius);
     max-width: max-content;
     margin-block-start: -2.5rem;
-    margin-inline-start: calc(-1.5rem - var(--border-radius));
+    margin-inline-start: -1.9rem;
     padding: 0.5rem;
-    padding-inline-start: calc(0.5rem + var(--border-radius));
+    padding-inline-start: 0.9rem;
 
     z-index: 5;
     position: relative;
@@ -222,7 +215,6 @@ article {
         height: 100%;
         width: 0.25em;
         background-color: var(--text-color);
-        border-radius: var(--border-radius);
         left: calc(-1em + 3px);
       }
     }
@@ -253,12 +245,10 @@ article {
     :is(h2, h3, h4) {
       @include shadow(0.25rem);
       background-color: var(--highlight-background);
-      border-top-right-radius: var(--border-radius);
-      border-bottom-right-radius: var(--border-radius);
       max-width: max-content;
-      margin-inline-start: calc(-1.5rem - var(--border-radius));
+      margin-inline-start: -1.9rem;
       padding: 0.5em;
-      padding-inline-start: calc(0.5rem + var(--border-radius));
+      padding-inline-start: 0.9rem;
 
       --flow-space: 2em;
 
