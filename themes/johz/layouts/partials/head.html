@@ -13,6 +13,9 @@
 {{ if not .Lastmod.IsZero }}
 <meta name="updated_time" property="og:updated_time" content="{{.Lastmod | time.Format "2006-01-02"}}" />
 {{ end }}
+{{ with .Resources.GetMatch "cover.jpg" }}
+<meta name="image" property="og:image" content="{{ .RelPermalink }}"> 
+{{end}}
 
 
 {{ partialCached "head/css.html" . }} {{ partialCached "head/js.html" . }}
