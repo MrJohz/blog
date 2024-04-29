@@ -142,6 +142,16 @@ article {
   padding: 1.5rem 1.5rem 2rem;
   margin-block-start: 1.5rem;
 
+  .cover {
+    max-width: calc(100% + 3rem);
+    height: auto;
+    width: auto;
+    margin: -1.5rem;
+    padding-block-end: 2.5rem;
+    border-top-right-radius: var(--border-radius);
+    border-top-left-radius: var(--border-radius);
+  }
+
   header {
     @include shadow(0.25rem);
     background-color: var(--highlight-background);
@@ -152,6 +162,9 @@ article {
     margin-inline-start: calc(-1.5rem - var(--border-radius));
     padding: 0.5rem;
     padding-inline-start: calc(0.5rem + var(--border-radius));
+
+    z-index: 5;
+    position: relative;
 
     @include screen(big) {
       margin-inline-start: -4rem;

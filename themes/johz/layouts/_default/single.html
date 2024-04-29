@@ -4,13 +4,41 @@
 
 {{ define "main" }}
 <article>
+  {{ with .Resources.GetMatch "cover.jpg" }}
+  <picture>
+    {{ with .Resize (printf "%dx%d webp" .Width .Height) }}
+      <source srcset="{{ .RelPermalink }}" width="{{ .Width }}" height="{{ .Height }}" type="image/webp" />
+    {{end}}
+    {{ with .Resize "600x webp" }}
+      <source srcset="{{ .RelPermalink }}" width="{{ .Width }}" height="{{ .Height }}" type="image/webp" />
+    {{end}}
+    {{ with .Resize "300x webp" }}
+      <source srcset="{{ .RelPermalink }}" width="{{ .Width }}" height="{{ .Height }}" type="image/webp" />
+    {{end}}
+    {{ with .Resize "150x webp" }}
+      <source srcset="{{ .RelPermalink }}" width="{{ .Width }}" height="{{ .Height }}" type="image/webp" />
+    {{end}}
+    <img class="cover" role="presentation" alt="" src="{{ .RelPermalink }}" width="{{ .Width }}" height="{{ .Height }}" />
+  </picture>
+  {{ end }}
   <header>
     <h1><a href="{{.RelPermalink}}">{{ .Title }}</a></h1>
   </header>
   {{if eq .Section "posts"}}
   <div class="details">
-    Posted <time datetime="{{.PublishDate | time.Format "2006-01-02"}}">{{ humanize .PublishDate.Day }} {{.PublishDate | time.Format "January 2006"}}</time> in
-    {{range $k, $v := .GetTerms "tags"}}{{- if $k }}, {{end}}<a href="{{.RelPermalink}}">{{.Title}}</a>{{end}}
+    <p>Posted <time datetime="{{.PublishDate | time.Format "2006-01-02"}}">{{ humanize .PublishDate.Day }} {{.PublishDate | time.Format "January 2006"}}</time> in
+    {{range $k, $v := .GetTerms "tags"}}{{- if $k }}, {{end}}<a href="{{.RelPermalink}}">{{.Title}}</a>{{end}}</p>
+    {{with .Param "cover"}}<p>Cover image based on: 
+      {{ $cover := . }}
+      <em>{{ default "Unknown" (index $cover "name") }}</em>, 
+      {{ default "Unknown Artist" (index $cover "artist") }}
+      {{with index $cover "date"}}({{.}}){{end}}
+      {{with index $cover "institution"}}
+        {{with index $cover "institution-url"}}<a href="{{.}}">{{end}}
+        {{.}}
+        {{with index $cover "institution-url"}}</a>{{end}}
+      {{end}}
+    </p>{{end}}
   </div>
   {{end}}
   <div class="content">{{ .Content }}</div>

@@ -2,6 +2,12 @@
 title = "I (Re)designed My Blog"
 date = 2024-03-23
 tags = ["design", "blogging", "frontend"]
+[params.cover]
+name = "Interior of a Painter's Studio"
+artist = "Jan Davidsz. de Heem"
+date = "about 1630"
+institution = "MFA Boston"
+institution-url = "https://www.mfa.org/"
 +++
 
 I’ve updated my blog. And of course, the first thing you blog about with a new blog design is how you updated your blog. This is that post.
