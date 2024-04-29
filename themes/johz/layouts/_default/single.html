@@ -6,18 +6,16 @@
 <article>
   {{ with .Resources.GetMatch "cover.jpg" }}
   <picture>
-    {{ with .Resize (printf "%dx%d webp" .Width .Height) }}
-      <source srcset="{{ .RelPermalink }}" width="{{ .Width }}" height="{{ .Height }}" type="image/webp" />
-    {{end}}
-    {{ with .Resize "600x webp" }}
-      <source srcset="{{ .RelPermalink }}" width="{{ .Width }}" height="{{ .Height }}" type="image/webp" />
-    {{end}}
-    {{ with .Resize "300x webp" }}
-      <source srcset="{{ .RelPermalink }}" width="{{ .Width }}" height="{{ .Height }}" type="image/webp" />
-    {{end}}
-    {{ with .Resize "150x webp" }}
-      <source srcset="{{ .RelPermalink }}" width="{{ .Width }}" height="{{ .Height }}" type="image/webp" />
-    {{end}}
+    <source
+    srcset="
+      {{(.Resize "300x webp").RelPermalink}} 300w,
+      {{(.Resize "720x webp").RelPermalink}} 720w,
+      {{.RelPermalink}} {{.Width}}w,
+    "
+    sizes="(min-width: 900px) 720px, (min-width: 600px) calc(75vw + 60px), 100vw"
+    width="{{ .Width }}"
+    height="{{ .Height }}"
+    type="image/webp" />
     <img class="cover" role="presentation" alt="" src="{{ .RelPermalink }}" width="{{ .Width }}" height="{{ .Height }}" />
   </picture>
   {{ end }}
