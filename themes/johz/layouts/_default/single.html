@@ -28,7 +28,7 @@
   <div class="details">
     <p>Posted <time datetime="{{.PublishDate | time.Format "2006-01-02"}}">{{ humanize .PublishDate.Day }} {{.PublishDate | time.Format "January 2006"}}</time> in
     {{range $k, $v := .GetTerms "tags"}}{{- if $k }}, {{end}}<a href="{{.RelPermalink}}">{{.Title}}</a>{{end}}</p>
-    {{with .Param "cover"}}<p>Cover image based on: 
+    {{with .Param "cover"}}<p>Cover image based on 
       {{ $cover := . }}
       <em>{{ default "Unknown" (index $cover "name") }}</em>, 
       {{ default "Unknown Artist" (index $cover "artist") }}
