@@ -1,18 +1,24 @@
-// COLORS:
-// https://coolors.co/96e3d0-afaa18-092327-efd2cb-d65780
-
 :root {
-  &,
+  // yes, there's a bunch of duplication here that we would like to avoid
+  // but it turns out to be surprisingly difficult to write a selector that:
+  // * works on old browsers (&, &:has(...)) does not work on older browsers, even
+  //   though they understand the first part of the selector
+  // * covers both the body.dark case and the prefers-color-scheme: dark case
+  // so for the time being, we just duplicate everything
+
+  --main-background: #f3f8ff;
+  --highlight-background: #afc1d6;
+  --text-color: #092327;
+  --article-color: #cef9f2;
+  --link-deco-color: #ab92bf;
+  --text-highlight-background: #fff5;
+  color-scheme: light;
+
   &:has(body.light) {
     --main-background: #f3f8ff;
-    // --highlight-background: #ffda22;
-    // --highlight-background: #dbcbd8;
-    // --highlight-background: #f25f5c;
     --highlight-background: #afc1d6;
-    // --highlight-background: #96e3d0;
     --text-color: #092327;
     --article-color: #cef9f2;
-    // --article-color: #DBCBD8;
     --link-deco-color: #ab92bf;
     --text-highlight-background: #fff5;
     color-scheme: light;
@@ -23,7 +29,7 @@
     --highlight-background: #07362f;
     --text-color: #e7eee5;
     --article-color: #202b2c;
-    --link-deco-color: #520023;
+    --link-deco-color: #6b0a34;
     --text-highlight-background: #fff2;
     color-scheme: dark;
   }
@@ -33,12 +39,12 @@
     --highlight-background: #07362f;
     --text-color: #e7eee5;
     --article-color: #202b2c;
-    --link-deco-color: #520023;
+    --link-deco-color: #6b0a34;
     --text-highlight-background: #fff2;
     color-scheme: dark;
   }
 
-  --shadow-color: #0006;
+  --shadow-color: rgba(0, 0, 0, 0.4);
   font-size: 18px;
 }
 
@@ -171,6 +177,7 @@ article {
   .details {
     font-size: 0.8em;
     margin-block-start: var(--flow-space, 1em);
+    opacity: 0.8;
   }
 
   .content {
