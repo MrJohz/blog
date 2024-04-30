@@ -2,6 +2,7 @@
 title = "I (Re)designed My Blog"
 date = 2024-04-29
 tags = ["design", "blogging", "frontend"]
+slug = "blog-redesign"
 [params.cover]
 name = "Interior of a Painter's Studio"
 artist = "Jan Davidsz. de Heem"

@@ -1,7 +1,8 @@
 +++
 title = "Koka, Explored"
-date = 2024-03-16
+date = 2024-04-30
 tags = ["pl-design", "koka"]
+slug = "koka-explored"
 draft = true
 +++
 

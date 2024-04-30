@@ -2,6 +2,7 @@
 title = "Wait, Rust Has Effects?"
 date = 2023-03-15
 tags = ["pl-design", "effects", "rust"]
+slug = "effects-in-rust"
 +++
 
 This post is a reply to Without Boat’s article ["Patterns & Abstractions"](https://without.boats/blog/patterns-and-abstractions/). I originally started it as a reply on Reddit, and then I just kept on writing, so now it’s a blog post. Please read that post first (and probably the other posts linked there), but for the sake of discourse, I’ll also summarise what I got out of it:

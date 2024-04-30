@@ -1,5 +1,6 @@
 +++
-title = 'How I Do Dependency Injection With Closures'
+title = "How I Do Dependency Injection With Closures"
+slug = "how-i-do-dependency-injection-with-closures"
 date = 2023-10-31
 tags = ["dependency injection", "javascript", "programming", "python", "tips"]
 +++
