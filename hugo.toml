@@ -1,7 +1,8 @@
 baseURL = 'https://example.org/'
-languageCode = 'en-us'
+languageCode = 'en-gb'
 title = "Jonathan's Blog"
 theme = "johz"
+copyright = "This work is licensed under CC BY-SA 4.0"
 
 # disableKinds = ["term"]
 

@@ -276,7 +276,8 @@ article {
 
 nav a,
 .content a,
-.details a {
+.details a,
+.footer a {
   color: var(--text-color);
   text-decoration: underline;
   text-decoration-color: var(--link-deco-color);
@@ -295,4 +296,11 @@ nav a,
   margin-inline-start: 1em;
   opacity: 0.8;
   font-size: 0.9em;
+}
+
+.footer {
+  text-align: center;
+  & + & {
+    margin-block-start: 0.5em;
+  }
 }
