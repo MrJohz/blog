@@ -13,6 +13,7 @@ Renders a list of pages.
   {{ range $pages }}
   <li>
     <p>
+      {{if .Draft}}<span style="color: rgb(173, 48, 26);">(draft) </span>{{end}}
       <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a> —
       <time datetime="{{.PublishDate | time.Format "2006-01-02"}}">{{humanize .PublishDate.Day}} {{.PublishDate | time.Format "January 2006"}}</time>
     </p>

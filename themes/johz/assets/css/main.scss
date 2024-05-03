@@ -233,6 +233,31 @@ article {
       background-color: var(--text-highlight-background);
     }
 
+    table {
+      margin-inline: -1.5em;
+      width: calc(100% + 3em);
+      border-top: 0.25em solid var(--text-color);
+      border-bottom: 0.25em solid var(--text-color);
+      background-color: var(--text-highlight-background);
+
+      thead th,
+      tbody td {
+        padding-block: 0.5em;
+        padding-inline: 0.5em;
+
+        text-wrap: pretty;
+        hanging-punctuation: first force-end last;
+
+        &:first-child {
+          padding-inline-start: 1.5em;
+        }
+
+        &:last-child {
+          padding-inline-end: 1.5em;
+        }
+      }
+    }
+
     p {
       text-wrap: pretty;
       hanging-punctuation: first force-end last;
