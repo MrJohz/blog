@@ -61,7 +61,7 @@ As I mentioned before, no-args lambdas (and lambdas in general) are everywhere i
 
 To resolve this, Koka provides `with` statements. They’re best explained with an example. Consider a function `finally` that takes a block of code, and a second lambda to be executed when the block of code finishes, regardless of whether it succeeds or not. We might use it like this:
 
-```
+```koka
 // NB: Koka doesn't have the `open` and `stream` functions that I'm using
 // below, but they're useful to demonstrate the use-case
 
@@ -77,7 +77,7 @@ finally { close(file) }
 
 Theoretically, we could add plenty more `finally` calls, along with other blocks depending on what we’re doing, but we’d end up with an ever increasing tower of nesting. Instead, we use `with` to flatten the tower down:
 
-```
+```koka
 val file = open("./test.txt")
 val conn = stream("127.0.0.1:7878")
 
