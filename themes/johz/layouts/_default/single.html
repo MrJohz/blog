@@ -41,10 +41,12 @@
   </div>
   {{end}}
   <div class="content">
-    <details class="toc" open>
-      <summary>Contents</summary>
-      {{ .TableOfContents }}
-    </details>
+    {{ if (.Fragments.Headings | len) }}
+      <details class="toc" open>
+        <summary>Contents</summary>
+        {{ .TableOfContents }}
+      </details>
+    {{ end }}
     {{ .Content }}
   </div>
 </article>
