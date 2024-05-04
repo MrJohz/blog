@@ -12,13 +12,13 @@ institution = "Belvedere, Vienna"
 institution-url = "https://www.belvedere.at/"
 +++
 
-Javascript’s new "Explicit Resource Management" proposal adds the `using` statement, a way to automatically close resources after you’ve finished using with it. But as part of the same proposal, a bunch of additional stuff has been added that’s also useful, both in its own right, and when combined with `using`. I couldn’t find a lot of useful documentation out there when I was trying to get it working, so here's a bit of an overview of getting started with `using`, `Disposable`s, and explicit resource management.
+Javascript’s new "Explicit Resource Management" proposal adds the `using` statement, a way to automatically close resources after you’ve finished using them. But as part of the same proposal, a number of other APIs have been added that make `using` even more useful. I couldn’t find a lot of documentation out there when I was trying to figure out how these APIs worked, so this article is a bit of an overview of getting started with `using`, `Disposable`s, and explicit resource management.
 
 ## The Journey to Using `using`
 
-A lot of classes or objects represent some sort of resource, e.g. an open file or a database connection, that requires some cleanup logic to occur when that object is no longer in use. In NodeJS, the convention is typically to put this cleanup logic in a `close()` function. For example, the `Server` class in `node:http` has a `close()` method that stops new connections and closes any existing connections.
+Many classes or objects represent some sort of resource, such as an open file or a database connection, that requires some cleanup logic when that resource is no longer in use. In NodeJS, the convention is typically to put this cleanup in a `close()` function. For example, the `Server` class in `node:http` has a `close()` method that stops new connections and closes existing connections.
 
-The problem with `close` alone is that it’s easy not to call it. Sometimes that’s just forgetting, but often exceptions can trip us up. Consider this function:
+The problem with `close` alone is that it’s easy not to call it. Sometimes it's just a matter of forgetting, but often errors and exceptions can trip us up. Consider this function:
 
 ```tsx
 async function saveMessageInDatabase(message: string) {
@@ -29,9 +29,9 @@ async function saveMessageInDatabase(message: string) {
 }
 ```
 
-This creates a database connection at the start of the function, and closes it at the end. But we have an issue is `parseMessage` or `conn.insert(...)` throws an error — in this situation, we will leave `saveMessageInDatabase` without closing the connection, leaving unclosed resources hanging around.
+This creates a database connection at the start of the function, and closes it at the end. But we have a problem if `parseMessage` or `conn.insert(...)` throw an error — in this situation, the `saveMessageInDatabase` function will stop without closing the connection, leaving unclosed resources hanging around.
 
-The new `using` syntax solves this, but to do so, we first need to formalise this `close()` method a bit. We can do that using the `Disposable` interface:
+The new `using` syntax solves this, but first we need to formalise this `close()` method a bit. We can do this using the `Disposable` interface:
 
 ```tsx
 interface Disposable {
@@ -39,9 +39,9 @@ interface Disposable {
 }
 ```
 
-This is very similar to the `close` method, but we use the [well-known symbol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol#well-known_symbols) `Symbol.dispose` instead of `close` or another arbitrary string method name. This helps the runtime differentiate between objects that have purposefully been made disposable (that use the correct symbol), and objects that just happen to have a particular name (e.g. `door.close()`). This is an increasingly common pattern in modern Javascript.
+This is very similar to the `close` method, but we use the [well-known symbol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol#well-known_symbols) `Symbol.dispose` instead of `close` or another arbitrary string method name. This helps the runtime differentiate between objects that have intentionally been made disposable (using the correct symbol), and objects that just happen to have a particular name (e.g. `door.close()`). This is an increasingly common pattern in modern Javascript.
 
-With this in place, we can define the `using` syntax. `using` can be used in mostly the same way that `const` is used, and behaves very similar in most respects.
+With this in place, we can define the `using` syntax. `using` can be used in much the same way that `const` is used, and behaves very similarly in most respects.
 
 ```tsx
 // was: const varName = new MyDisposableObject();
