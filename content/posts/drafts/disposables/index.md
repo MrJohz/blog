@@ -8,7 +8,7 @@ draft = true
 name = "Waldlandschaft mit Sonnenaufgang"
 artist = " Joseph Rebell"
 date = "1809"
-institution = "Belvedere, Wien"
+institution = "Belvedere, Vienna"
 institution-url = "https://www.belvedere.at/"
 +++
 
