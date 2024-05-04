@@ -234,8 +234,11 @@ article {
     }
 
     table {
+      display: block;
       margin-inline: -1.5em;
       width: calc(100% + 3em);
+      overflow-x: auto;
+
       border-top: 0.25em solid var(--text-color);
       border-bottom: 0.25em solid var(--text-color);
       background-color: var(--text-highlight-background);
@@ -254,6 +257,10 @@ article {
 
         &:last-child {
           padding-inline-end: 1.5em;
+        }
+
+        &:empty {
+          display: none;
         }
       }
     }
