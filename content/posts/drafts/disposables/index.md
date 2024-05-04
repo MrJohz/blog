@@ -4,64 +4,19 @@ date = 2024-04-30
 tags = ["tips", "javascript", "programming"]
 slug = "disposables-in-javascript"
 draft = true
+[params.cover]
+name = "Waldlandschaft mit Sonnenaufgang"
+artist = " Joseph Rebell"
+date = "1809"
+institution = "Belvedere, Wien"
+institution-url = "https://www.belvedere.at/"
 +++
 
-Javascript’s new `using` statement provides a way to automatically close resources after you’ve finished using with it. But as part of the same proposal, a bunch of additional stuff has been added that’s also useful, both in its own right, and when combined with `using`. I couldn’t find a lot of useful documentation out there when I was trying to get it working, so I wanted to explain how it works in my own words.
+Javascript’s new "Explicit Resource Management" proposal adds the `using` statement, a way to automatically close resources after you’ve finished using with it. But as part of the same proposal, a bunch of additional stuff has been added that’s also useful, both in its own right, and when combined with `using`. I couldn’t find a lot of useful documentation out there when I was trying to get it working, so here's a bit of an overview of getting started with `using`, `Disposable`s, and explicit resource management.
 
-## Motivation
+## The Journey to Using `using`
 
-Let’s say we’re writing something on the backend, and there’s a lot of interactions with users. We want a class that handles all of our user-based logic:
-
-- It can create/read/update/delete our user objects in the database
-- It automatically deletes users that haven’t been active in the last five minutes (we’re _very_ GDPR conscious here, we don’t keep data a second longer than we need to)
-- It provides a stream of all the new users inserted into the database, so that elsewhere we can send them a lovely greeting message.
-
-We’ll use dependency injection so that we don’t need to create the database connection ourselves, but we do want to handle some of the other pieces ourselves. The result might look something like this:
-
-```tsx
-export class UserService {
-  #conn: DB.Conn;
-  #intervalHandle: NodeJS.Timeout;
-  #streamHandle: DB.StreamHandle;
-
-  constructor(conn: DB.Conn) {
-    // our DB connection, passed in via dependency injection
-    this.#conn = conn;
-    // search for and delete active users once a minute
-    this.#timeoutHandle = setInterval(
-      () => this.deleteInactiveUsers(),
-      60 * 1000
-    );
-    // create a stream of events from the DB whenever a new user is inserted
-    this.#streamHandle = this.#createNewUserStream();
-  }
-
-  // ... methods and implementation details
-}
-```
-
-We can create all of our dependencies in a setup function somewhere, and voila, we’ve got :
-
-```tsx
-export async function createResources(config: Config) {
-  const db = new MyDbDriver(config.connectionString);
-  const conn = await db.connect();
-
-  const userService = new UserService(conn);
-
-  return { userService };
-}
-```
-
-Now we can plug this as context into our server implementation and have all of our user-related needs met.
-
-The problem comes when we want to stop our server. If we try to use `server.close()`, we’ll notice that Node hangs after the server should have exited. The actual web server has shut down, but there are resources left hanging over. And the reason for that is that we haven’t cleaned up our connections properly.
-
-I want to explore in this post how `using`, disposables, and the disposable stack can help keep control of resources, and hopefully show how they can make it easier to handle cleaning up resources in this sort of situation.
-
-## The Journey to using `using`
-
-The case above describes having a class or object that needs to run some cleanup logic when it shuts down. This requirement is nothing new, it’s something that has been part of programming since very early on, and in NodeJS, the convention is typically to put this cleanup logic in a `close()` function. For example, the `Server` class in `node:http` has a `close()` method that “Stops the server from accepting new connections and closes all connections connected to this server which are not sending a request or waiting for a response.”
+A lot of classes or objects represent some sort of resource, e.g. an open file or a database connection, that requires some cleanup logic to occur when that object is no longer in use. In NodeJS, the convention is typically to put this cleanup logic in a `close()` function. For example, the `Server` class in `node:http` has a `close()` method that stops new connections and closes any existing connections.
 
 The problem with `close` alone is that it’s easy not to call it. Sometimes that’s just forgetting, but often exceptions can trip us up. Consider this function:
 
@@ -74,7 +29,7 @@ async function saveMessageInDatabase(message: string) {
 }
 ```
 
-This creates a database connection at the start of the function, and closes it at the end. But we have an issue is `parseMessage` throws an error — in this situation, we will leave `saveMessageInDatabase` without closing the connection, leaving unclosed resources hanging around.
+This creates a database connection at the start of the function, and closes it at the end. But we have an issue is `parseMessage` or `conn.insert(...)` throws an error — in this situation, we will leave `saveMessageInDatabase` without closing the connection, leaving unclosed resources hanging around.
 
 The new `using` syntax solves this, but to do so, we first need to formalise this `close()` method a bit. We can do that using the `Disposable` interface:
 
@@ -151,10 +106,11 @@ To use an async disposable, we have the `await using` syntax, which does the sam
 
 The `await using` syntax can also handle non-async `Disposable` objects, which means if you don’t know whether a given resource is going to be asynchronously or synchronously disposed, you can use `await using` and cover both options.
 
-|                |           await using            |          using           |
-| -------------: | :------------------------------: | :----------------------: |
-|   **Context:** |       async functions only       | async and sync functions |
-| **Interface:** | `AsyncDisposable` + `Disposable` |    only `Disposable`     |
+|                |                                  |                          |
+| -------------: | :------------------------------- | :----------------------- |
+|    **Syntax:** | `await using`                    | `using`                  |
+|   **Context:** | async functions only             | async and sync functions |
+| **Interface:** | `AsyncDisposable` + `Disposable` | only `Disposable`        |
 
 ## Collections of Disposables
 
@@ -219,7 +175,7 @@ during function body
 ending function
 ```
 
-## Useful Patterns with Disposables
+## Useful Patterns with Explicit Resource Management
 
 Hopefully by now it should be clear what disposable resources are, how they can be manipulated, etc. But it still took me a while to get my head around some typical patterns with disposables, how they can be manipulated, and some best practices. So here are a few short sections which explain a couple of ideas that are now possible, and the best ways to achieve some common goals.
 
@@ -329,3 +285,190 @@ export function openFiles(fileList: string[]): { files: File[] } & Disposable {
 ```
 
 ### The Disposable Wrapper
+
+Right now, `Disposable`s are still relatively new, and so it's not unlikely that the library you're working with doesn't support them, opting instead for a `.close()` method or something similar. But Javascript is a dynamic language, so it's not too hard to get these tools to behave. Here's an example for MongoDB, which at the time of writing does not support `using` or any of the disposable interfaces:
+
+```typescript
+function createMongoClient(
+  connection: string,
+  options?: MongoClientOptions
+): MongoClient & Disposable {
+  const client = new MongoClient(connection, options);
+
+  if (client[Symbol.asyncDispose]) throw new Error("this code is unnecessary");
+  return Object.assign(client, { [Symbol.asyncDispose]: () => client.close() });
+}
+```
+
+This will add a `Symbol.asyncDispose` method to the client, meaning you can use it in `await using` declarations and with `AsyncDisposableStack#use()`. In addition, if you ever update to a version of MongoDB that does implement the `AsyncDisposable` interface, you'll get an error reminding you to delete the code.
+
+### Awaiting Signals
+
+A common pattern for NodeJS servers is to start up the web server, and then add event handlers for the OS's "quit" signals (e.g. `SIGINT`). Inside these handlers, we can shut the server down, clean up resources, etc.
+
+This works fine, but the control flow can be difficult to follow, and we have to manually call the `Symbol.dispose` and `Symbol.asyncDispose` methods where that's relevant. It would be nice if there was a way to tie the lifetime of the application to the lifetime of a single function, so that when that function exits, the server will also automatically exit, closing and disposing of all resources along the way.
+
+Enter NodeJS's `once` function, which converts an event into a promise[^once]:
+
+[^once]: Note that if you don't have access to NodeJS, you can replicate this functionality using `new Promise(...)` manually, although this can be tricky to do properly as it's difficult to ensure that resources get correctly cleaned up once an event has been triggered.
+
+```typescript
+import { once } from "node:events";
+
+// waits until the `SIGINT` signal has been triggered, e.g. from Ctrl-C
+await once(process, "SIGINT");
+```
+
+Using this, we can write a `main()` function that lives for the entire length of the application, and quits when the application is stopped, automatically cleaning up any resources after itself:
+
+```typescript
+async function main() {
+  await using stack = new AsyncDisposableStack();
+  await using resource = createResource();
+  // ... etc, for as many resources as make sense
+
+  // alternatively, use the "Disposable Wrapper" pattern from earlier
+  const server = stack.adopt(express(), server => server.close());
+
+  // add routes, use resources, etc
+  server.get(/* ... */);
+
+  logger.info("starting application on port 5000");
+  server.listen(5000, () => logger.info("application started"));
+
+  await Promise.race([
+    once(process, "SIGINT"), // Ctrl-C
+    once(process, "SIGTERM"), // OS/k8s/etc requested termination
+    // etc.
+  ]);
+
+  logger.info("shutting down application");
+}
+```
+
+Because all of our resources are managed either by `using` directly, or by the `stack` which is in turn tied to the application's lifespan, we don't need to manually close anything after the signals have been handled — everything will automatically be gracefully shutdown.
+
+## Using Explicit Resource Management Today
+
+Right now, explicit resource management is a stage three proposal — that means that the specification has been completed and approved, and browsers and other tools are encouraged to start implementing the proposal, and trying the feature out in practice[^trackers].
+
+This means that if you want to try this feature out right now, you're going to need to transpile the syntax to a format supported by older browsers, and provide a polyfill for the various global objects that the feature requires.
+
+In terms of transpiling, both Typescript and Babel support the `using ...` syntax. For Typescript, you'll need [version 5.2 or greater](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-2.html#using-declarations-and-explicit-resource-management) to handle the syntax. In the `tsconfig.json` file, the `target` should be `ES2022` or lower in order to do the transpilation (otherwise Typescript will just leave the syntax unchanged), and the `lib` setting should include `esnext.disposable` (or just the whole `esnext` bundle of types) to ensure that the right set of types is included. For Babel, including the `stage-3` preset, or explicitly adding the [`@babel/plugin-proposal-explicit-resource-management` plugin](https://babeljs.io/docs/babel-plugin-proposal-explicit-resource-management) should ensure that everything gets compiled correctly.
+
+Neither Typescript nor Babel include a polyfill for the various global types discussed here, which means you'll also need a polyfill. For this, there are various options, including [disposablestack](https://www.npmjs.com/package/disposablestack), which I've been using, and CoreJS.
+
+[^trackers]: For the people who like that sort of thing, you can see the tickets where this is being implemented for [Chrome](https://issues.chromium.org/issues/42203506), [Firefox](https://bugzilla.mozilla.org/show_bug.cgi?id=1569081), and [Safari](https://bugs.webkit.org/show_bug.cgi?id=248707).
+
+## Bringing It All Together
+
+Let’s say we’re writing something on the backend, and there’s a lot of interactions with users. We want a class that handles all of our user-based logic:
+
+- It can create/read/update/delete our user objects in the database
+- It automatically deletes users that haven’t been active in the last five minutes (we’re _very_ GDPR conscious here, we don’t keep data a second longer than we need to)
+- It provides a stream of all the new users inserted into the database, so that elsewhere we can send them a lovely greeting message.
+
+We’ll use dependency injection so that we don’t need to create the database connection ourselves, but some of the resources will be managed by the user service. We can use the `AsyncDisposableStack` to group those resources together, and we'll add a `Symbol.asyncDispose` method that delegates to the stack's dispose method to handle that disposal. We can even implement Typescript's `AsyncDisposable` interface to make sure that we get everything right:
+
+```tsx
+export class UserService implements AsyncDisposable {
+  #conn: DB.Conn;
+  #stack = new AsyncDisposableStack();
+  #intervalHandle: NodeJS.Timeout;
+  #streamHandle: DB.StreamHandle;
+
+  constructor(conn: DB.Conn) {
+    // Our DB connection, passed in via dependency injection -- so we don't want
+    // to add this to the set of resources managed by this service!
+    this.#conn = conn;
+
+    // Remember, NodeJS's `Timeout` class already has a `Symbol.dispose` method,
+    // so we can just add that to the stack
+    this.#timeoutHandle = this.#stack.use(
+      setInterval(() => this.deleteInactiveUsers(), 60 * 1000)
+    );
+
+    // For resources that don't have the right methods, `.adopt()` is the
+    // easiest way to add an "on dispose" cleanup function
+    this.#streamHandle = this.#stack.adopt(
+      this.#createNewUserStream(),
+      // Closing this stream is an async operation, hence why we're using
+      // Symbol.asyncDispose, AsyncDisposableStack, etc.
+      async (stream) => await stream.close()
+    );
+  }
+
+  async [Symbol.asyncDispose]() {
+    await this.#stack.dispose();
+  }
+
+  // ... methods and implementation details
+}
+```
+
+Now we need to actually construct all of our resources somewhere. We can add a `createResources` function that creates the resources, returns a disposable object that cleans up all of the resources together, and also ensures that if an error occurs during resource construction, everything will still get cleaned up gracefully — this is the power of the stack!
+
+```tsx
+export async function createResources(config: Config) {
+  await using stack = new AsyncDisposableStack();
+  const db = new MyDbDriver(config.connectionString);
+  const conn = stack.use(await db.connect());
+
+  // When the stack disposes of its resources, the `UserService` will be cleaned
+  // up before the `conn`, which prevents errors where the `UserService` is
+  // trying to use a connection that doesn't exist anymore.
+  const userService = stack.use(new UserService(conn));
+
+  // Now all the resources have been set up, use .move() to create a new stack
+  // and return a dispose method based on the new stack.
+  const closer = stack.move();
+  return {
+    userService,
+    [Symbol.asyncDispose]: async () => await closer.dispose(),
+  };
+}
+```
+
+Now finally, we need to plug all of this into our server implementation, and make sure that everything gets cleaned up when the server gracefully exits. We can use signals and promises to catch the events that should trigger a shutdown, and use the `using` declarations to automatically clean up any resources.
+
+```typescript
+async function main() {
+  const config = await loadConfig();
+  using resources = createResources(config);
+  using stack = new AsyncDisposableStack();
+
+  // create wrapper functions around APIs that don't yet support disposables
+  using server = createFastify({});
+
+  server.get(/* route using resources.userService */)
+
+  await server.listen({ port: 3000 })
+  logger.info("server running on port 3000");
+
+  // use `once` to turn one-time events into promises
+  await Promise.race([
+    once(process, "SIGINT"),
+    once(process, "SIGTERM"),
+    once(process, "SIGHUP"),
+  ]);
+
+  logger.info("server terminated, closing down");
+
+  // resources will all be cleaned up here
+}
+```
+
+## More Resources
+
+There's a lot more information out there about the explicit resource management proposal, but given how Google isn't working as well as it once was, here are some links so you don't have to Google so hard:
+
+- [The original proposal](https://github.com/tc39/proposal-explicit-resource-management) in the TC39 GitHub organisation. The documentation is a bit technically-focussed here, but the issues provide a lot of good context for the APIs, and a number of examples that explain why certain decisions were made.
+- [Typescript 5.2's release notes](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-2.html) include a section about resource management, how to use it, and how to get it working in Typescript.
+- Various tickets/bugs/issues about implementing explicit resource management:
+  - [Chrome](https://issues.chromium.org/issues/42203506)
+  - [Firefox](https://bugzilla.mozilla.org/show_bug.cgi?id=1569081)
+  - [Safari](https://bugs.webkit.org/show_bug.cgi?id=248707)
+- Prior art in other languages:
+  - [C#'s `using` statement](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/statements/using) is a big influence here.
+  - [Go's `defer` statement](https://gobyexample.com/defer) inspired the `.defer` method.
+  - [Python's `ExitStack`](https://docs.python.org/3/library/contextlib.html#contextlib.ExitStack) is an explicit inspiration for the `DisposableStack` and `AsyncDisposableStack` classes.
