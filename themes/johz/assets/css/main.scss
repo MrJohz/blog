@@ -179,6 +179,29 @@ article {
     opacity: 0.8;
   }
 
+  .toc {
+    summary {
+      font-weight: bold;
+      cursor: pointer;
+
+      & + * {
+        margin-block-start: 0.5em;
+      }
+    }
+
+    --flow-space: 0.5em;
+    @include screen(big) {
+      @include shadow(0.25rem);
+      width: 18rem;
+      float: right;
+      margin: 1rem;
+      margin-block-start: 0;
+      margin-inline-end: -4rem;
+      background-color: var(--highlight-background);
+      padding: 1rem;
+    }
+  }
+
   .content {
     &,
     & > * + *,

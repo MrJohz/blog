@@ -40,6 +40,12 @@
     </p>{{end}}
   </div>
   {{end}}
-  <div class="content">{{ .Content }}</div>
+  <div class="content">
+    <details class="toc" open>
+      <summary>Contents</summary>
+      {{ .TableOfContents }}
+    </details>
+    {{ .Content }}
+  </div>
 </article>
 {{ end }}
