@@ -12,13 +12,13 @@ institution = "Belvedere, Vienna"
 institution-url = "https://www.belvedere.at/"
 +++
 
-Javascript’s new "Explicit Resource Management" proposal adds the `using` statement, a way to automatically close resources after you’ve finished using them. But as part of the same proposal, a number of other APIs have been added that make `using` even more useful. I couldn’t find a lot of documentation out there when I was trying to figure out how these APIs worked, so this article is a bit of an overview of getting started with `using`, `Disposable`s, and explicit resource management.
+Javascript’s new "Explicit Resource Management" proposal adds the `using` statement, a way to automatically close resources after you’ve finished using them. But as part of the same proposal, a number of other APIs have been added that make `using` even more useful. I couldn’t find a lot of documentation out there when I was trying to figure out how these APIs work, so this article is a bit of an overview of getting started with `using`, `Disposable`s, and explicit resource management.
 
 ## The Journey to Using `using`
 
-Many classes or objects represent some sort of resource, such as an open file or a database connection, that requires some cleanup logic when that resource is no longer in use. In NodeJS, the convention is typically to put this cleanup in a `close()` function. For example, the `Server` class in `node:http` has a `close()` method that stops new connections and closes existing connections.
+Many classes or objects represent some sort of resource, such as an open file or a database connection, that requires some cleanup logic when that resource is no longer in use. In NodeJS, the convention is typically to put this cleanup in a `close()` function. For example, the `Server` class in `node:http` has a `close()` method that stops new connections and closes existing ones.
 
-The problem with `close` alone is that it’s easy not to call it. Sometimes it's just a matter of forgetting, but often errors and exceptions can trip us up. Consider this function:
+The problem with `close` alone is that it’s easy not to call it. Sometimes it's a matter of forgetting, but often errors and exceptions can trip us up. Consider this function:
 
 ```tsx
 async function saveMessageInDatabase(message: string) {
@@ -31,7 +31,7 @@ async function saveMessageInDatabase(message: string) {
 
 This creates a database connection at the start of the function, and closes it at the end. But we have a problem if `parseMessage` or `conn.insert(...)` throw an error — in this situation, the `saveMessageInDatabase` function will stop without closing the connection, leaving unclosed resources hanging around.
 
-The new `using` syntax solves this, but first we need to formalise this `close()` method a bit. We can do this using the `Disposable` interface:
+The first step to solving this is to formalise how a resource gets closed. We can do this using the `Disposable` interface or protocol:
 
 ```tsx
 interface Disposable {
@@ -39,9 +39,9 @@ interface Disposable {
 }
 ```
 
-This is very similar to the `close` method, but we use the [well-known symbol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol#well-known_symbols) `Symbol.dispose` instead of `close` or another arbitrary string method name. This helps the runtime differentiate between objects that have intentionally been made disposable (using the correct symbol), and objects that just happen to have a particular name (e.g. `door.close()`). This is an increasingly common pattern in modern Javascript.
+This is very similar to methods like `.close()`, `.cancel()`, and so on, but we use the [well-known symbol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol#well-known_symbols) `Symbol.dispose` instead. This helps the runtime to distinguish between objects that have been intentionally made disposable (using this symbol), and objects that happen to have a certain name (e.g. `door.close()`).
 
-With this in place, we can define the `using` syntax. `using` can be used in much the same way that `const` is used, and behaves very similarly in most respects.
+With this in place, we can define the `using` syntax. `using` can be used in much the same way as `const`, and behaves very similarly in most respects.
 
 ```tsx
 // was: const varName = new MyDisposableObject();
@@ -50,16 +50,16 @@ using varName = new MyDisposableObject();
 varName.method();
 ```
 
-However, `using` has a couple of restrictions on top of the normal behaviour of `const`:
+However, `using` has a couple of restrictions in addition to the normal behaviour of `const`:
 
-- When using `using`, the variable _must_ implement the `Disposable` interface — i.e. it must have a `Symbol.dispose` method that can be called with no arguments.
-- When using `using`, you cannot destructure the variable you’re interested in (e.g. `using { field1, field2 } = disposable()`).
+- With `using`, the variable _must_ implement the `Disposable` protocol — i.e. it must have a `Symbol.dispose` method that can be called without arguments.
+- With `using`, you cannot destructure the variable you’re interested in (e.g. `using { field1, field2 } = disposable()`).
 
-When we leave the scope where a `using` variable was defined (i.e. when we return from the function where `using` was used, or leave the if-block, or an exception gets thrown, etc), then the `Symbol.dispose` method will be called.
+When we leave the scope where a `using` variable was defined (i.e. when we return from the function in which `using` was used, or leave the if-block, or an exception gets thrown, etc), then the `Symbol.dispose` method will be called.
 
-In addition, the dispose methods will be called in the reverse order to the way they were defined. So the object that was created first will only be cleaned up right at the very end. This is important for the purposes of data ordering. We don’t want the database to be cleaned up before we clean up the object using that database!
+In addition, the dispose methods will be called in the reverse order to the way they were defined. So the object that was created first will be disposed of last. This reverse order is deliberate: we don’t want the database to be cleaned up while other resources are still using it!
 
-As an example:
+An example:
 
 ```tsx
 function create(data: string) {
@@ -98,82 +98,55 @@ after main
 
 ## Async Disposables
 
-In practice, most of the times when we want to dispose of a resource in Javascript, we’re going to want to do so asynchronously — that’s the big advantage of Javascript’s runtime after all!
+Often, when we want to dispose of a resource in Javascript, that cleanup/close/disposal operation will need to be asynchonous — for example due to waiting for connections to be cleaned up or data to be flushed.
 
-So in addition to the standard `Disposable` interface, there’s a second one, `AsyncDisposable`. This uses the `Symbol.asyncDispose` method, which returns a promise that should resolve when the resource is completely closed.
+So in addition to the standard `Disposable` protocol, there’s a second one, `AsyncDisposable`. This uses the `Symbol.asyncDispose` method, which returns a promise that should resolve when the resource is completely closed.
 
 To use an async disposable, we have the `await using` syntax, which does the same thing as a normal `using` declaration, but, well, asynchronously. It must be called inside an `async` function (i.e. it needs to be called in a place where normal `await` is allowed).
 
 The `await using` syntax can also handle non-async `Disposable` objects, which means if you don’t know whether a given resource is going to be asynchronously or synchronously disposed, you can use `await using` and cover both options.
 
-|                |                                  |                          |
-| -------------: | :------------------------------- | :----------------------- |
-|    **Syntax:** | `await using`                    | `using`                  |
-|   **Context:** | async functions only             | async and sync functions |
-| **Interface:** | `AsyncDisposable` + `Disposable` | only `Disposable`        |
+|               |                                        |                          |
+| ------------: | :------------------------------------- | :----------------------- |
+|   **Syntax:** | `await using`                          | `using`                  |
+|  **Context:** | async functions only                   | async and sync functions |
+| **Protocol:** | `AsyncDisposable` + `Disposable`       | only `Disposable`        |
+|   **Symbol:** | `Symbol.asyncDispose`/`Symbol.dispose` | `Symbol.dispose`         |
 
 ## Collections of Disposables
 
-Going back to the `UserService` example, we find that we can use the `Symbol.asyncDispose` method to close the service. But the `using`/`await using` syntax is less useful here. This is because `using` ties the lifetime of a resource to the lifetime of a function — when the function exits, the resource will be closed. But with our `UserService`, we’re using a couple of resources, and we want to tie their lifetimes to that of the service as a whole — we want to close those resources when we close the service itself.
+Sometimes it's not enough to use function scope to handle resources. We might have a class or object that owns and manages a number of different resources. It would be useful if we could group all of its resources together in a similar way to `using`, but as a class variable or as part of a closure.
 
-One convenient way of doing this is using the `DisposableStack` and `AsyncDisposableStack` classes. These are essentially bundles (specifically stacks) of resources — we can add a resource to the stack, and its lifetime will end up managed by the stack. The stack itself implements the `Disposable` (or `AsyncDisposable`) interface, and when the stack gets cleaned up, it will automatically go through the resources it contains and clean them up (in reverse order, just like a stack, and just like the regular `using` syntax).
+One convenient way of doing this is using the `DisposableStack` and `AsyncDisposableStack` classes. These represent stacks of resources managed by the `DisposableStack` or `AsyncDisposableStack` object — if we clean up the stack, all the resources that it manages will also get cleaned up. They can be created using the `new` operator, and provide three different methods for adding resources to the stack:
 
-For example, with a class, we could use the stack as follows:
+```typescript
+const stack = new DisposableStack(); // or ` = new AsyncDisposableStack()`
 
-```tsx
-class UserService {
-  #stack = new AsyncDisposableStack();
-  #db: DB.Conn;
-  #http: HTTP.Session;
+// .use() takes a resource, adds it to the resources managed by the stack,
+// and returns the resource so it can be used elsewhere.
+// The resource must be a disposable item using the `Symbol.dispose` method
+// (or `Symbol.asyncDispose` if using `AsyncDisposableStack`).
+const resource1 = stack.use(new MyResource());
 
-  constructor() {
-    // .use() takes a resource, adds it to the resources managed by the stack,
-    // and returns the resource so it can be used elsewhere.
-    this.#db = this.#stack.use(new DB.Conn());
+// `.defer()` schedules a callback to take place when the stack gets disposed.
+const handle = setInterval(() => console.log("running"), 5000);
+stack.defer(() => clearInterval(handle));
 
-    const handle = setInterval(() => console.log("running"), 5000);
-    // .defer() takes a callback and adds it to the stack's resources. The
-    // callback will be called when the stack gets disposed.
-    this.#stack.defer(() => clearInterval(handle));
-
-    // .adopt() takes a resource that doesn't necessarily implement `Disposable`,
-    // and a callback that will be called when the stack gets disposed. This is
-    // useful for resources that don't yet implement the new interfaces.
-    this.#http = this.#stack.adopt(
-      new HTTP.Session(),
-      async (session) => await session.close()
-    );
-  }
-
-  async [Symbol.asyncDispose]() {
-    await #stack.disposeAsync();
-    // or await #stack[Symbol.asyncDispose]();
-
-    // continue with any further necessary dispose actions here
-  }
-}
+// .adopt() combines the above two behaviours: it takes a resource and a
+// disposal callback, and calls the callback with the resource as its argument
+// when the stack gets disposed.  The resource does _not_ need to implement
+// the disposable protocol.
+const resource2 = stack.adopt(new OtherResource(), (r) => r.close());
 ```
 
-Note that it’s also possible to use `using` on a `DisposableStack` or `AsyncDisposableStack` (just like with any other object that implements the `Disposable` or `AsyncDisposable` interfaces). This makes it very easy to create a `defer`-like mechanism as found in languages like Go:
+Stacks are themselves disposable, so can be disposed of using the `Symbol.dispose` or `Symbol.asyncDispose` methods. For convenience, this method is also exposed simple as `.dispose()` or `.asyncDispose()`. As mentioned earlier, this method (either using `Symbol.dispose`/`Symbol.asyncDispose` or via the alias method) will dispose of all of the resources managed by this stack. Similarly to the `using` declaration, the resources will be cleaned up in reverse order to prevent issues where resources depend on each other.
 
-```tsx
-function main() {
-	using stack = new DisposableStack();
-
-	console.log("starting function");
-	stack.defer(() => console.log("ending function"));
-
-	console.log("during function body");
-}
-```
-
-This will produce the following output:
-
-```
-starting function
-during function body
-ending function
-```
+|                   |                                  |                   |
+| ----------------: | :------------------------------- | :---------------- |
+|        **Class:** | `AsyncDisposableStack`           | `DisposableStack` |
+|   **Implements:** | `AsyncDisposable`                | `Disposable`      |
+|      **Manages:** | `AsyncDisposable` + `Disposable` | only `Disposable` |
+| **Dispose With:** | `.disposeAsync()`                | `.dispose()`      |
 
 ## Useful Patterns with Explicit Resource Management
 
@@ -213,7 +186,7 @@ function main() {
 }
 ```
 
-In fact, if you’re using NodeJS, you can go one better. The NodeJS timers (i.e. `setInterval` and friends) already return an object with lots of useful functions like `.unref()`. Recent versions of v18 and upwards now also include a `Symbol.dispose` key for these objects, which means you can simplify the above code to this:
+In fact, if you’re using NodeJS, you can go one better. The NodeJS timers (i.e. `setInterval` and friends) already return an object ([`Timeout`](https://nodejs.org/api/timers.html#class-timeout)) with lots of useful functions like `.unref()`. Recent versions of v18 and upwards now also include a `Symbol.dispose` key for these objects, which means you can simplify the above code to this:
 
 ```tsx
 function main() {
@@ -286,7 +259,7 @@ export function openFiles(fileList: string[]): { files: File[] } & Disposable {
 
 ### The Disposable Wrapper
 
-Right now, `Disposable`s are still relatively new, and so it's not unlikely that the library you're working with doesn't support them, opting instead for a `.close()` method or something similar. But Javascript is a dynamic language, so it's not too hard to get these tools to behave. Here's an example for MongoDB, which at the time of writing does not support `using` or any of the disposable interfaces:
+Right now, `Disposable`s are still relatively new, and so it's not unlikely that the library you're working with doesn't support them, opting instead for a `.close()` method or something similar. But Javascript is a dynamic language, so it's not too hard to get these tools to behave. Here's an example for MongoDB, which at the time of writing does not support `using` or any of the disposable protocols:
 
 ```typescript
 function createMongoClient(
@@ -300,7 +273,7 @@ function createMongoClient(
 }
 ```
 
-This will add a `Symbol.asyncDispose` method to the client, meaning you can use it in `await using` declarations and with `AsyncDisposableStack#use()`. In addition, if you ever update to a version of MongoDB that does implement the `AsyncDisposable` interface, you'll get an error reminding you to delete the code.
+This will add a `Symbol.asyncDispose` method to the client, meaning you can use it in `await using` declarations and with `AsyncDisposableStack#use()`. In addition, if you ever update to a version of MongoDB that does implement the `AsyncDisposable` protocol, you'll get an error reminding you to delete the code.
 
 ### Awaiting Signals
 
@@ -354,7 +327,7 @@ Right now, explicit resource management is a stage three proposal — that means
 
 This means that if you want to try this feature out right now, you're going to need to transpile the syntax to a format supported by older browsers, and provide a polyfill for the various global objects that the feature requires.
 
-In terms of transpiling, both Typescript and Babel support the `using ...` syntax. For Typescript, you'll need [version 5.2 or greater](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-2.html#using-declarations-and-explicit-resource-management) to handle the syntax. In the `tsconfig.json` file, the `target` should be `ES2022` or lower in order to do the transpilation (otherwise Typescript will just leave the syntax unchanged), and the `lib` setting should include `esnext.disposable` (or just the whole `esnext` bundle of types) to ensure that the right set of types is included. For Babel, including the `stage-3` preset, or explicitly adding the [`@babel/plugin-proposal-explicit-resource-management` plugin](https://babeljs.io/docs/babel-plugin-proposal-explicit-resource-management) should ensure that everything gets compiled correctly.
+In terms of transpiling, both Typescript and Babel support the `using ...` syntax. For Typescript, you'll need [version 5.2 or greater](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-2.html#using-declarations-and-explicit-resource-management) to handle the syntax. In the `tsconfig.json` file, the `target` should be `ES2022` or lower in order to do the transpilation (otherwise Typescript will leave the syntax unchanged), and the `lib` setting should include `esnext.disposable` (or alternatively the whole `esnext` bundle of types) to ensure that the right set of types is included. For Babel, including the `stage-3` preset, or explicitly adding the [`@babel/plugin-proposal-explicit-resource-management` plugin](https://babeljs.io/docs/babel-plugin-proposal-explicit-resource-management) should ensure that everything gets compiled correctly.
 
 Neither Typescript nor Babel include a polyfill for the various global types discussed here, which means you'll also need a polyfill. For this, there are various options, including [disposablestack](https://www.npmjs.com/package/disposablestack), which I've been using, and CoreJS.
 
@@ -383,7 +356,7 @@ export class UserService implements AsyncDisposable {
     this.#conn = conn;
 
     // Remember, NodeJS's `Timeout` class already has a `Symbol.dispose` method,
-    // so we can just add that to the stack
+    // so we can add that to the stack
     this.#timeoutHandle = this.#stack.use(
       setInterval(() => this.deleteInactiveUsers(), 60 * 1000)
     );
@@ -460,7 +433,7 @@ async function main() {
 
 ## More Resources
 
-There's a lot more information out there about the explicit resource management proposal, but given how Google isn't working as well as it once was, here are some links so you don't have to Google so hard:
+There's a lot more information out there about the explicit resource management proposal, but given how Google isn't working as well as it once was, here are some links to help you find it:
 
 - [The original proposal](https://github.com/tc39/proposal-explicit-resource-management) in the TC39 GitHub organisation. The documentation is a bit technically-focussed here, but the issues provide a lot of good context for the APIs, and a number of examples that explain why certain decisions were made.
 - [Typescript 5.2's release notes](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-2.html) include a section about resource management, how to use it, and how to get it working in Typescript.
