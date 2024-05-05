@@ -1,5 +1,5 @@
 +++
-title = "New Resource Management APIs in Javascript"
+title = "New Disposable APIs in Javascript"
 date = 2024-05-06
 tags = ["tips", "javascript", "programming"]
 slug = "disposables-in-javascript"
