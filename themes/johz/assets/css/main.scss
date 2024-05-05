@@ -266,6 +266,26 @@ article {
       border-bottom: 0.25em solid var(--text-color);
       background-color: var(--text-highlight-background);
 
+      // This is a clever, ugly hack:
+      // * Initially, use a `:has()` declaration to hide all `th` cells
+      //   -- this ensures that browsers that don't support `:has()` will
+      //   ignore this declaration and treat th cells as normal
+      // * Then, use :has(th:not(:empty)) to select all thead elements that
+      //   have at least one non-empty head cell.  Revert these to using
+      //   `table-cell` display
+      // The result should be the following:
+      // * for browsers that don't support `:has`, tables are rendered as per default
+      // * for other browsers, for each table:
+      //   * if there is at least one `th` with content, all `th`s will be displayed
+      //   * otherwise, no `th`s will displayed
+      thead:has(th) th {
+        display: none;
+      }
+
+      thead:has(th:not(:empty)) th {
+        display: table-cell;
+      }
+
       thead th,
       tbody td {
         padding-block: 0.5em;
@@ -280,10 +300,6 @@ article {
 
         &:last-child {
           padding-inline-end: 1.5em;
-        }
-
-        &:empty {
-          display: none;
         }
       }
     }

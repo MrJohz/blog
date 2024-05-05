@@ -106,9 +106,8 @@ To use an async disposable, we have the `await using` syntax, which does the sam
 
 The `await using` syntax can also handle non-async `Disposable` objects, which means if you don’t know whether a given resource is going to be asynchronously or synchronously disposed, you can use `await using` and cover both options.
 
-|               |                                        |                          |
+|               | `await using`                          | `using`                  |
 | ------------: | :------------------------------------- | :----------------------- |
-|   **Syntax:** | `await using`                          | `using`                  |
 |  **Context:** | async functions only                   | async and sync functions |
 | **Protocol:** | `AsyncDisposable` + `Disposable`       | only `Disposable`        |
 |   **Symbol:** | `Symbol.asyncDispose`/`Symbol.dispose` | `Symbol.dispose`         |
@@ -141,9 +140,8 @@ const resource2 = stack.adopt(new OtherResource(), (r) => r.close());
 
 Stacks are themselves disposable, so can be disposed of using the `Symbol.dispose` or `Symbol.asyncDispose` methods. For convenience, this method is also exposed simple as `.dispose()` or `.asyncDispose()`. As mentioned earlier, this method (either using `Symbol.dispose`/`Symbol.asyncDispose` or via the alias method) will dispose of all of the resources managed by this stack. Similarly to the `using` declaration, the resources will be cleaned up in reverse order to prevent issues where resources depend on each other.
 
-|                   |                                  |                   |
+|                   | `AsyncDisposableStack`           | `DisposableStack` |
 | ----------------: | :------------------------------- | :---------------- |
-|        **Class:** | `AsyncDisposableStack`           | `DisposableStack` |
 |   **Implements:** | `AsyncDisposable`                | `Disposable`      |
 |      **Manages:** | `AsyncDisposable` + `Disposable` | only `Disposable` |
 | **Dispose With:** | `.disposeAsync()`                | `.dispose()`      |
