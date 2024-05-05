@@ -1,9 +1,8 @@
 +++
 title = "Disposables in Javascript"
-date = 2024-04-30
+date = 2024-05-06
 tags = ["tips", "javascript", "programming"]
 slug = "disposables-in-javascript"
-draft = true
 [params.cover]
 name = "Waldlandschaft mit Sonnenaufgang"
 artist = " Joseph Rebell"
