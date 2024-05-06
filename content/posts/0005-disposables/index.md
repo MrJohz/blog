@@ -21,10 +21,10 @@ The problem with `close` alone is that it’s easy not to call it. Sometimes it'
 
 ```tsx
 async function saveMessageInDatabase(message: string) {
-	const conn = new DatabaseConnection();
-	const { sender, recipient, content } = parseMessage();
-	await conn.insert({ sender, recipient, content };
-	await conn.close();
+  const conn = new DatabaseConnection();
+  const { sender, recipient, content } = parseMessage();
+  await conn.insert({ sender, recipient, content });
+  await conn.close();
 }
 ```
 
@@ -105,11 +105,11 @@ To use an async disposable, we have the `await using` syntax, which does the sam
 
 The `await using` syntax can also handle non-async `Disposable` objects, which means if you don’t know whether a given resource is going to be asynchronously or synchronously disposed, you can use `await using` and cover both options.
 
-|               | `await using`                          | `using`                  |
-| ------------: | :------------------------------------- | :----------------------- |
-|  **Context:** | async functions only                   | async and sync functions |
-| **Protocol:** | `AsyncDisposable` + `Disposable`       | only `Disposable`        |
-|   **Symbol:** | `Symbol.asyncDispose`/`Symbol.dispose` | `Symbol.dispose`         |
+|                | `await using`                          | `using`                  |
+| -------------: | :------------------------------------- | :----------------------- |
+| **Usable In:** | async functions only                   | async and sync functions |
+|  **Protocol:** | `AsyncDisposable` + `Disposable`       | only `Disposable`        |
+|    **Symbol:** | `Symbol.asyncDispose`/`Symbol.dispose` | `Symbol.dispose`         |
 
 ## Collections of Disposables
 
