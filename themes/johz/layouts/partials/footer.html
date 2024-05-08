@@ -19,6 +19,6 @@
 
 {{ with .OutputFormats.Get "rss" -}}
 <p class="footer">
-  This page is also available as an <a href="{{ .Permalink }}">RSS Feed</a>
+  This page is also available as an <a href="{{ .RelPermalink }}">RSS Feed</a>
 </p>
 {{ end }}
