@@ -7,6 +7,8 @@
 <meta name="title" property="og:title" content="{{ if .IsHome }}{{ site.Title }}{{ else }}{{ printf "%s | %s" .Title site.Title }}{{ end }}" />
 <meta name="author" content="Jonathan Frere" />
 
+<link rel="me" href="https://hachyderm.io/@johz" />
+
 {{ if not .PublishDate.IsZero }}
 <meta name="publish_date" property="og:publish_date" content="{{.PublishDate | time.Format "2006-01-02"}}" />
 {{ end }}
