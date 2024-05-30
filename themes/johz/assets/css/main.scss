@@ -145,6 +145,10 @@ article {
   padding: 1.5rem 1.5rem 2rem;
   margin-block-start: 1.5rem;
 
+  &:has(.cover) {
+    margin-block-start: 0;
+  }
+
   .cover {
     max-width: calc(100% + 3rem);
     height: auto;
