@@ -194,7 +194,15 @@ article {
     }
 
     --flow-space: 0.5em;
+    @include screen(small) {
+      &.desktop {
+        display: none;
+      }
+    }
     @include screen(big) {
+      &.mobile {
+        display: none;
+      }
       @include shadow(0.25rem);
       width: 18rem;
       float: right;

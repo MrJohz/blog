@@ -44,10 +44,17 @@
   {{end}}
   <div class="content">
     {{ if (.Fragments.Headings | len) }}
-      <details class="toc" open>
-        <summary>Contents</summary>
-        {{ .TableOfContents }}
-      </details>
+    {{/* I want to show a table of contents that is open by default on desktop,
+         and closed by default on mobile.  Having two ToCs seems like the easiest
+         option, somehow... */}}
+    <details class="toc desktop" open>
+      <summary>Contents</summary>
+      {{ .TableOfContents }}
+    </details>
+    <details class="toc mobile">
+      <summary>Contents</summary>
+      {{ .TableOfContents }}
+    </details>
     {{ end }}
     {{ .Content }}
   </div>
