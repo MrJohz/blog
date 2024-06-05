@@ -1,3 +1,26 @@
+@mixin screen($size) {
+  @if ($size == big) {
+    @media (min-width: 600px) {
+      @content;
+    }
+  }
+  @if ($size == small) {
+    @media (max-width: 599px) {
+      @content;
+    }
+  }
+}
+
+@mixin full-shadow($size) {
+  box-shadow: 0 $size/2 10px 0px var(--shadow-color),
+    $size / 3 $size / 3 $size 0px var(--shadow-color);
+}
+
+@mixin shadow($size) {
+  box-shadow: $size/2 $size/2 10px 0px var(--shadow-color),
+    $size * 0.75 $size * 0.75 $size 0px var(--shadow-color);
+}
+
 :root {
   // yes, there's a bunch of duplication here that we would like to avoid
   // but it turns out to be surprisingly difficult to write a selector that:
@@ -46,29 +69,10 @@
 
   --shadow-color: rgba(0, 0, 0, 0.4);
   font-size: 18px;
-}
 
-@mixin screen($size) {
-  @if ($size == big) {
-    @media (min-width: 600px) {
-      @content;
-    }
+  @screen (small) {
+    font-size: 16px;
   }
-  @if ($size == small) {
-    @media (max-width: 599px) {
-      @content;
-    }
-  }
-}
-
-@mixin full-shadow($size) {
-  box-shadow: 0 $size/2 10px 0px var(--shadow-color),
-    $size / 3 $size / 3 $size 0px var(--shadow-color);
-}
-
-@mixin shadow($size) {
-  box-shadow: $size/2 $size/2 10px 0px var(--shadow-color),
-    $size * 0.75 $size * 0.75 $size 0px var(--shadow-color);
 }
 
 html,
@@ -96,8 +100,17 @@ body {
   flex-direction: column;
   margin-inline-end: 2rem;
 
+  @include screen(small) {
+    margin: -1.5rem 0;
+    background-color: var(--highlight-background);
+    width: 100%;
+    @include shadow(0.25rem);
+    z-index: 5;
+    align-items: center;
+  }
+
   h1 {
-    font-size: clamp(2rem, 6vw, 4rem);
+    font-size: clamp(1.5rem, 6vw, 4rem);
     z-index: 2;
 
     width: max-content;
@@ -107,6 +120,11 @@ body {
 
     &:has(a:hover) {
       background-color: var(--link-deco-color);
+    }
+
+    @include screen(small) {
+      background-color: transparent;
+      box-shadow: unset;
     }
   }
 
@@ -118,6 +136,14 @@ body {
     padding: 2.75rem 1.5em 0.75em;
     margin-block-start: -2rem;
     margin-inline-end: -2rem;
+
+    @include screen(small) {
+      margin: 0;
+      margin-block-start: -0.6rem;
+      margin-block-end: -1.7rem;
+      padding: 0.7rem;
+      z-index: 5;
+    }
 
     ul {
       display: flex;
@@ -170,6 +196,9 @@ article {
 
     @include screen(big) {
       margin-inline-start: -4rem;
+    }
+    @include screen(small) {
+      font-size: 0.9rem;
     }
 
     &:has(a:hover) {
