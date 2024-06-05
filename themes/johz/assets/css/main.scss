@@ -82,7 +82,7 @@ body {
   background-color: var(--main-background);
   color: var(--text-color);
   align-items: center;
-  padding-block: 1.5rem;
+  padding-block: 1rem;
   gap: 1.5rem;
 
   @include screen(big) {
@@ -97,13 +97,13 @@ body {
   margin-inline-end: 2rem;
 
   h1 {
-    font-size: clamp(2rem, 6vw, 4rem);
+    font-size: clamp(1.7rem, 6vw, 4rem);
     z-index: 2;
 
     width: max-content;
     background-color: var(--highlight-background);
     @include shadow(0.25rem);
-    padding: 1rem;
+    padding: 0.4em;
 
     &:has(a:hover) {
       background-color: var(--link-deco-color);
@@ -111,13 +111,14 @@ body {
   }
 
   nav {
+    font-size: clamp(0.8rem, 2vw, 1.2rem);
     align-self: flex-end;
     width: max-content;
     background-color: var(--article-color);
     @include shadow(0.25rem);
-    padding: 2.75rem 1.5em 0.75em;
-    margin-block-start: -2rem;
-    margin-inline-end: -2rem;
+    padding: 2.75em 1em 0.75em;
+    margin-block-start: -2em;
+    margin-inline-end: -1.5em;
 
     ul {
       display: flex;
