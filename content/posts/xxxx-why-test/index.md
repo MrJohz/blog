@@ -11,8 +11,6 @@ slug = "why-test"
 # institution-url = "https://www.belvedere.at/"
 +++
 
-# Why Test?
-
 Why do you write tests?
 
 I’ve been asking myself this a bit recently. I’ve been trying to motivate some developers I work with to write more tests, and if I’m going to convince them that tests are good, I should have an answer to that question myself, right?
