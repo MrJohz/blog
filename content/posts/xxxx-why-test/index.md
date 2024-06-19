@@ -15,11 +15,13 @@ Why do you write tests?
 
 I’ve been asking myself this a bit recently. I’ve been trying to motivate some developers I work with to write more tests, and if I’m going to convince them that tests are good, I should have an answer to that question myself, right?
 
-Tests sometimes get portrayed as one of the chores of software development. As a new developer, that’s how I saw tests for a long time: something you did because it’s what you’re told to do, and besides, if I make the coverage get to 100%, I get a little green checkbox to put on my README.md file on Github. Tests are good, because they make Good Code™ — just don’t ask junior-developer-me _how_ that happened, because he had no idea.
+Tests sometimes get portrayed as one of the chores of software development. As a new developer, that’s how I saw tests for a long time: something you did because it’s what you’re told to do, and besides, if I make the coverage get to 100%, I get a little green checkbox to put on my README.md file on Github. I knew that tests were good, because they make Good Code™ — I just didn't know how that happened, or why my tests were still so painful to work with!
 
-But since then, I’ve found that I quite like writing tests — and not because of the coverage scores, but because they can be very useful. And it’s been interesting trying to explore and articulate _why_ they’re useful. As I’ve grown better at testing, they’ve become a tool that I can use: a way of developing faster and more confidently. It’s like learning all the shortcuts in your IDE or editor of choice, or figuring out the underlying model behind Git: the better you can use the tool, the more useful the tool is when you’re developing.
+But over time, I've found better ways of writing tests, tests that are easier to write and work with. And once I started writing better tests, I found they also became more useful to me, and I wanted to write them more — not because of some coverage metric, but because I was getting real value out of them.
 
-In this post, I want to explore how testing helps with the process of building software. I’m going to divide my test-writing process into two parts: testing as a tool for faster development, and testing as a tool for future refactoring. I’ll talk about each part individually, and then explore how the two parts work together. Throughout this, I want to argue that testing is not just about correctness, but also that it can be an integral part of the development and design process.
+Now, trying to articulate the "why" of testing to others, it's been interesting to explore where that value is coming from. The more I write tests, the more they've become another tool in my toolbox — another way of developing faster and more confidently. It’s like learning all the shortcuts in your IDE or editor of choice, or figuring out the underlying model behind Git: the better you can use the tool, the more useful the tool is when you’re developing.
+
+In this post, I want to explore testing as a tool in the process of building software. I’m going to divide my test-writing process into two parts: testing as a tool for faster development, and testing as a tool for future refactoring. I’ll talk about each part individually, and then explore how the two parts work together. Throughout this, I want to argue that testing is not just about correctness, but also that it can be an integral part of the development and design process.
 
 ## Testing for Faster Development
 
@@ -45,7 +47,7 @@ Secondly, it’s important to find good abstractions inside the tests. Abstracti
 
 ## Testing for Future Refactoring
 
-The goal for refactoring is to keep the outward-facing interface of a unit (say, a module, a class, a function, etc) the same, while rewriting the internals to be more maintainable. This naturally raises the question: How do we know what the outward-facing interface of a module is?
+The goal for refactoring is to keep the outward-facing interface of a unit (say, a module, a class, a function, etc) the same, while rewriting the internals to be more maintainable. This naturally raises the question: How do define that outward-facing interface of a module in the first place?
 
 One answer is tests. If you’re adding tests to a unit for development purposes as you go along, over time you’ll build up a collection of examples of how that unit works. For example, a test that asserts that `add(1, 2)` results in `3` tells me a bit about the outward-facing interface of the `add` function[^complete-testing]. That’s a useful way of defining this interface, in large part because we can automatically run these tests regularly to make sure that the interface remains the same.
 
