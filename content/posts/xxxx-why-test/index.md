@@ -3,19 +3,13 @@ title = "Why Test?"
 date = 2024-06-13
 tags = ["advice", "testing", "programming"]
 slug = "why-test"
-# [params.cover]
-# name = "Waldlandschaft mit Sonnenaufgang"
-# artist = " Joseph Rebell"
-# date = "1809"
-# institution = "Belvedere, Vienna"
-# institution-url = "https://www.belvedere.at/"
 +++
 
 Why do you write tests?
 
-I’ve been asking myself this a bit recently. I’ve been trying to motivate some developers I work with to write more tests, and if I’m going to convince them that tests are good, I should have an answer to that question myself, right?
+I've been thinking about this question a lot recently. I’ve been trying to motivate some teammates that tests are worth writing. But I'm going to convince them of that, I need to be able to answer that question for myself, right?
 
-Tests sometimes get portrayed as one of the chores of software development. As a new developer, that’s how I saw tests for a long time: something you did because it’s what you’re told to do, and besides, if I make the coverage get to 100%, I get a little green checkbox to put on my README.md file on Github. I knew that tests were good, because they make Good Code™ — I just didn't know how that happened, or why my tests were still so painful to work with!
+Tests sometimes get portrayed as one of the chores of software development. As a new developer, that’s how I saw tests for a long time: something I did because it was what I was told to do — besides, if I got the coverage to 100%, I got a little green checkbox to put on my README.md file on Github. I knew that tests were good, because they make Good Code™ — I just didn't know how that happened, or why my tests were still so painful to work with!
 
 But over time, I've found better ways of writing tests, tests that are easier to write and work with. And once I started writing better tests, I found they also became more useful to me, and I wanted to write them more — not because of some coverage metric, but because I was getting real value out of them.
 
@@ -25,7 +19,7 @@ In this post, I want to explore testing as a tool in the process of building sof
 
 ## Testing for Faster Development
 
-When I started programming, I did testing like this: I would write my code, and then I’d run it. I’d run the program I’d written a few times with different arguments or inputs and make sure it was doing what I expected.
+When I started programming, I did testing like this: I would write my code, and then I’d run it. And that was pretty much the full test. I’d run the program I’d written a few times with different arguments or inputs and make sure it was doing what I expected.
 
 This strategy works really well at first. You try out your code by using it — how can there be any purer approach? And it’s really easy to get started too. No boilerplate, no extra frameworks; just run the code and poke around a bit until you’re confident that it works.
 
@@ -66,13 +60,17 @@ The second difficulty is what to do when an interface really should change. If e
 
 In this case, having tests break is good (otherwise are the tests really telling us what's going on?), but it's still work, time, and effort to fix them. A good test, therefore, is also easy to update. Similarly to testing for development, one tool here is abstraction. Describing test goals at a higher level (e.g. "Which suggestions would I get if I typed in this text, and left the cursor at this point?") allows a chance to abstract the precise mechanics of that code, while still maintaining the same tests.
 
+The third difficulty is figuring out where to stop testing. If I fully tested every single function, every method and class, then I'd never be able to change my code without needing to update a whole bunch of tests to match. At this point, tests are slowing me down rather than speeding up.
+
+When I'm refactoring, the best tests are the ones that are written against interfaces that are unlikely to change (or at least, unlikely to change beyond what can be fixed with a bit of find-and-replace and some manual poking around). In particular, modules that represent core business logic are generally unlikely to change significantly — if your application is a spreadsheet, then the module handling the reactive engine that binds all the cells together is going to need to remain relatively consistent. This can also be true for smaller modules that narrowly focus on one piece of functionality.
+
 ## Design: Combining Development and Refactoring
 
 I’ve presented these two ideas as if they were two different testing processes, and in a way they are: if you were to only do testing for development, you’d probably choose to optimise a different set of things to if you were only doing testing for refactoring. But in practice, most of the tests I write serve both needs. After all, it would be a lot of effort to develop an entire test suite as I’m developing my code, only to delete it all and rewrite it for future refactoring purposes once I’ve finished.
 
 I think that combining development and refactoring into one set of tests is about good software design.
 
-In Test-Driven-Development (or TDD), there’s often a big emphasis on tests as a tool for design. But I often find that connection between testing and design is explained poorly, or not at all. There’s often a vague handwave towards the “refactor” stage of TDD, or a point about how, by testing things, you can break them into modules better. But I think we can be more specific about this.
+In Test-Driven-Development (or TDD), there’s a big emphasis on tests as a tool for design. But often that connection between testing and design is explained poorly, or not at all. I regularly see references to TDD having the "refactor" stage, or an argument about how testing things helps us break them down into modules, but I think we can be more specific about this.
 
 My theory is that good, clean code comes from a balancing of short-term and long-term needs, and the development/refactoring divide brings both of those needs to the surface. My short-term, development tests push me to write simple code. If it takes me thirty lines of code to get my code set up properly before I can even start testing, then development is going to be a very slow process! But my long-term, refactoring tests push me to write code that has clear public boundaries. After all, I don’t want to rewrite my tests every time I make a change to the implementation.
 
@@ -84,6 +82,6 @@ It’s the combination of testing for now _and_ for the future that makes tests 
 
 In this post, I’ve tried to present my approach to testing as, principally, a tool for making my life as a software developer easier: it allows me to write code more quickly by providing a way to check that what I’m writing works; it allows me to refactor more confidently by enforcing that what I’m writing adheres to a certain interface; and it encourages better design through the natural pressures that come from the tests I’m writing.
 
-Like I said at the start, the value here isn’t just some arbitrary vision of what Good Code™ should look like, or even correctness. (I’d go as far as to say that making code correct often involves a lot more than just tests, and tests are just one small part of that, but I’ll bang the static typing drum some other time.) Writing tests makes me faster overall[^faster-tests], and more confident in my work. I made the comparison earlier to an IDE, and it feels similar. An IDE is not necessary to be a developer, but it will highlight my code, identify unused variables, allow me to navigate the codebase I’m working on easily, and generally make my life easier. Tests are a form of that that have the added convenience of being shared by my entire team.
+Like I said at the start, the value here isn’t just some arbitrary vision of what Good Code™ should look like, or even correctness. (I’d go as far as to say that making code correct often involves a lot more than just tests, and tests are just one small part of that, but I’ll bang the static typing drum some other time.) Writing tests makes me faster overall[^faster-tests], and more confident in my work. I made the comparison earlier to an IDE, and it feels similar. As a developer, an IDE isn't necessary, but it will highlight my code, identify unused variables, allow me to navigate the codebase I’m working on easily, and generally make my life easier. Tests are a form of that that have the added convenience of being shared by my entire team.
 
 [^faster-tests]: The corollary of that is that when writing tests really slows me down, I tend to write a lot fewer of them and only when I feel like they’re adding a lot of value. For example, I tend to only tests UI components when the logic gets complex, otherwise the value I get from testing is minimal compared to the work I need to put in to get the tests running.
