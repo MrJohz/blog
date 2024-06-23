@@ -1,6 +1,6 @@
 +++
 title = "Why Test?"
-date = 2024-06-13
+date = 2024-06-23
 tags = ["advice", "testing", "programming"]
 slug = "why-test"
 [params.cover]
