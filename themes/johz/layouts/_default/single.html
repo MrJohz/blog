@@ -5,20 +5,23 @@
 {{ define "main" }}
 <article>
   {{ with .Resources.GetMatch "cover.jpg" }}
-  <picture>
-    <source
-    srcset="
-      {{(.Resize "300x webp").RelPermalink}} 300w,
-      {{(.Resize "500x webp").RelPermalink}} 500w,
-      {{(.Resize "720x webp").RelPermalink}} 720w,
-      {{.RelPermalink}} {{.Width}}w,
-    "
-    sizes="(min-width: 900px) 720px, (min-width: 600px) calc(75vw + 60px), 100vw"
-    width="{{ .Width }}"
-    height="{{ .Height }}"
-    type="image/webp" />
-    <img class="cover" role="presentation" alt="" src="{{ .RelPermalink }}" width="{{ .Width }}" height="{{ .Height }}" />
-  </picture>
+    {{ $size := (printf "%dx%d" (.Width) (mul (div .Width 16) 7)) }}
+    {{ with .Crop $size }}
+    <picture>
+      <source
+      srcset="
+        {{(.Resize "300x webp").RelPermalink}} 300w,
+        {{(.Resize "500x webp").RelPermalink}} 500w,
+        {{(.Resize "720x webp").RelPermalink}} 720w,
+        {{.RelPermalink}} {{.Width}}w,
+      "
+      sizes="(min-width: 900px) 720px, (min-width: 600px) calc(75vw + 60px), 100vw"
+      width="{{ .Width }}"
+      height="{{ .Height }}"
+      type="image/webp" />
+      <img class="cover" role="presentation" alt="" src="{{ .RelPermalink }}" width="{{ .Width }}" height="{{ .Height }}" />
+    </picture>
+    {{ end }}
   {{ end }}
   <header>
     <h1><a href="{{.RelPermalink}}">{{ .Title }}</a></h1>
