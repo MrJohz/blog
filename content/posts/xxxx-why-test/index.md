@@ -3,6 +3,12 @@ title = "Why Test?"
 date = 2024-06-13
 tags = ["advice", "testing", "programming"]
 slug = "why-test"
+[params.cover]
+name = "Brougham Castle"
+artist = "John Inigo Richards"
+date = "1731 - 1810"
+institution = "Yale Center for British Art"
+institution-url = "https://britishart.yale.edu/"
 +++
 
 Why do you write tests?
