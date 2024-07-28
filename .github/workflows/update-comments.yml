@@ -28,4 +28,10 @@ jobs:
         env:
           REDDIT_ID: ${{ secrets.RedditId }}
           REDDIT_SECRET: ${{ secrets.RedditSecret }}
-      - run: git diff
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        commit-message: "[automated] Update discussions"
+        branch: "update-discussions"
+        title: "Update Discussions"
+        assignees: "MrJohz"
+        delete-branch: true
