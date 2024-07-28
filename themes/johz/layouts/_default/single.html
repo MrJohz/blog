@@ -5,7 +5,7 @@
 
 {{ define "main" }}
 <article>
-  {{ with .Resources.GetMatch "cover.jpg" }}
+  {{ with .Resources.Get "cover.jpg" }}
     {{ $size := (printf "%dx%d" (.Width) (mul (div .Width 16) 7)) }}
     {{ with .Crop $size }}
     <picture>
@@ -61,6 +61,20 @@
     </details>
     {{ end }}
     {{ .Content }}
+    {{ with .Resources.Get "discussions.toml" }}
+      <hr>
+      <p><strong>Previous Discussions</strong></p>
+      <ul>
+      {{ range (index (. | transform.Unmarshal) "discussions") }}
+        {{ if (not (index . "hidden")) }}
+        <li class="discussion-link">
+          <a href="{{ index . "url" }}"><strong>{{ index . "title" }}</strong></a> <em>({{ humanize (index . "timestamp").Day }} {{ index . "timestamp" | time.Format "January 2006"}})</em> on {{ index . "site" }}
+          <em>({{ index . "score" }} points • {{ index . "comment_count"}} comments)</em>
+        </li>
+        {{ end }}
+      {{ end }}
+      </ul>
+    {{ end }}
   </div>
 </article>
 {{ end }}
