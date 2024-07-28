@@ -5,10 +5,14 @@
   "keywords": [],
   "author": "Jonathan Frere",
   "license": "MPL-2.0",
+  "scripts": {
+    "download-comments": "tsx download-comments.mts"
+  },
   "devDependencies": {
     "@types/node": "^20.14.12"
   },
   "dependencies": {
-    "smol-toml": "^1.3.0"
+    "smol-toml": "^1.3.0",
+    "tsx": "^4.16.2"
   }
 }

@@ -22,7 +22,7 @@ url = "https://www.reddit.com/r/programming/comments/1clc3pd/the_new_disposable_
 site = "Reddit (/r/programming)"
 timestamp = 2024-05-06T06:13:28.000Z
 comment_count = 27
-score = 101
+score = 100
 
 [[discussions]]
 title = "The new disposable APIs in Javascript"
@@ -30,4 +30,4 @@ url = "https://www.reddit.com/r/javascript/comments/1cky712/the_new_disposable_a
 site = "Reddit (/r/javascript)"
 timestamp = 2024-05-05T18:43:41.000Z
 comment_count = 27
-score = 115
+score = 116
