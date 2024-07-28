@@ -6,7 +6,7 @@ import * as TOML from "smol-toml";
 const DOMAIN = "jonathan-frere.com";
 const STANDARD_HEADERS = {
   "User-Agent":
-    "jonathan-frere.com | scraping discussions | jonathan.frere@gmail.com",
+    "discussion-scraper v0.1 | Reddit: MrJohz | Email: jonathan.frere@gmail.com",
 };
 
 type DiscussionsToml = {
@@ -79,6 +79,7 @@ async function scrapeLobsters(): Promise<ScraperResult[]> {
     page += 1;
   }
 
+  console.info("Lobsters Data Downloaded");
   return responses.map((each) => {
     const url = new URL(each.url);
     return {
@@ -119,6 +120,7 @@ async function scrapeHackerNews(): Promise<ScraperResult[]> {
     page += 1;
   }
 
+  console.info("Hacker News Data Downloaded");
   return responses.map((each) => {
     const url = new URL(each.url);
     return {
@@ -135,10 +137,33 @@ async function scrapeHackerNews(): Promise<ScraperResult[]> {
   });
 }
 
+async function authReddit(): Promise<string> {
+  console.info("Authorizing Reddit");
+  const response = await fetch("https://www.reddit.com/api/v1/access_token", {
+    method: "POST",
+    headers: {
+      Authorization:
+        "Basic " +
+        btoa(`${process.env.REDDIT_ID}:${process.env.REDDIT_SECRET}`),
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: new URLSearchParams({
+      grant_type: "client_credentials",
+    }),
+  });
+
+  const data = await response.json();
+  console.info("Reddit Authorized");
+  return data.access_token;
+}
+
 async function scrapeReddit(): Promise<ScraperResult[]> {
   console.info("Scraping Reddit");
   let after: string | undefined = undefined;
   const responses: RedditResponse[] = [];
+
+  const token = await authReddit();
+
   while (true) {
     const query = new URLSearchParams({
       q: `site:${DOMAIN}`,
@@ -149,8 +174,8 @@ async function scrapeReddit(): Promise<ScraperResult[]> {
     if (after != null) query.append("after", after);
 
     const response = await fetch(
-      `https://www.reddit.com/search.json?${query}`,
-      { headers: STANDARD_HEADERS }
+      `https://oauth.reddit.com/search.json?${query}`,
+      { headers: { ...STANDARD_HEADERS, Authorization: `bearer ${token}` } }
     );
     const data = await response.json();
     responses.push(...data.data.children);
@@ -158,6 +183,7 @@ async function scrapeReddit(): Promise<ScraperResult[]> {
     if (data.after == null) break;
   }
 
+  console.info("Reddit Data Downloaded");
   return responses.map((each) => {
     const url = new URL(each.data.url);
     return {
@@ -177,7 +203,20 @@ async function scrapeReddit(): Promise<ScraperResult[]> {
 async function scrape() {
   console.info("Scraping Discussion Sites");
   return (
-    await Promise.all([scrapeHackerNews(), scrapeLobsters(), scrapeReddit()])
+    await Promise.all([
+      scrapeHackerNews().catch((err) => {
+        console.warn("Hacker News scraper failed", err);
+        return [];
+      }),
+      scrapeLobsters().catch((err) => {
+        console.warn("Lobsters scraper failed", err);
+        return [];
+      }),
+      scrapeReddit().catch((err) => {
+        console.warn("Reddit scraper failed", err);
+        return [];
+      }),
+    ])
   ).flat();
 }
 
@@ -204,20 +243,23 @@ async function loadExistingDiscussionLinks() {
   const fileResolvePromises: Promise<BlogPost>[] = [];
   for await (const file of walk(postsDir)) {
     if (file.name !== "index.md") continue;
-    if (/\/drafts\//.test(file.path)) continue;
+    if (/\/drafts\//.test(file.parentPath)) continue;
 
     fileResolvePromises.push(
       (async () => {
-        const contents = await fs.readFile(file.path, "utf-8");
+        const contents = await fs.readFile(
+          path.join(file.parentPath, file.name),
+          "utf-8"
+        );
         // very naive way to fetch frontmatter, can probably fail
         // in all sorts of different ways
         const [, frontmatter] = contents.split("+++\n");
         const { slug } = TOML.parse(frontmatter);
 
-        const discussionsPath = path.join(file.path, "../discussions.toml");
+        const discussionPath = path.join(file.parentPath, "discussions.toml");
         let discussions = [];
         try {
-          const contents = await fs.readFile(discussionsPath, "utf-8");
+          const contents = await fs.readFile(discussionPath, "utf-8");
           const file = TOML.parse(contents) as {
             discussions: RawDiscussionsToml[];
           };
@@ -230,7 +272,7 @@ async function loadExistingDiscussionLinks() {
         } catch {}
 
         return {
-          discussionPath: path.join(file.path, "../discussions.toml"),
+          discussionPath,
           slug: `/posts/${slug}/`,
           discussions,
         };
