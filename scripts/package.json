@@ -9,7 +9,7 @@
     "download-comments": "tsx download-comments.mts"
   },
   "devDependencies": {
-    "@types/node": "^20.14.12"
+    "@types/node": "^20.14.13"
   },
   "dependencies": {
     "smol-toml": "^1.3.0",
