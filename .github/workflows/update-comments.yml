@@ -12,10 +12,6 @@ jobs:
       matrix:
         node-version: [20.x]
 
-    defaults:
-      run:
-        working-directory: "./scripts"
-
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -26,6 +22,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: "pnpm"
-      - run: pnpm install
-      - run: pnpm run download-comments
+          cache-dependency-path: "scripts/pnpm-lock.yaml"
+      - run: cd scripts && pnpm install
+      - run: cd scripts && pnpm run download-comments
       - run: git status
