@@ -292,6 +292,12 @@ function shouldHide(record: DiscussionsToml) {
   return record.score < 2 || record.comment_count < 2;
 }
 
+function roughlyEqual(scoreA: number, scoreB: number): boolean {
+  const diff = Math.abs(scoreA - scoreB);
+  const epsilon = Math.min(scoreA, scoreB) * 0.06;
+  return diff <= epsilon;
+}
+
 function mergeRecords(
   scrapedRecords: ScraperResult[],
   existingRecords: Record<string, BlogPost>
@@ -311,6 +317,19 @@ function mergeRecords(
     for (const existing of existingRecords[record.slug].discussions) {
       if (existing.url !== record.toml.url) continue;
       found = true;
+
+      // Reddit adds random fuzz to vote counts, which means that the `score` field
+      // isn't stable between runs.  Therefore, we only update the record if an attribute
+      // other than the score has changed, or if the score has changed enough to make
+      // a difference.
+      const changed =
+        existing.comment_count !== record.toml.comment_count ||
+        existing.hidden !== record.toml.hidden ||
+        +existing.timestamp !== +record.toml.timestamp ||
+        existing.title !== record.toml.title ||
+        !roughlyEqual(existing.score, record.toml.score);
+      if (!changed) continue;
+
       Object.assign(existing, record.toml);
     }
     if (!found) {
