@@ -1,0 +1,24 @@
+name: Update Comments
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  update-comments:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "pnpm"
+      - run: cd scripts && pnpm install
+      - run: cd scripts && pnpm run download-comments
+      - run: git status
