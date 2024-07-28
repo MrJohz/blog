@@ -23,9 +23,9 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "pnpm"
           cache-dependency-path: "scripts/pnpm-lock.yaml"
-      - run: cd scripts && pnpm install
+      - run: cd scripts && pnpm install --frozen-lockfile
       - run: cd scripts && pnpm run download-comments
         env:
           REDDIT_ID: ${{ secrets.RedditId }}
           REDDIT_SECRET: ${{ secrets.RedditSecret }}
-      - run: git status
+      - run: git diff
