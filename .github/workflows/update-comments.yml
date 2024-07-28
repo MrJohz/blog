@@ -30,8 +30,9 @@ jobs:
           REDDIT_SECRET: ${{ secrets.RedditSecret }}
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
-        commit-message: "[automated] Update discussions"
-        branch: "update-discussions"
-        title: "Update Discussions"
-        assignees: "MrJohz"
-        delete-branch: true
+        with:
+          commit-message: "[automated] Update discussions"
+          branch: "update-discussions"
+          title: "Update Discussions"
+          assignees: "MrJohz"
+          delete-branch: true
