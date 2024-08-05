@@ -61,19 +61,29 @@
     </details>
     {{ end }}
     {{ .Content }}
-    {{ with .Resources.Get "discussions.toml" }}
+    {{if eq .Section "posts"}}
       <hr>
-      <p><strong>Previous Discussions</strong></p>
-      <ul>
-      {{ range (index (. | transform.Unmarshal) "discussions") }}
-        {{ if (not (index . "hidden")) }}
-        <li class="discussion-link">
-          <a href="{{ index . "url" }}"><strong>{{ index . "title" }}</strong></a> <em>({{ humanize (index . "timestamp").Day }} {{ index . "timestamp" | time.Format "January 2006"}})</em> on {{ index . "site" }}
-          <em>({{ index . "score" }} points • {{ index . "comment_count"}} comments)</em>
-        </li>
+      <p>
+        <strong>Share this article</strong> on  
+        <a href="https://reddit.com/submit?url={{ .Permalink }}&title={{ .Title }}">Reddit</a>,
+        <a href="https://twitter.com/intent/tweet?url={{ .Permalink}}&text={{ .Title }}">X/Twitter</a>,
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ .Permalink }}">LinkedIn</a>,
+        <a href="https://news.ycombinator.com/submitlink?u={{ .Permalink }}&t={{ .Title }}">Hacker News</a>,
+        or <a href="https://lobste.rs/stories/new?url={{ .Permalink }}&title={{ .Title }}">Lobsters</a>.
+      </p>
+      {{ with .Resources.Get "discussions.toml" }}
+        <p><strong>Previous Discussions</strong></p>
+        <ul>
+        {{ range (index (. | transform.Unmarshal) "discussions") }}
+          {{ if (not (index . "hidden")) }}
+          <li class="discussion-link">
+            <a href="{{ index . "url" }}"><strong>{{ index . "title" }}</strong></a> <em>({{ humanize (index . "timestamp").Day }} {{ index . "timestamp" | time.Format "January 2006"}})</em> on {{ index . "site" }}
+            <em>({{ index . "score" }} points • {{ index . "comment_count"}} comments)</em>
+          </li>
+          {{ end }}
         {{ end }}
+        </ul>
       {{ end }}
-      </ul>
     {{ end }}
   </div>
 </article>
