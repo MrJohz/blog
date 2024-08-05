@@ -1,6 +1,6 @@
 +++
 title = "Adding Discussions to my Blog"
-date = 2024-07-27
+date = 2024-08-05
 tags = ["blogging"]
 slug = "adding-discussions"
 draft = true
@@ -106,11 +106,11 @@ This part isn't hugely interesting, just repetitive: choose a site, figure out t
 
 - [Lobsters](https://lobste.rs) has an API, but it's not particularly documented, so the strategy for using it mostly: add `.json` to the end of any URL and see if you get an error. If you see a JSON response, you've found part of the API! There's a `/domains/<domain>` page which can be API-ified, which returns pretty much all the data I need. Pagination exists but isn't telegraphed, so there's a bit of guesswork involved as to how many pages we need to download.
 - [Hacker News](https://news.ycombinator.com/) has a couple of different APIs, interestingly both provided by different Y-Combinator-funded startups. One of these provides a full-text search that can be configured to just about do what I'm interested in. There is an HTML page that also gives me exactly what I want, but consuming an API is easier than scraping HTML.
-- [Reddit](https://www.reddit.com/) has an official API. The documentation implies (although doesn't state) that authentication isn't mandatory for many GET-based public routes, which is good because I'm lazy. I just need to stay under the rate limits, but I don't think that should be too hard.
+- [Reddit](https://www.reddit.com/) has an official API, and it's even reasonably well documented (i.e. other people have used it so there's lots of hits on Google and StackOverflow for the issues I run into). It requires authentication, which was more complicated than I expected but in principle just another HTTP call that I need to make before fetching the results.
 
 Some also-rans:
 
-- Twitter/X — I don't use this, and I don't expect there to be much here, but I was curious what data it would produce. Unfortunately, creating an account on the site just to get access to the API proved too faffy, so I gave up. Maybe I'll try again at some point in the future.
+- Twitter/X — I don't use this, and I don't expect there to be much here, but I was curious what data it would produce. Unfortunately, creating an account on the site just to get access to the API proved too much work, so I gave up. Maybe I'll try again at some point in the future.
 - Mastodon — I would have been more interested to get results from here, but there's a social convention to avoid full searches across the entire Mastodon federation, so I avoided this.
 - Various Reddit-alikes — I frequent Tildes, and I know there are some other sites that also act as link aggregators, but most of these sites seem to be either dead, or don't have an API. I could do HTML scraping, but I don't want to spend too much time on this project.
 
@@ -148,9 +148,9 @@ async function scrapeLobsters(): Promise<ScraperResult[]> {
 }
 ```
 
-I also need to get a list of all the blog posts I've written, and the discussion links that are already saved for each post. (This means I can manually add discussion links for posts that used to be hosted on my old [Bear Blog](https://bearblog.dev/) site.) Once I've done that, I can merge the two: for each scraped link, find the post on my blog that it corresponds to and merge the new and old entries together.
+I also need to get a list of all the blog posts I've written, and the discussion links that are already saved for each post. (This means I can manually add discussion links for posts that used to be hosted on my old [Bear Blog](https://bearblog.dev/) site.) The hardest part about this is that there's no native `walk` functionality in the NodeJS standard library, so I use a snippet I've found online.
 
-Finally, I can write the discussion links back out again.
+Finally, I can merge the scraped links with the discussion links that are already saved, sort them so that the newest discussions always show up first, and write them back to the `discussions.toml` file for each entry. This means that the next time I run the script, some of the discussions it scrapes will already have been saved in the `discussions.toml` file, so I assume that the URL of the discussion can be used as a natural ID for each discussion, and deduplicate based on that.
 
 ## Filtering
 
@@ -165,4 +165,28 @@ So as the discussion links are being merged, if the discussion in question has f
 
 ## Automation: Round 2
 
-With all this work, I now have a Node script that will find discussions and update a number of files in my repository. The next step is being able to run the script on a schedule.
+With all this work, I now have a Node script that will find discussions and update a number of files in my repository. The next step is being able to run the script on a schedule, and update the repository automatically.
+
+For the schedule, GitHub Actions seems like a good option. It has a generous free tier (2k minutes of CI time a month, which would let me run my script 60 times a day if I really wanted to). More importantly, a script running in a GitHub Actions pipeline has access to various variables and secrets that should make updating the repository easier.
+
+I had a few ideas for how best to update the repository, but in the end I used [Peter Evans](https://peterevans.dev/)' [`create-pull-request`](https://github.com/peter-evans/create-pull-request/) action. This is one of the things that I like best about GitHub's CI system — the actions system makes it so much easier to write these sorts of encapsulated pipeline components than any other CI system I've used.
+
+The `create-pull-request` action creates a pull request (hence the name) for the current repository based on the changes made in the local workspace. In this case, I could run the script (which fetches new data and updates all the `discussions.toml` files in the local workspace), then run `create-pull-request` to commit those changes, push them to a new branch in the repository, and create a pull request in GitHub for me to review those changes.[^create-pull-request]
+
+[^create-pull-request]: Moreover, if there is an existing pull request already open with the same name/branch/etc, then it'll update that pull request rather than creating a new one, meaning I'll only ever have one up-to-date PR to review
+
+This is pretty much exactly what I need, because it means my repo is still the single source of truth for my blog, but it means that updating that repo is now just a single click — I'll even get an email notification when there's new data to update.
+
+Unfortunately, testing the `create-pull-request`-based workflow reveals a problem: the number of votes displayed for Reddit threads fluctuates a lot. This is an anti-spam mechanism that means that you never see the exact score of a particular Reddit thread, only a randomised approximate score. If you repeatedly query the same thread, you'll different values for the same discussion, even after several months or years have passed, and no-one is upvoting the thread anymore.
+
+This means that every time the CI job runs, it produces different results, even for very old discussions, which creates a sisyphean effect where there is always a new pull request to be made. To fix this, I use the anti-anti-spam technique of only updating the discussion stats for a discussion if the vote score are more than 6% away from the previous vote score. (6% is a number plucked out of the air and adjusted based on some quick experiments.)
+
+## Finishing Touches
+
+Alongside the existing discussions, I also wanted some share links to make it easier to share the article with others. This was also very easy thanks to the [Social Share URLs](https://github.com/bradvin/social-share-urls) project on GitHub. In fairness, some of those results may well be a bit out of date at this point (as the project hasn't been updated in two years), but the ones that I could test easily worked well.
+
+## Conclusion
+
+I don't know how useful anyone is ever going to find this feature, but it's been quite fun to implement — piecing together the data from the APIs, the format for storing the discussions in the repo, and the automation to update the site whenever something changes.
+
+By the time you read this, all of this should be live, so if you want to see what it looks like, check out one of the pages with existing discussions. Or share this post on your favourite site and start a new discussion! 😉
