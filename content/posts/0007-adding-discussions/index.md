@@ -3,7 +3,6 @@ title = "Adding Discussions to my Blog"
 date = 2024-08-05
 tags = ["blogging"]
 slug = "adding-discussions"
-draft = true
 +++
 
 I enjoy reading other people's blog posts, but I often enjoy reading the comments more. The post itself becomes a jumping-off point for further discussion, where people can add critique, additional supporting evidence, or their own alternative explanations. Or just get side-tracked by one specific line in the article and start a whole flame-war about it.
