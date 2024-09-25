@@ -67,9 +67,10 @@
         <strong>Share this article</strong> on  
         <a href="https://reddit.com/submit?url={{ .Permalink }}&title={{ .Title }}">Reddit</a>,
         <a href="https://twitter.com/intent/tweet?url={{ .Permalink}}&text={{ .Title }}">X/Twitter</a>,
-        <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ .Permalink }}">LinkedIn</a>,
         <a href="https://news.ycombinator.com/submitlink?u={{ .Permalink }}&t={{ .Title }}">Hacker News</a>,
-        or <a href="https://lobste.rs/stories/new?url={{ .Permalink }}&title={{ .Title }}">Lobsters</a>.
+        <span class="hide-on-share">or </span>
+        <a href="https://lobste.rs/stories/new?url={{ .Permalink }}&title={{ .Title }}">Lobsters</a><span class="show-on-share">
+          , or <button id="share">via your device</button></span>.
       </p>
       {{ with .Resources.Get "discussions.toml" }}
         <p><strong>Previous Discussions</strong></p>

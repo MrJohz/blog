@@ -1,5 +1,5 @@
-{{- with resources.Get "js/theme-toggle.js" }} {{- if eq hugo.Environment
-"development" }} {{- with . | js.Build }}
+{{- with resources.Get "js/utils.js" }} {{- if eq hugo.Environment "development"
+}} {{- with . | js.Build }}
 <script type="module" src="{{ .RelPermalink }}"></script>
 {{- end }} {{- else }} {{- $opts := dict "minify" true }} {{- with . | js.Build
 $opts }} {{- with . | minify | fingerprint }}

@@ -361,7 +361,8 @@ article {
 nav a,
 .content a,
 .details a,
-.footer a {
+.footer a,
+#share {
   color: var(--text-color);
   text-decoration: underline;
   text-decoration-color: var(--link-deco-color);
@@ -387,4 +388,25 @@ nav a,
   & + & {
     margin-block-start: 0.5em;
   }
+}
+
+// share logic
+
+.show-on-share {
+  display: none;
+  .share-enabled & {
+    display: unset;
+  }
+}
+
+.share-enabled .hide-on-share {
+  display: none;
+}
+
+#share {
+  display: unset;
+  border: unset;
+  padding: unset;
+  background: unset;
+  cursor: pointer;
 }
