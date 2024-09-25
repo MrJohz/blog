@@ -16,11 +16,8 @@ function handleShare() {
   };
 
   document.body.append(`to share: ${JSON.stringify(share)}`);
-  document.body.append(`can share? ${navigator.canShare}`);
   if (!navigator.canShare) return;
-  document.body.append(`can share 2? ${navigator.canShare(share)}`);
   if (!navigator.canShare(share)) return;
-  document.body.append(`has element? ${document.getElementById("share")}`);
   const shareButton = document.getElementById("share");
   if (!shareButton) return;
 
