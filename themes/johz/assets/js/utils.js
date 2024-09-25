@@ -15,23 +15,14 @@ function handleShare() {
     title: document.title,
   };
 
-  document.body.append(`to share: ${JSON.stringify(share)}`);
   if (!navigator.canShare) return;
   if (!navigator.canShare(share)) return;
   const shareButton = document.getElementById("share");
   if (!shareButton) return;
 
-  document.body.append("added class");
   document.body.classList.add("share-enabled");
 
-  document.body.append("added click listener");
   shareButton.addEventListener("click", () => navigator.share(share));
 }
 
-try {
-  handleShare();
-} catch (e) {
-  const pre = document.createElement("pre");
-  pre.innerText = e.stack;
-  document.body.append(pre);
-}
+handleShare();
