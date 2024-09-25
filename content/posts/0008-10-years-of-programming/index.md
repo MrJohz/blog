@@ -5,11 +5,11 @@ tags = ["advice", "programming"]
 slug = "10-years-of-programming"
 draft = true
 [params.cover]
-name = "Brougham Castle"
-artist = "John Inigo Richards"
-date = "1731 - 1810"
-institution = "Yale Center for British Art"
-institution-url = "https://britishart.yale.edu/"
+name = "Meinungsdifferenzen"
+artist = "Leo Reiffenstein"
+date = "1885"
+institution = "Belvedere, Vienna"
+institution-url = "https://www.belvedere.at/"
 +++
 
 As of the beginning of September, I’ve been programming for a decade. Well, I’ve been programming longer than that, but before then it was just a hobby — something I could do in my room while burying my head in the sand about the Physics degree I was failing at the time. But that summer, I realised maybe if I was choosing to spend all my free time coding, maybe it was worth trying to pursue that as a career instead.
@@ -25,8 +25,8 @@ Since then I’ve learned a lot. I suspect not everything I learned is correct. 
 - **I like tests when they’re good.** I’ve [written before]({{< ref "/posts/0006-why-test" >}}) about how I didn’t really get testing until I understood how to write a good test. I’m currently rewriting a core module in a system at work, and having 100 or so tests that each test one aspect of this module, that I can slowly reenable as the new functionality comes online — it makes my life easier, and gives me more confidence that my new version behaves the same as the old.
 - **I _hate_ tests when they’re bad.** I still struggle to delete tests — it feels a lot like cheating — but sometimes they just aren’t helping. The accuracy and precision of tests in large codebases would be a great topic to study, because I suspect a lot of tests are never once useful in their lifetimes in a codebase.
 - **The simplest code is usually the hardest to write.** There’s that famous quote “I’d have written a shorter tweet, but I didn’t have the time, so here’s 29 tweets in a thread that will be a pain for everyone to read”. That’s true for code simplicity too. Simple code isn’t about writing less code (that’s usually code that’s missing edge cases). It’s also not necessarily the easiest to read (see Torvald’s [“good taste” example](https://felipec.github.io/good-taste/parts/1.html), which is simple, but uses more indirection than a more naive alternative). Simple code is good, but it usually takes a lot of work to create it[^grug].
-- **Perfection is a good goal, but a bad obsession.** I really like doing things the “right” way. I’m one of those people who’ll come up with an idea, create an empty repo for it, and then spend the next three hours getting the tests, linting, and CI working. I say that partly in jest, but also partly in pride. Perfection is also about little things like choosing the right semantic HTML element rather than adding an `onClick` handler to a `div` ; or spending a bit of extra time to get the commit history looking cleaner; or finding the O(n) algorithm instead of the O(n²) one. I take pride in working conscientiously on these sorts of things.
+- **Perfection is a good goal, but a bad obsession.** I really like doing things the “right” way. I’m one of those people who’ll come up with an idea, create an empty repo for it, and then spend the next three hours getting the tests, linting, and CI working. I say that partly in jest, but also partly in pride. Perfection is also about little things like choosing the right semantic HTML element rather than adding an `onClick` handler to a `div` ; or spending a bit of extra time to get the commit history looking cleaner; or finding the O(n) algorithm instead of the O(n²) one.
 
-  But I’ve also learned that sometimes it’s just not worth it. If the right HTML element doesn’t exist, it’s fine to bash something together with `div` elements (with the right aria roles). Building a native UI is better, but having one that runs (efficiently) in Electron is better than nothing.
+  But I've also got to limit myself on these things. Sometimes it's not worth the extra effort. Sometimes, it's not even possible to get things perfect. Often, there are competing needs, and I just choose the needs that feel most important at the time. I recently saw a comment where someone listed their ideal websites, and it included things like not using CDNs, and ensuring that the site works on terminal browsers like Lynx. The perfectionist inside me understands these goals, but the pragmatist has won out, at least for this website.
 
 [^grug]: As an aside, this is one of the issues I have with the “grug-brained developer” concept — writing simple code is not a matter of just not doing the complicated things, it’s about having enough deep knowledge and experience that you can see the simple option. This is a difficult, learned skill. To be clear, a lot of the advice given in the [original document](https://grugbrain.dev/) is good advice, but I don’t find the “just write simple code because you aren’t smart” framing accurate or helpful.
