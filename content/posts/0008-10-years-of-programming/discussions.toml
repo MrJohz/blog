@@ -5,6 +5,7 @@ site = "Hacker News"
 timestamp = 2024-09-26T19:29:12.000Z
 comment_count = 0
 score = 4
+hidden = true
 
 [[discussions]]
 title = "10 Years of Programming"
@@ -12,4 +13,5 @@ url = "https://lobste.rs/s/zgf9dq/10_years_programming"
 site = "Lobsters"
 timestamp = 2024-09-26T19:28:04.000Z
 comment_count = 1
-score = 17
+score = 18
+hidden = true
