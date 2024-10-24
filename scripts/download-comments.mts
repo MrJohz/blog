@@ -311,7 +311,8 @@ function mergeRecords(
       continue;
     }
 
-    if (shouldHide(record.toml)) record.toml.hidden = true;
+    if (record.toml.hidden == null && shouldHide(record.toml))
+      record.toml.hidden = true;
 
     let found = false;
     for (const existing of existingRecords[record.slug].discussions) {
