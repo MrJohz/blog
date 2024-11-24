@@ -48,6 +48,42 @@
   font-size: 18px;
 }
 
+/* @link https://utopia.fyi/type/calculator?c=320,16,1.2,1240,18,1.25,5,2,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l&g=s,l,xl,12 */
+/* @link https://utopia.fyi/space/calculator?c=320,18,1.2,1240,20,1.25,5,2,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l&g=s,l,xl,8 */
+:root {
+  --step--2: clamp(0.6944rem, 0.6856rem + 0.0444vw, 0.72rem);
+  --step--1: clamp(0.8333rem, 0.8101rem + 0.1159vw, 0.9rem);
+  --step-0: clamp(1rem, 0.9565rem + 0.2174vw, 1.125rem);
+  --step-1: clamp(1.2rem, 1.1283rem + 0.3587vw, 1.4063rem);
+  --step-2: clamp(1.44rem, 1.3295rem + 0.5527vw, 1.7578rem);
+  --step-3: clamp(1.728rem, 1.5648rem + 0.8161vw, 2.1973rem);
+  --step-4: clamp(2.0736rem, 1.8395rem + 1.1704vw, 2.7466rem);
+  --step-5: clamp(2.4883rem, 2.1597rem + 1.6433vw, 3.4332rem);
+
+  --space-3xs: clamp(0.25rem, 0.2283rem + 0.1087vw, 0.3125rem);
+  --space-2xs: clamp(0.5rem, 0.4783rem + 0.1087vw, 0.5625rem);
+  --space-xs: clamp(0.75rem, 0.7065rem + 0.2174vw, 0.875rem);
+  --space-s: clamp(1rem, 0.9565rem + 0.2174vw, 1.125rem);
+  --space-m: clamp(1.5rem, 1.4348rem + 0.3261vw, 1.6875rem);
+  --space-l: clamp(2rem, 1.913rem + 0.4348vw, 2.25rem);
+  --space-xl: clamp(3rem, 2.8696rem + 0.6522vw, 3.375rem);
+  --space-2xl: clamp(4rem, 3.8261rem + 0.8696vw, 4.5rem);
+  --space-3xl: clamp(6rem, 5.7391rem + 1.3043vw, 6.75rem);
+
+  /* One-up pairs */
+  --space-3xs-2xs: clamp(0.25rem, 0.1413rem + 0.5435vw, 0.5625rem);
+  --space-2xs-xs: clamp(0.5rem, 0.3696rem + 0.6522vw, 0.875rem);
+  --space-xs-s: clamp(0.75rem, 0.6196rem + 0.6522vw, 1.125rem);
+  --space-s-m: clamp(1rem, 0.7609rem + 1.1957vw, 1.6875rem);
+  --space-m-l: clamp(1.5rem, 1.2391rem + 1.3043vw, 2.25rem);
+  --space-l-xl: clamp(2rem, 1.5217rem + 2.3913vw, 3.375rem);
+  --space-xl-2xl: clamp(3rem, 2.4783rem + 2.6087vw, 4.5rem);
+  --space-2xl-3xl: clamp(4rem, 3.0435rem + 4.7826vw, 6.75rem);
+
+  /* Custom pairs */
+  --space-s-l: clamp(1rem, 0.5652rem + 2.1739vw, 2.25rem);
+}
+
 @mixin screen($size) {
   @if ($size == big) {
     @media screen and (min-width: 600px) {
@@ -83,27 +119,28 @@ body {
   color: var(--text-color);
   align-items: center;
   padding-block: 1rem;
-  gap: 1.5rem;
+  gap: var(--space-m);
+  padding-block: var(--space-s);
 
-  @include screen(big) {
-    padding-block: 3rem;
-    gap: 3rem;
-  }
+  // @include screen(big) {
+  //   padding-block: 3rem;
+  //   gap: 3rem;
+  // }
 }
 
 .header {
   display: flex;
   flex-direction: column;
-  margin-inline-end: 2rem;
+  margin-inline-end: var(--space-m);
 
   h1 {
-    font-size: clamp(1.7rem, 6vw, 4rem);
+    font-size: var(--step-5);
     z-index: 2;
 
     width: max-content;
     background-color: var(--highlight-background);
     @include shadow(0.25rem);
-    padding: 0.4em;
+    padding: var(--space-s);
 
     &:has(a:hover) {
       background-color: var(--link-deco-color);
@@ -111,14 +148,16 @@ body {
   }
 
   nav {
-    font-size: clamp(0.8rem, 2vw, 1.2rem);
+    font-size: var(--step-0);
     align-self: flex-end;
     width: max-content;
     background-color: var(--article-color);
     @include shadow(0.25rem);
-    padding: 2.75em 1em 0.75em;
-    margin-block-start: -2em;
-    margin-inline-end: -1.5em;
+    padding-block-start: var(--space-l);
+    padding-inline: var(--space-s);
+    padding-block-end: var(--space-xs);
+    margin-block-start: calc(0px - var(--space-m));
+    margin-inline-end: calc(0px - var(--space-m));
 
     ul {
       display: flex;
@@ -143,35 +182,35 @@ article {
     width: calc(min(85%, 40rem));
   }
   background-color: var(--article-color);
-  padding: 1.5rem 1.5rem 2rem;
-  margin-block-start: 1.5rem;
+  padding-block-start: var(--space-m-l);
+  padding-block-end: var(--space-m-l);
+  padding-inline: var(--space-m-l);
+  margin-block-start: var(--space-m-l);
+
+  font-size: var(--step-0);
 
   &:has(.cover) {
     margin-block-start: 0;
   }
 
   .cover {
-    max-width: calc(100% + 3rem);
+    max-width: calc(100% + var(--space-m-l) * 2);
     height: auto;
-    margin: -1.5rem;
-    padding-block-end: 2.5rem;
+    margin: calc(0px - var(--space-m-l));
+    padding-block-end: var(--space-m-l);
   }
 
   header {
     @include shadow(0.25rem);
     background-color: var(--highlight-background);
     max-width: max-content;
-    margin-block-start: -2.5rem;
-    margin-inline-start: -1.9rem;
+    margin-block-start: calc(0px - var(--space-m-l));
+    margin-inline-start: calc(0px - var(--space-m-l) + var(--space-s-m));
     padding: 0.5rem;
     padding-inline-start: 0.9rem;
 
     z-index: 5;
     position: relative;
-
-    @include screen(big) {
-      margin-inline-start: -4rem;
-    }
 
     &:has(a:hover) {
       background-color: var(--link-deco-color);
