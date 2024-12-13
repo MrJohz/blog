@@ -13,5 +13,5 @@ url = "https://lobste.rs/s/zgf9dq/10_years_programming"
 site = "Lobsters"
 timestamp = 2024-09-26T19:28:04.000Z
 comment_count = 1
-score = 20
-hidden = false
+score = 21
+hidden = true
