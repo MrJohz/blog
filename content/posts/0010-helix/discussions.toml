@@ -4,7 +4,7 @@ url = "https://news.ycombinator.com/item?id=42422659"
 site = "Hacker News"
 timestamp = 2024-12-15T10:19:07.000Z
 comment_count = 0
-score = 1
+score = 4
 
 [[discussions]]
 title = "Helix: Why (and How) I Use It"
