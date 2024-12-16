@@ -38,7 +38,7 @@ For me, this was one of the first new experiences. I’ve used terminal text edi
 
 ### Opening Files
 
-When opened in project mode, most modern text editors provide some sort of file explorer view, so you can look around, open files, move files around, etc while in the editor. Helix doesn’t include this at all[^file-explorer]. Instead, pressing `space f` opens a “jump to file” picker, very similar to Ctrl+P in VSCode and some other editors. I like this approach a lot, because it lets me type the file (or folder) name as opposed to typing it out manually, and because it’s something I’m very used to doing from VSCode.
+When opened in project mode, most modern text editors provide some sort of file explorer view, so you can look around, open files, move files around, etc while in the editor. Helix doesn’t include this at all[^file-explorer]. Instead, pressing `space f` opens a “jump to file” picker, very similar to Ctrl+P in VSCode and some other editors. I like this approach a lot, because it lets me type the file (or folder) name as opposed to navigating through the folder tree, and because it’s something I’m very used to doing from VSCode.
 
 [^file-explorer]: To be more specific, it doesn’t include this functionality currently, but there is an upcoming plugin system where a file explorer is likely to be a key use-case. There are also some vague noises about a built-in file explorer, but I believe this is a bit controversial, and may or may not get implemented.
 
