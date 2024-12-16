@@ -13,6 +13,7 @@ site = "Hacker News"
 timestamp = 2024-12-14T09:18:33.000Z
 comment_count = 0
 score = 3
+hidden = true
 
 [[discussions]]
 title = "Helix: Why (and How) I Use It"
