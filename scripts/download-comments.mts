@@ -294,7 +294,7 @@ function shouldHide(record: DiscussionsToml) {
 
 function roughlyEqual(scoreA: number, scoreB: number): boolean {
   const diff = Math.abs(scoreA - scoreB);
-  const epsilon = Math.min(scoreA, scoreB) * 0.06;
+  const epsilon = Math.min(scoreA, scoreB) * 0.08;
   return diff <= epsilon;
 }
 
@@ -324,7 +324,7 @@ function mergeRecords(
       // other than the score has changed, or if the score has changed enough to make
       // a difference.
       const changed =
-        existing.comment_count !== record.toml.comment_count ||
+        !roughlyEqual(existing.comment_count, record.toml.comment_count) ||
         existing.hidden !== record.toml.hidden ||
         +existing.timestamp !== +record.toml.timestamp ||
         existing.title !== record.toml.title ||
