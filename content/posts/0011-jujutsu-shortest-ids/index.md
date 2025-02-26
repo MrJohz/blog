@@ -5,17 +5,18 @@ tags = ["tools", "jujutsu", "vcs"]
 slug = "jujutsu-shortest-ids"
 draft = true
 [params.cover]
-name = "The Start of the Hunt"
-artist = "American 19th Century"
-date = "c. 1800"
+anchor = "Center"
+name = "Blue Jay"
+artist = "Robert Havell after John James Audubon"
+date = "1831"
 institution = "National Gallery of Art"
 institution-url = "https://www.nga.gov/"
 +++
 
 [Jujutsu](https://jj-vcs.github.io/jj/latest/) is a relatively new version control system that is designed around working directly with commit-like objects called “changes”[^commits-changes]. Each change has an ID, and these IDs are important because they’re the main way of referring to different changes[^against-names]. To make referencing these IDs a bit easier, Jujutsu often shows ID prefixes rather than the whole ID when displaying commits (such as in the `jj log` command).
 
-[^commits-changes]: There is an important distinction between _commits_ and _changes_, in that _commits_ are immutable and serve as a kind of backing store, whereas _changes_ are mutable and represent a logical set of code changes. Each change is linked to a commit (the current immutable snapshot of that change), but if the contents of the change is updated, it will instead point to a different commit. Importantly, each change retains a history of the previous commits it pointed to — these commits can be seen by running `jj evolog`.
-[^against-names]: I recommend reading Steve Klabnik’s “[Against Names](https://steveklabnik.com/writing/against-names/)” post which specifically uses this fact about Jujutsu as an example for why avoiding names by design can sometimes make things much easier to use.
+[^commits-changes]: There's an important distinction between _commits_ and _changes_, in that _commits_ are immutable and serve as a kind of backing store, whereas _changes_ are mutable and represent a logical set of code changes. Each change is linked to a commit (the current immutable snapshot of that change), but if the contents of the change is updated, it will instead point to a different commit. Importantly, each change retains a history of the previous commits it pointed to — these commits can be seen by running `jj evolog`.
+[^against-names]: Go read Steve Klabnik’s “[Against Names](https://steveklabnik.com/writing/against-names/)” post which specifically uses this fact about Jujutsu as an example for why avoiding names by design can sometimes make things much easier to use.
 
 This is similar to how Git can show an abbreviated commit hash, (typically 7-8 characters), but in Jujutsu, the ID prefixes are often 1-2 characters long. But a repository in Jujutsu can have thousands of changes in it. How can the prefixes stay so small?
 

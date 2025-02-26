@@ -26,3 +26,23 @@ function handleShare() {
 }
 
 handleShare();
+
+function handleEmailSubstitution() {
+  const emailElements = document.getElementsByClassName("email");
+  for (const el of emailElements) {
+    const email = Array.from(el.childNodes)
+      .filter((each) => each.nodeType === Node.TEXT_NODE)
+      .map((each) => each.textContent)
+      .join("");
+
+    const node = document.createElement("a");
+    node.href = `mailto:${email}`;
+    node.appendChild(new Text(email));
+    el.replaceWith(node);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  handleEmailSubstitution();
+  handleShare();
+});

@@ -278,6 +278,10 @@ article {
       padding-block: 1.5em;
       padding-inline: 2em;
       background-color: var(--text-highlight-background);
+
+      code {
+        background-color: unset;
+      }
     }
 
     table {
@@ -369,6 +373,10 @@ article {
   }
 }
 
+code {
+  background-color: var(--text-highlight-background);
+}
+
 nav a,
 .content a,
 .details a,
@@ -420,4 +428,10 @@ nav a,
   padding: unset;
   background: unset;
   cursor: pointer;
+}
+
+.email {
+  .hidden {
+    display: none;
+  }
 }

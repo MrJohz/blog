@@ -14,8 +14,8 @@ pageRef = "/about"
 weight = 10
 
 [[menus.main]]
-name = "Github"
-url = "https://github.com/MrJohz/"
+name = "Contact"
+pageRef = "/contact"
 weight = 20
 
 [[menus.main]]
