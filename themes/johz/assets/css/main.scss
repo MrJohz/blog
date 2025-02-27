@@ -434,16 +434,16 @@ nav a,
 }
 
 .tags {
-  --flow-space: 0.5em;
-  margin-inline-start: 1em;
+  --flow-space: var(--space-3xs);
+  margin-inline-start: var(--space-s);
   opacity: 0.8;
-  font-size: 0.9em;
+  font-size: var(--step--1);
 }
 
 .footer {
   text-align: center;
   & + & {
-    margin-block-start: 0.5em;
+    margin-block-start: var(--space-2xs);
   }
 }
 
