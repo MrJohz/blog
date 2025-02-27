@@ -10,6 +10,7 @@ ul {
 
   :is(article, aside, nav, section) & {
     font-size: 1em;
+    font-weight: 400;
   }
 }
 
