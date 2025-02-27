@@ -7,6 +7,10 @@ h6,
 p,
 ul {
   margin: 0;
+
+  :is(article, aside, nav, section) & {
+    font-size: 1em;
+  }
 }
 
 a {

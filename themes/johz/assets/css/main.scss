@@ -1,7 +1,29 @@
+@mixin shadow($size) {
+  box-shadow: $size/2 $size/2 10px 0px var(--shadow-color),
+    $size * 0.75 $size * 0.75 $size 0px var(--shadow-color);
+}
+
+@mixin full-shadow($size) {
+  box-shadow: 0 $size/2 10px 0px var(--shadow-color),
+    $size / 3 $size / 3 $size 0px var(--shadow-color);
+}
+
 @font-face {
   font-family: Sen;
   src: url("/Sen-VariableFont_wght.woff2") format("woff2"),
     url("/Sen-VariableFont_wght.woff") format("woff");
+}
+
+@mixin small() {
+  @media screen and (max-width: 749px) {
+    @content;
+  }
+}
+
+@mixin large() {
+  @media screen and (min-width: 750px) {
+    @content;
+  }
 }
 
 :root {
@@ -51,30 +73,59 @@
   }
 
   --shadow-color: rgba(0, 0, 0, 0.4);
-  font-size: 18px;
 }
 
-@mixin screen($size) {
-  @if ($size == big) {
-    @media screen and (min-width: 600px) {
-      @content;
-    }
-  }
-  @if ($size == small) {
-    @media (max-width: 599px) {
-      @content;
-    }
-  }
+/* @link https://utopia.fyi/space/calculator?c=320,16,1.2,1240,18,1.25,5,2,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l&g=s,l,xl,12 */
+
+:root {
+  --space-3xs: clamp(0.25rem, 0.2283rem + 0.1087vw, 0.3125rem);
+  --space-2xs: clamp(0.5rem, 0.4783rem + 0.1087vw, 0.5625rem);
+  --space-xs: clamp(0.75rem, 0.7065rem + 0.2174vw, 0.875rem);
+  --space-s: clamp(1rem, 0.9565rem + 0.2174vw, 1.125rem);
+  --space-m: clamp(1.5rem, 1.4348rem + 0.3261vw, 1.6875rem);
+  --space-l: clamp(2rem, 1.913rem + 0.4348vw, 2.25rem);
+  --space-xl: clamp(3rem, 2.8696rem + 0.6522vw, 3.375rem);
+  --space-2xl: clamp(4rem, 3.8261rem + 0.8696vw, 4.5rem);
+  --space-3xl: clamp(6rem, 5.7391rem + 1.3043vw, 6.75rem);
+
+  /* em-equivalents */
+  --space-2xs-em: clamp(0.5em, 0.4783em + 0.1087vw, 0.5625em);
+  --space-xs-em: clamp(0.75em, 0.7065em + 0.2174vw, 0.875em);
+  --space-s-em: clamp(1em, 0.9565em + 0.2174vw, 1.125em);
+  --space-m-em: clamp(1.5em, 1.4348em + 0.3261vw, 1.6875em);
+  --space-l-em: clamp(2em, 1.913em + 0.4348vw, 2.25em);
+
+  /* One-up pairs */
+  --space-3xs-2xs: clamp(0.25rem, 0.1413rem + 0.5435vw, 0.5625rem);
+  --space-2xs-xs: clamp(0.5rem, 0.3696rem + 0.6522vw, 0.875rem);
+  --space-xs-s: clamp(0.75rem, 0.6196rem + 0.6522vw, 1.125rem);
+  --space-s-m: clamp(1rem, 0.7609rem + 1.1957vw, 1.6875rem);
+  --space-m-l: clamp(1.5rem, 1.2391rem + 1.3043vw, 2.25rem);
+  --space-l-xl: clamp(2rem, 1.5217rem + 2.3913vw, 3.375rem);
+  --space-xl-2xl: clamp(3rem, 2.4783rem + 2.6087vw, 4.5rem);
+  --space-2xl-3xl: clamp(4rem, 3.0435rem + 4.7826vw, 6.75rem);
+
+  /* Custom pairs */
+  --space-s-l: clamp(1rem, 0.5652rem + 2.1739vw, 2.25rem);
+  --space-l-xl: clamp(2rem, 1.5217rem + 2.3913vw, 3.375rem);
 }
 
-@mixin full-shadow($size) {
-  box-shadow: 0 $size/2 10px 0px var(--shadow-color),
-    $size / 3 $size / 3 $size 0px var(--shadow-color);
+/* @link https://utopia.fyi/type/calculator?c=320,16,1.2,1240,18,1.25,5,2,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l&g=s,l,xl,12 */
+
+:root {
+  --step--2: clamp(0.6944rem, 0.6856rem + 0.0444vw, 0.72rem);
+  --step--1: clamp(0.8333rem, 0.8101rem + 0.1159vw, 0.9rem);
+  --step-0: clamp(1rem, 0.9565rem + 0.2174vw, 1.125rem);
+  --step-1: clamp(1.2rem, 1.1283rem + 0.3587vw, 1.4063rem);
+  --step-2: clamp(1.44rem, 1.3295rem + 0.5527vw, 1.7578rem);
+  --step-3: clamp(1.728rem, 1.5648rem + 0.8161vw, 2.1973rem);
+  --step-4: clamp(2.0736rem, 1.8395rem + 1.1704vw, 2.7466rem);
+  --step-5: clamp(2.4883rem, 2.1597rem + 1.6433vw, 3.4332rem);
 }
 
-@mixin shadow($size) {
-  box-shadow: $size/2 $size/2 10px 0px var(--shadow-color),
-    $size * 0.75 $size * 0.75 $size 0px var(--shadow-color);
+:root {
+  font-size: var(--step-0);
+  font-family: Sen, sans-serif;
 }
 
 html,
@@ -88,54 +139,43 @@ body {
   background-color: var(--main-background);
   color: var(--text-color);
   align-items: center;
-  padding-block: 1rem;
-  gap: 1.5rem;
-
-  font-family: "Sen", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 400;
-  font-style: normal;
-
-  @include screen(big) {
-    padding-block: 3rem;
-    gap: 3rem;
-  }
+  padding-block: var(--space-l-xl);
+  gap: var(--space-l-xl);
 }
 
 .header {
   display: flex;
   flex-direction: column;
-  margin-inline-end: 2rem;
 
   h1 {
-    font-size: clamp(1.7rem, 6vw, 4rem);
-    z-index: 2;
-
+    font-size: var(--step-5);
     width: max-content;
     background-color: var(--highlight-background);
     @include shadow(0.25rem);
-    padding: 0.4em;
+    padding: var(--space-s-m);
+
+    z-index: 1;
 
     &:has(a:hover) {
       background-color: var(--link-deco-color);
     }
   }
-
   nav {
-    font-size: clamp(0.8rem, 2vw, 1.2rem);
+    font-size: var(--step-0);
     align-self: flex-end;
     width: max-content;
     background-color: var(--article-color);
     @include shadow(0.25rem);
-    padding: 2.75em 1em 0.75em;
-    margin-block-start: -2em;
-    margin-inline-end: -1.5em;
+    padding: calc(var(--space-l) + var(--space-xs-s)) var(--space-s)
+      var(--space-xs);
+    margin-block-start: calc(0px - var(--space-l));
+    margin-inline-end: calc(0px - var(--space-s-m));
 
     ul {
       display: flex;
       list-style: none;
       padding: 0;
-      gap: 1rem;
+      gap: var(--space-xs-s);
     }
   }
 }
@@ -145,43 +185,45 @@ main {
 }
 
 article {
-  @include screen(small) {
-    @include full-shadow(0.25rem);
-    width: 100%;
-  }
-  @include screen(big) {
-    @include shadow(0.25rem);
-    width: calc(min(85%, 40rem));
-  }
-  background-color: var(--article-color);
-  padding: 1.5rem 1.5rem 2rem;
-  margin-block-start: 1.5rem;
+  @include shadow(0.25rem);
+  width: calc(min(100vw, 40rem));
 
+  @include small() {
+    width: 100vw;
+    @include full-shadow(0.25rem);
+  }
+
+  background-color: var(--article-color);
+  padding: var(--space-m);
+
+  margin-block-start: var(--space-m);
   &:has(.cover) {
     margin-block-start: 0;
   }
 
   .cover {
-    max-width: calc(100% + 3rem);
+    max-width: calc(100% + 2 * var(--space-m));
     height: auto;
-    margin: -1.5rem;
-    padding-block-end: 2.5rem;
+    margin-inline: calc(0px - var(--space-m));
+    margin-block-start: calc(0px - var(--space-m));
+    margin-block-end: var(--space-m);
   }
 
   header {
     @include shadow(0.25rem);
     background-color: var(--highlight-background);
     max-width: max-content;
-    margin-block-start: -2.5rem;
-    margin-inline-start: -1.9rem;
+    margin-block-start: calc(0px - var(--space-s) - var(--space-m));
+    margin-block-end: var(--space-m);
+    margin-inline-start: calc(0px - var(--space-m));
     padding: 0.5rem;
     padding-inline-start: 0.9rem;
+    font-size: var(--step-2);
 
-    z-index: 5;
     position: relative;
 
-    @include screen(big) {
-      margin-inline-start: -4rem;
+    @include large() {
+      margin-inline-start: calc(0px - var(--space-m) - var(--space-l));
     }
 
     &:has(a:hover) {
@@ -190,8 +232,8 @@ article {
   }
 
   .details {
-    font-size: 0.8em;
-    margin-block-start: var(--flow-space, 1em);
+    font-size: var(--step--1);
+    margin-block-start: var(--flow-space, var(--space-s-em));
     opacity: 0.8;
   }
 
@@ -201,28 +243,28 @@ article {
       cursor: pointer;
 
       & + * {
-        margin-block-start: 0.5em;
+        margin-block-start: var(--space-2xs);
       }
     }
 
-    --flow-space: 0.5em;
-    @include screen(small) {
+    --flow-space: var(--space-2xs-em);
+    @include small() {
       &.desktop {
         display: none;
       }
     }
-    @include screen(big) {
+    @include large() {
       &.mobile {
         display: none;
       }
       @include shadow(0.25rem);
       width: 18rem;
       float: right;
-      margin: 1rem;
+      margin: var(--space-s);
       margin-block-start: 0;
-      margin-inline-end: -4rem;
+      margin-inline-end: calc(-4 * var(--space-s));
       background-color: var(--highlight-background);
-      padding: 1rem;
+      padding: var(--space-s);
     }
   }
 
@@ -231,16 +273,16 @@ article {
     & > * + *,
     & blockquote > * + *,
     & li > * + * {
-      margin-block-start: var(--flow-space, 1.5em);
+      margin-block-start: var(--flow-space, var(--space-s-em));
     }
 
     ul,
     ol {
-      padding-inline-start: 1em;
+      padding-inline-start: var(--space-s);
       & > li:not(:first-of-type) {
-        padding-block-start: 0.5em;
+        padding-block-start: var(--space-2xs);
         &:has(p) {
-          padding-block-start: 1em;
+          padding-block-start: var(--space-xs);
         }
       }
     }
@@ -248,16 +290,19 @@ article {
     blockquote {
       position: relative;
       margin-inline: 0em;
-      padding-block: 0.5em;
+      padding-block: var(--space-2xs);
 
-      & > blockquote,
+      & > blockquote {
+        margin-inline-start: var(--space-s);
+      }
+
       & > ul,
       & > li {
-        margin-inline-start: 1.5em;
+        margin-inline-start: var(--space-xs);
       }
 
       & pre {
-        margin-inline-start: -0.6em;
+        margin-inline-start: calc(-1 * var(--space-xs));
       }
 
       &::before {
@@ -266,17 +311,17 @@ article {
         position: absolute;
         top: 0;
         height: 100%;
-        width: 0.25em;
+        width: var(--space-3xs);
         background-color: var(--text-color);
-        left: calc(-1em + 3px);
+        left: calc(-1 * var(--space-s) + 3px);
       }
     }
 
     pre {
       overflow-x: auto;
-      margin-inline: -1.5em;
-      padding-block: 1.5em;
-      padding-inline: 2em;
+      margin-inline: calc(-1 * var(--space-m));
+      padding-block: var(--space-s);
+      padding-inline: var(--space-m);
       background-color: var(--text-highlight-background);
 
       code {
@@ -286,12 +331,12 @@ article {
 
     table {
       display: block;
-      margin-inline: -1.5em;
-      width: calc(100% + 3em);
+      margin-inline: calc(-1 * var(--space-m));
+      width: calc(100% + 2 * var(--space-m));
       overflow-x: auto;
 
-      border-top: 0.25em solid var(--text-color);
-      border-bottom: 0.25em solid var(--text-color);
+      border-top: var(--space-3xs) solid var(--text-color);
+      border-bottom: var(--space-3xs) solid var(--text-color);
       background-color: var(--text-highlight-background);
 
       // This is a clever, ugly hack:
@@ -316,18 +361,18 @@ article {
 
       thead th,
       tbody td {
-        padding-block: 0.5em;
-        padding-inline: 0.5em;
+        padding-block: var(--space-2xs);
+        padding-inline: var(--space-2xs);
 
         text-wrap: pretty;
         hanging-punctuation: first force-end last;
 
         &:first-child {
-          padding-inline-start: 1.5em;
+          padding-inline-start: var(--space-s);
         }
 
         &:last-child {
-          padding-inline-end: 1.5em;
+          padding-inline-end: var(--space-s);
         }
       }
     }
@@ -338,27 +383,24 @@ article {
     }
 
     h2 {
-      font-size: 1.3rem;
+      font-size: var(--step-1);
     }
     h3 {
-      font-size: 1.1rem;
-    }
-    h4 {
-      font-size: 1rem;
+      font-size: var(--step-0);
     }
 
     :is(h2, h3, h4) {
       @include shadow(0.25rem);
       background-color: var(--highlight-background);
       max-width: max-content;
-      margin-inline-start: -1.9rem;
-      padding: 0.5em;
-      padding-inline-start: 0.9rem;
+      margin-inline-start: calc(-1 * var(--space-m));
+      padding: var(--space-2xs);
+      padding-inline-start: var(--space-s);
 
-      --flow-space: 2em;
+      --flow-space: var(--space-m-em);
 
-      @include screen(big) {
-        margin-inline-start: -2.5rem;
+      @include large() {
+        margin-inline-start: calc(-2 * var(--space-m));
       }
 
       &:has(a:hover) {
@@ -371,10 +413,6 @@ article {
       }
     }
   }
-}
-
-code {
-  background-color: var(--text-highlight-background);
 }
 
 nav a,
@@ -429,6 +467,8 @@ nav a,
   background: unset;
   cursor: pointer;
 }
+
+// email de-obfuscation
 
 .email {
   .hidden {
