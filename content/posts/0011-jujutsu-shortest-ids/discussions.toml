@@ -4,7 +4,7 @@ url = "https://news.ycombinator.com/item?id=43194600"
 site = "Hacker News"
 timestamp = 2025-02-27T14:19:40.000Z
 comment_count = 0
-score = 6
+score = 7
 
 [[discussions]]
 title = "Why are Jujutsu's ID Prefixes So Short?"
@@ -12,4 +12,4 @@ url = "https://lobste.rs/s/ww96mh/why_are_jujutsu_s_id_prefixes_so_short"
 site = "Lobsters"
 timestamp = 2025-02-27T14:16:38.000Z
 comment_count = 0
-score = 9
+score = 14
