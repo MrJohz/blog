@@ -3,7 +3,6 @@ title = "Why are Jujutsu's ID Prefixes So Short?"
 date = 2025-02-15
 tags = ["tools", "jujutsu", "vcs"]
 slug = "jujutsu-shortest-ids"
-draft = true
 [params.cover]
 anchor = "Center"
 name = "Blue Jay"
