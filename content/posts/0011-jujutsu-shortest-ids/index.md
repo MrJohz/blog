@@ -1,6 +1,6 @@
 +++
 title = "Why are Jujutsu's ID Prefixes So Short?"
-date = 2025-02-15
+date = 2025-02-27
 tags = ["tools", "jujutsu", "vcs"]
 slug = "jujutsu-shortest-ids"
 [params.cover]
