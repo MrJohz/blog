@@ -19,10 +19,9 @@ jobs:
       - name: Build
         run: hugo --minify
       - name: Deploy to BunnyCDN
-        uses: GenieTim/ftp-action@v4.0.1
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          host: storage.bunnycdn.com
-          user: ${{ secrets.STORAGE_NAME }}
+          server: storage.bunnycdn.com
+          username: ${{ secrets.STORAGE_NAME }}
           password: ${{ secrets.STORAGE_PASSWORD }}
-          localDir: "public"
-          remoteDir: ""
+          local-dir: "public/"
