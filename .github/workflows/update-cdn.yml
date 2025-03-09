@@ -19,9 +19,14 @@ jobs:
       - name: Build
         run: hugo --minify
       - name: Deploy to BunnyCDN
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        uses: ayeressian/bunnycdn-storage-deploy@v2.2.5
         with:
-          server: storage.bunnycdn.com
-          username: ${{ secrets.STORAGE_NAME }}
-          password: ${{ secrets.STORAGE_PASSWORD }}
-          local-dir: "public/"
+          source: "public"
+          destination: ""
+          storageZoneName: "${{ secrets.STORAGE_NAME }}"
+          storagePassword: "${{ secrets.STORAGE_PASSWORD }}"
+          accessKey: "${{ secrets.ACCESS_KEY }}"
+          pullZoneId: "${{ secrets.ZONE_ID }}"
+          upload: "true"
+          remove: "true"
+          purgePullZone: "true"
