@@ -1,4 +1,4 @@
-name: Update Comments
+name: Update CDN
 
 on:
   push:
