@@ -19,7 +19,7 @@ jobs:
       - name: Build
         run: hugo --minify
       - name: Deploy to BunnyCDN
-        uses: genietim/ftp-action@releases/v4
+        uses: GenieTim/ftp-action@v4.0.1
         with:
           host: storage.bunnycdn.com
           user: ${{ secrets.STORAGE_NAME }}
