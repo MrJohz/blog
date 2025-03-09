@@ -19,11 +19,10 @@ jobs:
       - name: Build
         run: hugo --minify
       - name: Deploy to BunnyCDN
-        uses: ayeressian/bunnycdn-storage-deploy@v2.2.5
+        uses: genietim/ftp-action@releases/v4
         with:
-          source: "public"
-          destination: ""
-          storageZoneName: "${{ secrets.STORAGE_NAME }}"
-          storagePassword: "${{ secrets.STORAGE_PASSWORD }}"
-          upload: "true"
-          remove: "true"
+          host: storage.bunnycdn.com
+          user: ${{ secrets.STORAGE_NAME }}
+          password: ${{ secrets.STORAGE_PASSWORD }}
+          localDir: "public"
+          remoteDir: ""
