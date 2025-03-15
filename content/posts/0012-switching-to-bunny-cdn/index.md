@@ -42,7 +42,7 @@ These two steps took perhaps half an hour at most, and at the end of them, I had
 
 ## Switching Over From Cloudflare
 
-My first impressions were really positive — BunnyCDN was pretty consistently returning my blog post a few hundred milliseconds faster than Cloudflare, and the effect was noticeable just by clicking around my website. In addition, the experience had been remarkably effortless — yes, it wasn't quite as quick as Cloudflare's one-click Pages system, but it was still pretty easy, and BunnyCDN's admin dashboard also felt a lot clearer and more usable than Cloudflare's. This felt very promising.
+My first impressions were really positive — BunnyCDN was pretty consistently returning my blog post a few hundred milliseconds faster than Cloudflare (**Edit**: see update further down — this probably isn't accurate), and the effect was noticeable just by clicking around my website. In addition, the experience had been remarkably effortless — yes, it wasn't quite as quick as Cloudflare's one-click Pages system, but it was still pretty easy, and BunnyCDN's admin dashboard also felt a lot clearer and more usable than Cloudflare's. This felt very promising.
 
 So I made the sort of decision that one probably shouldn't make with a "production" site at 10pm in the evening, and I switched the domain's DNS to point to BunnyCDN instead.
 
@@ -103,3 +103,15 @@ For now, I'm going to keep the domain pointed at BunnyCDN and use the free trial
 I'll still keep the old Cloudflare Pages instance around, because, well, it's free, and it's still convenient for creating preview sites when I want to show someone what I've been working on. (With Cloudflare, preview sites are created automatically for any branch in a repository — that's presumably also possible with BunnyCDN, but more manual work that I don't want to get round to yet.) And if everything goes wrong, I can switch back to Cloudflare at any time.
 
 But for now, I'm a satisfied BunnyCDN customer, and I would recommend giving it a go.
+
+## Update — 15th March 2025
+
+This post unexpectedly hit Hacker News, and the people there provided some feedback in their usual loveable way, and also the first stress-test of my new CDN hosting! So to deal with those, in order:
+
+Firstly, I mentioned that BunnyCDN was serving pages a few hundred milliseconds faster than Cloudflare. In fairness, I was testing this at about 11pm at night, having just had a fit of inspiration that I should try this out, so these aren't exact measurements with an easy-to-reproduce benchmark. I was playing around with Firefox and the `load` event (i.e. waiting for all assets to finish loading), and getting around 150ms via BunnyCDN, vs 300ms via Cloudflare. Someone pointed out on HN that there issues with certain German ISPs and Cloudflare, which may be part of the issue, but it could also have just been a temporary thing — right now, I can't measure any significant difference between the two providers.
+
+Secondly, the person who posted my post used a URL without a trailing slash, which turned out to break my [discussions script]({{< ref "/posts/0007-adding-discussions" >}}) (which was why it was such a surprise to see this post on HN). This raised the question, though, of how they ended up at that particular URL in the first place. To try and avoid this happening again, I've added redirects via BunnyCDN's admin panel to always redirect to the canonical, ends-with-a-trailing-slash URL. Hopefully this avoids some weirdnesses in future. Thanks here goes to [Gabriel Garrido](https://garrido.io/notes/bunny-edge-rules-for-html-canonical-urls/) who wrote a blog post explaining how to set this configuration up.
+
+Thirdly, according to the BunnyCDN dashboard, as a result of this Hacker News hit, I have now reached 25¢ of the $20 credit in my free trial. This is well within a reasonable budget for me — even if this amount of traffic were continuous throught the year (unlikely, based on past performance), I'd still only be spending about $20 a year, which is perfectly fine for me.
+
+I will try and report back when the trial period is ended and see what the costs look like over a whole two-week period, but otherwise I'm still very happy with the results!
