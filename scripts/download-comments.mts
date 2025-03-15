@@ -83,7 +83,7 @@ async function scrapeLobsters(): Promise<ScraperResult[]> {
   return responses.map((each) => {
     const url = new URL(each.url);
     return {
-      slug: url.pathname,
+      slug: normaliseSlug(url),
       toml: {
         title: each.title,
         url: each.comments_url,
@@ -124,7 +124,7 @@ async function scrapeHackerNews(): Promise<ScraperResult[]> {
   return responses.map((each) => {
     const url = new URL(each.url);
     return {
-      slug: url.pathname,
+      slug: normaliseSlug(url),
       toml: {
         title: each.title,
         url: `https://news.ycombinator.com/item?id=${each.story_id}`,
@@ -187,7 +187,7 @@ async function scrapeReddit(): Promise<ScraperResult[]> {
   return responses.map((each) => {
     const url = new URL(each.data.url);
     return {
-      slug: url.pathname,
+      slug: normaliseSlug(url),
       toml: {
         title: each.data.title,
         url: `https://www.reddit.com${each.data.permalink}`,
@@ -377,3 +377,8 @@ async function main() {
 }
 
 await main();
+
+function normaliseSlug(url: URL) {
+  if (url.pathname.endsWith("/")) return url.pathname;
+  return url.pathname + "/";
+}
