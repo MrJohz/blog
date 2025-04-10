@@ -1,5 +1,5 @@
-import * as fs from "node:fs/promises";
 import type { Dirent } from "node:fs";
+import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import * as TOML from "smol-toml";
 
@@ -157,12 +157,12 @@ async function authReddit(): Promise<string> {
   return data.access_token;
 }
 
-async function scrapeReddit(): Promise<ScraperResult[]> {
-  console.info("Scraping Reddit");
+async function scrapeRedditOnce(
+  token: string,
+  n: number
+): Promise<ScraperResult[]> {
   let after: string | undefined = undefined;
   const responses: RedditResponse[] = [];
-
-  const token = await authReddit();
 
   while (true) {
     const query = new URLSearchParams({
@@ -183,7 +183,7 @@ async function scrapeReddit(): Promise<ScraperResult[]> {
     if (data.after == null) break;
   }
 
-  console.info("Reddit Data Downloaded");
+  console.info(`Reddit Data Downloaded ${n}/10`);
   return responses.map((each) => {
     const url = new URL(each.data.url);
     return {
@@ -197,6 +197,61 @@ async function scrapeReddit(): Promise<ScraperResult[]> {
         score: each.data.score,
       },
     };
+  });
+}
+
+async function scrapeReddit(): Promise<ScraperResult[]> {
+  console.info("Scraping Reddit");
+
+  const token = await authReddit();
+  const scrapes = (
+    await Promise.allSettled(
+      Array.from({ length: 10 }, (_, i) => scrapeRedditOnce(token, i + 1))
+    )
+  ).filter((each): each is PromiseFulfilledResult<ScraperResult[]> => {
+    if (each.status === "rejected") {
+      console.warn("Reddit scraper returned an error", each.reason);
+      return false;
+    }
+
+    return true;
+  });
+
+  if (scrapes.length === 0) throw new Error("No reddit scrape was successful");
+
+  const results = new Map<
+    string,
+    { entry: ScraperResult; scores: number[]; comments: number[] }
+  >();
+
+  let index = 0;
+  for (const scrape of scrapes) {
+    for (const entry of scrape.value) {
+      const prev = results.get(entry.toml.url);
+      if (!prev) {
+        results.set(entry.toml.url, {
+          entry,
+          scores: [entry.toml.score],
+          comments: [entry.toml.comment_count],
+        });
+        continue;
+      }
+
+      prev.comments.push(entry.toml.comment_count);
+      prev.scores.push(entry.toml.score);
+    }
+
+    index += 1;
+  }
+
+  return Array.from(results.values(), (entry) => {
+    entry.entry.toml.comment_count = Math.floor(
+      entry.comments.reduce((a, c) => a + c, 0) / entry.comments.length
+    );
+    entry.entry.toml.score = Math.floor(
+      entry.scores.reduce((a, s) => a + s, 0) / entry.scores.length
+    );
+    return entry.entry;
   });
 }
 
@@ -294,7 +349,7 @@ function shouldHide(record: DiscussionsToml) {
 
 function roughlyEqual(scoreA: number, scoreB: number): boolean {
   const diff = Math.abs(scoreA - scoreB);
-  const epsilon = Math.min(scoreA, scoreB) * 0.08;
+  const epsilon = Math.min(scoreA, scoreB) * 0.05;
   return diff <= epsilon;
 }
 
