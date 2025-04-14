@@ -8,7 +8,7 @@
   {{ $anchor := (index (.Param "cover") "anchor")}}
   {{ with .Resources.Get "cover.jpg" }}
     {{ $size := (printf "%dx%d %s" (.Width) (mul (div .Width 16) 7) (default "" $anchor)) }}
-    {{ with .Crop $size }}
+    {{ with (.Crop $size).Resize "720x" }}
     <picture>
       <source
       srcset="
