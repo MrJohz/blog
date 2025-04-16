@@ -22,9 +22,9 @@ In general, BunnyCDN operates on a pay-as-you-go system. Once the trial period w
 
 There is a minimum price of $1 a month. This means that the least I can spend each month is $1, but any usage up to that point is essentially free. As far as I can tell, if I’ve only used the service for a fraction of a month, the $1 fee is reduced proportionally, which is nice, although probably only relevant for the first and last months that I use BunnyCDN!
 
-In March, once the trial was over, I used the service for 11 days (by my calculation). The usage cost was 42¢, most of which went to the monthly minimum charge fee. I spent nothing on cloud storage, and about 17¢ on CDN traffic charges, the vast majority of which came from Europe (more on that later).
+In March, once the trial was over, I used the service for 11 days (by my calculation). The usage cost was 42¢, most of which went to the monthly minimum charge fee. I spent nothing on cloud storage, and about 17¢ on CDN traffic charges (~10GB served), the vast majority of which came from Europe (more on that later).
 
-I haven’t got my April bill yet, but I can see the usage statistics in the dashboard, and again it seems like I will still be significantly under the $1 minimum fee. As of the 13th, I have spent 7¢, again almost entirely on CDN traffic.
+I haven’t got my April bill yet, but I can see the usage statistics in the dashboard, and again it seems like I will still be significantly under the $1 minimum fee. As of the 16th, I have spent 9¢, again almost entirely on CDN traffic (~16GB served).
 
 All-in-all, for a personal website of my sort of audience (i.e. minimal), I think it’s reasonable to treat hosting my site on BunnyCDN as a fixed $1 monthly cost, with some possible rare exceptions if I manage to write something particularly interesting.
 

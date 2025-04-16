@@ -1,6 +1,6 @@
 +++
-title = "Accessing Fastify Sessions via tRPC Websockets"
-date = 2025-04-15
+title = "Bunny Updates"
+date = 2025-04-16
 tags = ["javascript", "tips", "frontend", "programming"]
 slug = "trpc-fastify-websockets"
 # [params.cover]
@@ -52,10 +52,7 @@ The best solution I found is a `WeakMap` mapping `IncomingMessage` requests to `
 app.register((app) => {
   // use a WeakMap to avoid leaking memory by holding on to
   // requests longer than necessary
-  const REQS = new WeakMap<
-    FastifyRequest | IncomingMessage,
-    FastifyRequest
-  >();
+  const REQS = new WeakMap<FastifyRequest | IncomingMessage, FastifyRequest>();
 
   app.addHook("onRequest", async (req) => {
     // associate each raw `IncomingMessage` (`req.raw`) with
@@ -74,8 +71,7 @@ app.register((app) => {
         // `IncomingMessage`, fetch the related
         // `FastifyRequest` that we saved earlier
         const realReq = REQS.get(req.raw ?? req);
-        if (!realReq)
-          throw new Error("This should never happen");
+        if (!realReq) throw new Error("This should never happen");
 
         console.log(realReq.session); // logs the session object
         return {};
