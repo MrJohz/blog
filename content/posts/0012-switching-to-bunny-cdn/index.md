@@ -11,6 +11,8 @@ institution = "National Gallery of Art"
 institution-url = "https://www.nga.gov/"
 +++
 
+> **Update, 2025-04-16:** I wrote a follow-up post after about a month of usage, and you can read that [here]({{< ref "/posts/0014-bunny-updates" >}}).
+
 Given some recent, uh, _instability_ in US politics, and given that everyone likes an underdog, I've been looking at European alternatives to my current hosting situation, which is Cloudflare.
 
 After looking through [european-alternatives.eu](https://european-alternatives.eu/), and reading [some opinions](https://bsky.app/profile/dubroy.com/post/3ljuv6i2hud2h) on Bluesky, I figured I'd try out BunnyCDN, which is a CDN service based in Slovenia. The process of completely switching over to BunnyCDN was remarkably easy, and took a little under two hours to set up.

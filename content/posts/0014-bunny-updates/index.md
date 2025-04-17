@@ -12,7 +12,7 @@ institution = "Getty"
 institution-url = "https://www.getty.edu/"
 +++
 
-A bit over a month ago, I switched my blog over to BunnyCDN. I wanted to update that post when the trial period was up, but I ended up being busy, so here’s an update from a month and change in.
+A bit over a month ago, I [switched my blog over to BunnyCDN]({{< ref "/posts/0012-switching-to-bunny-cdn" >}}). I wanted to update that post when the trial period was up, but I ended up being busy, so here’s an update from a month and change in.
 
 ## Pricing
 
