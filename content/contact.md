@@ -6,5 +6,5 @@ The following is an incomplete list of places you can get hold of me, look at st
 
 - GitHub: [MrJohz](https://github.com/MrJohz/)
 - LinkedIn: [Jonathan Frere](https://www.linkedin.com/in/jonathan-frere-254ab3197/)
-- Bluesky: [@mrjohz.bsky.social](https://bsky.app/profile/mrjohz.bsky.social)
+- Bluesky: [@jonathan-frere.com](https://bsky.app/profile/jonathan-frere.com)
 - Email: {{< email email="jonathan.frere@gmail.com" >}}
