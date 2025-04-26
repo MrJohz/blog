@@ -44,6 +44,14 @@ const CARDS = [
 
 const state = getGameState();
 
+for (const el of [$COPY_SHARE_LINK, $SHARE_LINK]) {
+  el.addEventListener("click", () => {
+    $SHARE_LINK.select();
+    // TODO: just how deprecated is `execCommand`?
+    document.execCommand("copy");
+  });
+}
+
 shuffle(CARDS, state);
 render(CARDS, state);
 
