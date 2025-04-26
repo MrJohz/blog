@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "*": ["*"],
+      "vendored/*": ["./assets/vendored/*"]
+    }
+  },
+  "include": ["assets/vendored/*", "content/**/*.js"]
+}

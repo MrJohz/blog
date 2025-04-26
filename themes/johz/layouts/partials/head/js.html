@@ -1,9 +1,18 @@
-{{- with resources.Get "js/utils.js" }} {{- if eq hugo.Environment "development"
-}} {{- with . | js.Build }}
-<script type="module" src="{{ .RelPermalink }}"></script>
-{{- end }} {{- else }} {{- $opts := dict "minify" true }} {{- with . | js.Build
-$opts }} {{- with . | minify | fingerprint }}
-<script type="module">
-  {{.Content | safeJS }}
-</script>
-{{- end }} {{- end }} {{- end }} {{- end }}
+{{- $scripts := (slice) -}}
+{{- $scripts := union $scripts (slice "js/utils.js") -}}
+{{- $scripts := union $scripts (.Param "scripts") -}}
+{{- range $scripts -}}
+  {{- $script := (or (page.Resources.Get .) (resources.Get .)) -}}
+  {{- if eq hugo.Environment "development" -}}
+    {{- with $script | js.Build -}}
+      <script type="module" src="{{ .RelPermalink }}"></script>
+    {{- end -}}
+  {{- else -}}
+    {{- $opts := dict "minify" true -}}
+    {{- with $script | js.Build $opts -}}
+      {{- with . | minify | fingerprint -}}
+        <script type="module">{{.Content | safeJS }}</script>
+      {{- end -}}
+    {{- end -}}
+  {{- end }}
+{{- end }}

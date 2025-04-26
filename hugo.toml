@@ -23,7 +23,10 @@ name = "Light/Dark"
 url = "javascript:toggletheme()"
 weight = 30
 
+[build]
+noJSConfigInAssets = true
 
-[markup]
 [markup.highlight]
 noClasses = false
+[markup.goldmark.renderer]
+unsafe = true

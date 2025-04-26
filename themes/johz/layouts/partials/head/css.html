@@ -1,15 +1,16 @@
-{{- range resources.Match "css/*.css" }}
-  {{- if eq hugo.Environment "development" }}
-    <link rel="stylesheet" href="{{ .RelPermalink }}" />
-  {{- else }}
-    {{- with . | minify | fingerprint }}<style>{{.Content | safeCSS}}</style>{{- end }}
-  {{- end }}
-{{- end }}
-{{- range resources.Match "css/*.scss" }}
-  {{- if eq hugo.Environment "development" }}
-    {{- with . | toCSS }}<link rel="stylesheet" href="{{ .RelPermalink }}" />{{- end }}
-  {{- else }}
-    {{- with . | toCSS | minify | fingerprint }}<style>{{.Content | safeCSS}}</style>{{- end }}
-  {{- end }}
-{{- end }}
+{{- $sheets := (slice) -}}
+{{- $sheets := union $sheets (slice "css/reset.css" "css/reset-plus.css" "css/main.scss" "css/syntax.css") -}}
+{{- $sheets := union $sheets (.Param "stylesheets") -}}
+
+{{- range $sheets -}}
+  {{ $sheet := (or (page.Resources.Get .) (resources.Get .)) }}
+  {{- if eq $sheet.MediaType.SubType "x-scss" -}}
+    {{- $sheet = $sheet | toCSS -}}
+  {{- end -}}
+  {{ if eq hugo.Environment "development" }}
+    <link rel="stylesheet" href="{{ $sheet.RelPermalink }}" />
+  {{ else }}
+    {{ with $sheet | minify }}<style>{{.Content | safeCSS}}</style>{{ end }}
+  {{ end }}
+{{- end -}}
       

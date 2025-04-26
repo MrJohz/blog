@@ -18,3 +18,19 @@ a {
   color: unset;
   text-decoration: unset;
 }
+
+button,
+.button {
+  background-color: var(--highlight-background);
+  border: none;
+  line-height: 1.15;
+  padding: 4px;
+  cursor: pointer;
+  box-shadow: 1px 1px 4px 0px var(--shadow-color),
+    2px 2px 2px 0px var(--shadow-color);
+}
+
+input {
+  background-color: var(--main-background);
+  border: 1px solid;
+}

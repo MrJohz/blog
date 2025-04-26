@@ -1,0 +1,48 @@
+.share-link-row {
+  display: flex;
+  gap: var(--space-2xs);
+  align-items: stretch;
+  flex-wrap: wrap;
+
+  input {
+    flex-grow: 1;
+  }
+  details {
+    display: contents;
+  }
+  details > summary {
+    list-style: none;
+  }
+  details:not([open]) > summary {
+    // needed to fix positioning
+    margin-right: calc(0px - var(--space-2xs));
+  }
+}
+
+#codenames {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  gap: var(--space-m);
+
+  width: 100%;
+
+  & > * {
+    aspect-ratio: 1;
+    display: grid;
+    border: 1px solid;
+
+    & > svg {
+      place-self: center;
+      width: 60%;
+    }
+
+    &.ag {
+      background-color: var(--highlight-background);
+    }
+
+    &.as {
+      background-color: var(--main-background);
+    }
+  }
+}

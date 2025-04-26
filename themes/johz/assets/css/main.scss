@@ -55,8 +55,8 @@
   }
 
   &:has(body.dark) {
-    --main-background: #181e1f;
-    --highlight-background: #07362f;
+    --main-background: #15191a;
+    --highlight-background: #095348;
     --text-color: #e7eee5;
     --article-color: #202b2c;
     --link-deco-color: #6b0a34;
@@ -65,8 +65,8 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    --main-background: #181e1f;
-    --highlight-background: #07362f;
+    --main-background: #15191a;
+    --highlight-background: #095348;
     --text-color: #e7eee5;
     --article-color: #202b2c;
     --link-deco-color: #6b0a34;
