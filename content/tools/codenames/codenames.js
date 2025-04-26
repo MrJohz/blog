@@ -12,6 +12,7 @@ const $SIDE = document.getElementById("side");
 const $SHARE_LINK = document.getElementById("share-link");
 const $COPY_SHARE_LINK = document.getElementById("copy-share-link");
 const $SHARE_QR = document.getElementById("share-qr");
+const $SHARE_QR_CONTAINER = document.getElementById("share-qr-container");
 const $NEW_GAME = document.getElementById("new-game");
 
 const ICON_MAP = { [AGENT]: AGENT_ICON, [ASSASSIN]: ASSASSIN_ICON };
@@ -62,6 +63,11 @@ function main() {
 
     shuffle(cards, state);
     render(cards, state);
+  });
+
+  $SHARE_QR_CONTAINER.addEventListener("toggle", () => {
+    if ($SHARE_QR_CONTAINER.open) $GRID.classList.add("obscure");
+    else $GRID.classList.remove("obscure");
   });
 
   shuffle(cards, state);

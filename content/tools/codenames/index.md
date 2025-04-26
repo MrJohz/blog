@@ -24,7 +24,7 @@ If you haven't done so already, send another player the following link (or use t
 
 <div class="share-link-row">
   <input id="share-link"> <button id="copy-share-link">Copy</button>
-  <details>
+  <details id="share-qr-container">
     <summary class="button">QR Code</summary>
     <div id="share-qr"></div>
 </div>
@@ -45,7 +45,7 @@ Use this page to play Codenames Duet using an existing Codenames or Codenames: P
 #### To use this page:
 
 1. The first player opens this page on their device. If they've opened the page up before, they may want to press "New Key" to generate a new key card.
-2. The first player sends the "share" link to the second player. They can do this by copying the URL in the text box above the key card and sending it to the second player, or by having the second player scan the QR code. (Note: the grid will be hidden while the QR code is open, to prevent the other players from seeing it accidentally.)
+2. The first player invites the second player. They can do this by copying the URL in the text box below the key card and sending it to the second player, or by having the second player scan the QR code. (Note: the grid will be hidden while the QR code is open, to prevent the other players from seeing it accidentally.)
 3. Both players can now use the key card on their device to play the game. See the official instructions for the game for more information.
 4. When the game is finished, both players can press the "New Game" button to start a new game. This game will be the same for both players.
 
