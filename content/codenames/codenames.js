@@ -12,6 +12,7 @@ const $SIDE = document.getElementById("side");
 const $SHARE_LINK = document.getElementById("share-link");
 const $COPY_SHARE_LINK = document.getElementById("copy-share-link");
 const $SHARE_QR = document.getElementById("share-qr");
+const $NEW_GAME = document.getElementById("new-game");
 
 const ICON_MAP = { [AGENT]: AGENT_ICON, [ASSASSIN]: ASSASSIN_ICON };
 const CARDS = [
@@ -42,24 +43,40 @@ const CARDS = [
   [BYSTANDER, ASSASSIN],
 ];
 
-const state = getGameState();
+function main() {
+  let state = getGameState();
+  let cards = [...CARDS];
 
-for (const el of [$COPY_SHARE_LINK, $SHARE_LINK]) {
-  el.addEventListener("click", () => {
-    $SHARE_LINK.select();
-    // TODO: just how deprecated is `execCommand`?
-    document.execCommand("copy");
+  for (const el of [$COPY_SHARE_LINK, $SHARE_LINK]) {
+    el.addEventListener("click", () => {
+      $SHARE_LINK.select();
+      // TODO: just how deprecated is `execCommand`?
+      document.execCommand("copy");
+    });
+  }
+
+  $NEW_GAME.addEventListener("click", () => {
+    const rand = sfc32(state.seed, 0, 0, 0);
+    state = getGameState((rand() * 2 ** 32) >>> 0);
+    cards = [...CARDS];
+
+    shuffle(cards, state);
+    render(cards, state);
   });
+
+  shuffle(cards, state);
+  render(cards, state);
 }
 
-shuffle(CARDS, state);
-render(CARDS, state);
+main();
 
 function render(cards, state) {
   const panels = [];
   for (const pair of cards) {
     const card = pair[state.player - 1];
-    panels.push(`<div class="${card}">${ICON_MAP[card] ?? ""}</div>`);
+    const elem = `<div class="${card}">${ICON_MAP[card] ?? ""}</div>`;
+    if (state.player === 1) panels.push(elem);
+    else panels.unshift(elem);
   }
 
   $GRID.innerHTML = panels.join("");
@@ -67,6 +84,7 @@ function render(cards, state) {
 
   const url = new URL(location.href);
   url.search = "";
+  url.hash = "";
   url.searchParams.set("player", Number(!(state.player - 1)) + 1);
   url.searchParams.set("seed", state.seed);
   $SHARE_LINK.value = url.href;
@@ -84,11 +102,11 @@ function shuffle(array, state) {
   }
 }
 
-function getGameState() {
+function getGameState(newSeed) {
   const url = new URL(location.href);
   let player = Number(url.searchParams.get("player"));
   if (Number.isNaN(player) || player < 1 || player > 2) player = 1;
-  let seed = Number(url.searchParams.get("seed") ?? NaN);
+  let seed = Number(newSeed ?? url.searchParams.get("seed") ?? NaN);
   if (Number.isNaN(seed)) seed = (Math.random() * 2 ** 32) >>> 0;
 
   url.search = "";
@@ -99,20 +117,16 @@ function getGameState() {
   return { player, seed };
 }
 
-function sfc32(a, b, c, d) {
+function sfc32(a) {
   // simple seeded random number generator
   // https://stackoverflow.com/a/47593316
   return () => {
     a |= 0;
-    b |= 0;
-    c |= 0;
-    d |= 0;
-    let t = (((a + b) | 0) + d) | 0;
-    d = (d + 1) | 0;
-    a = b ^ (b >>> 9);
-    b = (c + (c << 3)) | 0;
-    c = (c << 21) | (c >>> 11);
-    c = (c + t) | 0;
-    return (t >>> 0) / 4294967296;
+    a = (a + 0x9e3779b9) | 0;
+    let t = a ^ (a >>> 16);
+    t = Math.imul(t, 0x21f0aaad);
+    t = t ^ (t >>> 15);
+    t = Math.imul(t, 0x735a2d97);
+    return ((t = t ^ (t >>> 15)) >>> 0) / 4294967296;
   };
 }

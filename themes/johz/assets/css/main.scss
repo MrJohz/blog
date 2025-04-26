@@ -402,7 +402,7 @@ article {
       font-weight: 500;
     }
 
-    :is(h2, h3, h4) {
+    :is(h2, h3) {
       @include shadow(0.25rem);
       background-color: var(--highlight-background);
       max-width: max-content;
@@ -422,6 +422,16 @@ article {
 
       a {
         color: inherit;
+        text-decoration: inherit;
+      }
+    }
+
+    h4 {
+      font-weight: bold;
+      --flow-space: var(--space-m-em);
+      font-size: var(--step-0);
+
+      a {
         text-decoration: inherit;
       }
     }

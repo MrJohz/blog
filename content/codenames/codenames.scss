@@ -19,6 +19,13 @@
   }
 }
 
+#codenames-header {
+  display: flex;
+  & > button {
+    margin-left: auto;
+  }
+}
+
 #codenames {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
