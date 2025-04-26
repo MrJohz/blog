@@ -12,7 +12,7 @@ stylesheets = ["codenames.scss"]
 </noscript>
 
 <div id="codenames-header">
-  <span>You are player <span id="side"></span>.</span>
+  <span>You are player <span id="side"></span>.  See <a href="#instructions">below</a> for instructions.</span>
   <button id="new-game">New Game</button>
 </div>
 
@@ -23,7 +23,8 @@ stylesheets = ["codenames.scss"]
 If you haven't done so already, send another player the following link (or use the QR code) to show them the other side of this key card.
 
 <div class="share-link-row">
-  <input id="share-link"> <button id="copy-share-link">Copy</button>
+  <input readonly id="share-link">
+  <button id="copy-share-link">Copy</button>
   <details id="share-qr-container">
     <summary class="button">QR Code</summary>
     <div id="share-qr"></div>
@@ -49,4 +50,7 @@ Use this page to play Codenames Duet using an existing Codenames or Codenames: P
 3. Both players can now use the key card on their device to play the game. See the official instructions for the game for more information.
 4. When the game is finished, both players can press the "New Game" button to start a new game. This game will be the same for both players.
 
-**Important**: Both players should keep their devices in the same orientation, otherwise the cards will not work.
+## Attributions, Licenses, and Credits
+
+- Codenames is created by [Czech Games](https://www.czechgames.com/), and all credit for the game and design goes to them.
+- [QRCode.js](https://github.com/oelna/qrcodejs) is used to generate the QR code. It is used under the [MIT license](https://github.com/oelna/qrcodejs/blob/a669eba507133ce5ccdf78d2b8b609b335d81518/LICENSE).

@@ -28,6 +28,10 @@ button,
   cursor: pointer;
   box-shadow: 1px 1px 4px 0px var(--shadow-color),
     2px 2px 2px 0px var(--shadow-color);
+
+  &:hover {
+    background-color: var(--link-deco-color);
+  }
 }
 
 input {
