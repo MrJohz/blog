@@ -1,6 +1,6 @@
 +++
 title = "This Overly Long Variable Name Could Have Been a Comment"
-date = 2025-07-02
+date = 2025-07-01
 tags = ["programming", "tips"]
 slug = "names-vs-comments"
 [params.cover]
