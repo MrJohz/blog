@@ -85,7 +85,7 @@
           {{ if (not (index . "hidden")) }}
           <li class="discussion-link">
             <a href="{{ index . "url" }}"><strong>{{ index . "title" }}</strong></a> <em>({{ humanize (index . "timestamp").Day }} {{ index . "timestamp" | time.Format "January 2006"}})</em> on {{ index . "site" }}
-            <em>({{ index . "score" }} points • {{ index . "comment_count"}} comments)</em>
+            <em>({{ index . "comment_count"}} comments)</em>
           </li>
           {{ end }}
         {{ end }}

@@ -4,7 +4,6 @@ url = "https://www.reddit.com/r/javascript/comments/1h6ft6y/new_disposable_apis_
 site = "Reddit (/r/javascript)"
 timestamp = 2024-12-04T13:20:17.000Z
 comment_count = 13
-score = 24
 
 [[discussions]]
 title = "New Disposable APIs in Javascript | Jonathan's Blog"
@@ -12,7 +11,6 @@ url = "https://www.reddit.com/r/ThePrimeagenReact/comments/1cq7lth/new_disposabl
 site = "Reddit (/r/ThePrimeagenReact)"
 timestamp = 2024-05-12T13:13:59.000Z
 comment_count = 0
-score = 1
 hidden = true
 
 [[discussions]]
@@ -21,7 +19,6 @@ url = "https://news.ycombinator.com/item?id=40275139"
 site = "Hacker News"
 timestamp = 2024-05-06T14:31:28.000Z
 comment_count = 0
-score = 2
 hidden = true
 
 [[discussions]]
@@ -30,7 +27,6 @@ url = "https://www.reddit.com/r/programming/comments/1clc3pd/the_new_disposable_
 site = "Reddit (/r/programming)"
 timestamp = 2024-05-06T06:13:28.000Z
 comment_count = 26
-score = 105
 
 [[discussions]]
 title = "The new disposable APIs in Javascript"

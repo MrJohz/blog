@@ -16,7 +16,6 @@ type DiscussionsToml = {
   site: string;
   timestamp: Date;
   comment_count: number;
-  score: number;
 };
 
 type ScraperResult = { slug: string; toml: DiscussionsToml };
@@ -25,7 +24,6 @@ type LobstersResponse = {
   url: string;
   title: string;
   created_at: string;
-  score: number;
   comment_count: number;
   comments_url: string;
 };
@@ -35,7 +33,6 @@ type HnResponse = {
   created_at: string;
   title: string;
   story_id: number;
-  points: number;
   url: string;
 };
 
@@ -47,7 +44,6 @@ type RedditResponse = {
     title: string;
     num_comments: number;
     url: string;
-    score: number;
   };
 };
 
@@ -57,7 +53,6 @@ type RawDiscussionsToml = {
   site: string;
   timestamp: TOML.TomlDate;
   comment_count: number;
-  score: number;
 };
 
 async function scrapeLobsters(): Promise<ScraperResult[]> {
@@ -90,7 +85,6 @@ async function scrapeLobsters(): Promise<ScraperResult[]> {
         site: "Lobsters",
         timestamp: new Date(each.created_at),
         comment_count: each.comment_count,
-        score: each.score,
       },
     };
   });
@@ -131,7 +125,6 @@ async function scrapeHackerNews(): Promise<ScraperResult[]> {
         site: "Hacker News",
         timestamp: new Date(each.created_at),
         comment_count: each.num_comments,
-        score: each.points,
       },
     };
   });
@@ -194,7 +187,6 @@ async function scrapeRedditOnce(
         site: `Reddit (/r/${each.data.subreddit})`,
         timestamp: new Date(each.data.created_utc * 1000),
         comment_count: each.data.num_comments,
-        score: each.data.score,
       },
     };
   });
@@ -221,7 +213,7 @@ async function scrapeReddit(): Promise<ScraperResult[]> {
 
   const results = new Map<
     string,
-    { entry: ScraperResult; scores: number[]; comments: number[] }
+    { entry: ScraperResult; comments: number[] }
   >();
 
   let index = 0;
@@ -231,14 +223,12 @@ async function scrapeReddit(): Promise<ScraperResult[]> {
       if (!prev) {
         results.set(entry.toml.url, {
           entry,
-          scores: [entry.toml.score],
           comments: [entry.toml.comment_count],
         });
         continue;
       }
 
       prev.comments.push(entry.toml.comment_count);
-      prev.scores.push(entry.toml.score);
     }
 
     index += 1;
@@ -247,9 +237,6 @@ async function scrapeReddit(): Promise<ScraperResult[]> {
   return Array.from(results.values(), (entry) => {
     entry.entry.toml.comment_count = Math.floor(
       entry.comments.reduce((a, c) => a + c, 0) / entry.comments.length
-    );
-    entry.entry.toml.score = Math.floor(
-      entry.scores.reduce((a, s) => a + s, 0) / entry.scores.length
     );
     return entry.entry;
   });
@@ -344,7 +331,7 @@ async function loadExistingDiscussionLinks() {
 
 function shouldHide(record: DiscussionsToml) {
   if (+record.timestamp > +new Date() - 48 * 60 * 60 * 1000) return false;
-  return record.score < 2 || record.comment_count < 2;
+  return record.comment_count <= 1;
 }
 
 function roughlyEqual(scoreA: number, scoreB: number): boolean {
@@ -374,16 +361,15 @@ function mergeRecords(
       if (existing.url !== record.toml.url) continue;
       found = true;
 
-      // Reddit adds random fuzz to vote counts, which means that the `score` field
+      // Reddit adds random fuzz to vote counts, which means that the `comment_count` field
       // isn't stable between runs.  Therefore, we only update the record if an attribute
-      // other than the score has changed, or if the score has changed enough to make
-      // a difference.
+      // other than the comment_count has changed, or if the comment_count has changed enough
+      // to make a difference.
       const changed =
         !roughlyEqual(existing.comment_count, record.toml.comment_count) ||
         existing.hidden !== record.toml.hidden ||
         +existing.timestamp !== +record.toml.timestamp ||
-        existing.title !== record.toml.title ||
-        !roughlyEqual(existing.score, record.toml.score);
+        existing.title !== record.toml.title;
       if (!changed) continue;
 
       Object.assign(existing, record.toml);

@@ -4,7 +4,6 @@ url = "https://news.ycombinator.com/item?id=42422659"
 site = "Hacker News"
 timestamp = 2024-12-15T10:19:07.000Z
 comment_count = 0
-score = 6
 hidden = true
 
 [[discussions]]
@@ -13,7 +12,6 @@ url = "https://news.ycombinator.com/item?id=42415728"
 site = "Hacker News"
 timestamp = 2024-12-14T09:18:33.000Z
 comment_count = 0
-score = 3
 hidden = true
 
 [[discussions]]
@@ -22,7 +20,6 @@ url = "https://news.ycombinator.com/item?id=42410531"
 site = "Hacker News"
 timestamp = 2024-12-13T17:34:30.000Z
 comment_count = 0
-score = 2
 hidden = true
 
 [[discussions]]
@@ -31,7 +28,6 @@ url = "https://lobste.rs/s/i1xzas/helix_why_how_i_use_it"
 site = "Lobsters"
 timestamp = 2024-12-13T17:33:29.000Z
 comment_count = 41
-score = 52
 
 [[discussions]]
 title = "I wrote a bit about Helix and how/why I've been using it"
@@ -39,4 +35,3 @@ url = "https://www.reddit.com/r/HelixEditor/comments/1hctxlj/i_wrote_a_bit_about
 site = "Reddit (/r/HelixEditor)"
 timestamp = 2024-12-12T20:03:50.000Z
 comment_count = 14
-score = 72

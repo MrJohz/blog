@@ -42,6 +42,6 @@ You also have the right to complain to a data protection supervisory authority a
 
 ## Changes to this privacy policy
 
-I reserve the right to amend this privacy policy at any time. You can request the current version of this privacy policy at any time or find it at [Data Protection](https://jonathan-frere.com/privacy/) (<https://jonathan-frere.com/privacy/>).
+I reserve the right to amend this privacy policy at any time. You can request the current version of this privacy policy at any time or find it at [the current URL](https://jonathan-frere.com/privacy/) (<https://jonathan-frere.com/privacy/>).
 
 Last updated: March 2025

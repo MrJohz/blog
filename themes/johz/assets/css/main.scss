@@ -29,52 +29,24 @@
 }
 
 :root {
-  // yes, there's a bunch of duplication here that we would like to avoid
-  // but it turns out to be surprisingly difficult to write a selector that:
-  // * works on old browsers (&, &:has(...)) does not work on older browsers, even
-  //   though they understand the first part of the selector
-  // * covers both the body.dark case and the prefers-color-scheme: dark case
-  // so for the time being, we just duplicate everything
+  color-scheme: light dark;
 
-  --main-background: #f3f8ff;
-  --highlight-background: #afc1d6;
-  --text-color: #092327;
-  --article-color: #cef9f2;
-  --link-deco-color: #ab92bf;
-  --text-highlight-background: #fff5;
-  color-scheme: light;
-
-  &:has(body.light) {
-    --main-background: #f3f8ff;
-    --highlight-background: #afc1d6;
-    --text-color: #092327;
-    --article-color: #cef9f2;
-    --link-deco-color: #ab92bf;
-    --text-highlight-background: #fff5;
-    color-scheme: light;
-  }
-
-  &:has(body.dark) {
-    --main-background: #15191a;
-    --highlight-background: #095348;
-    --text-color: #e7eee5;
-    --article-color: #202b2c;
-    --link-deco-color: #6b0a34;
-    --text-highlight-background: #fff2;
-    color-scheme: dark;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    --main-background: #15191a;
-    --highlight-background: #095348;
-    --text-color: #e7eee5;
-    --article-color: #202b2c;
-    --link-deco-color: #6b0a34;
-    --text-highlight-background: #fff2;
-    color-scheme: dark;
-  }
+  --main-background: light-dark(#f3f8ff, #15191a);
+  --highlight-background: light-dark(#afc1d6, #095348);
+  --text-color: light-dark(#092327, #e7eee5);
+  --article-color: light-dark(#cef9f2, #202b2c);
+  --link-deco-color: light-dark(#ab92bf, #6b0a34);
+  --text-highlight-background: light-dark(#fff5, #fff2);
 
   --shadow-color: rgba(0, 0, 0, 0.4);
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+.light {
+  color-scheme: light;
 }
 
 /* @link https://utopia.fyi/space/calculator?c=320,16,1.2,1240,18,1.25,5,2,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l&g=s,l,xl,12 */
