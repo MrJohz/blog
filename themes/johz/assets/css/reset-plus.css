@@ -19,7 +19,7 @@ a {
   text-decoration: unset;
 }
 
-button,
+button:not(.linkbtn),
 .button {
   background-color: var(--highlight-background);
   border: none;
