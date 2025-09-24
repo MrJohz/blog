@@ -10,7 +10,7 @@ title = "Storing Unwise Amounts of Data in JavaScript Bigints"
 url = "https://www.reddit.com/r/programming/comments/1nny30x/storing_unwise_amounts_of_data_in_javascript/"
 site = "Reddit (/r/programming)"
 timestamp = 2025-09-22T20:45:36.000Z
-comment_count = 0
+comment_count = 1
 
 [[discussions]]
 title = "Storing Unwise Amounts of Data in JavaScript Bigints"
@@ -18,6 +18,7 @@ url = "https://news.ycombinator.com/item?id=45325610"
 site = "Hacker News"
 timestamp = 2025-09-21T18:58:51.000Z
 comment_count = 0
+hidden = true
 
 [[discussions]]
 title = "Storing Unwise Amounts of Data in JavaScript Bigints"
