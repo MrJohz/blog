@@ -4,6 +4,7 @@ url = "https://news.ycombinator.com/item?id=45343012"
 site = "Hacker News"
 timestamp = 2025-09-23T05:03:44.000Z
 comment_count = 0
+hidden = true
 
 [[discussions]]
 title = "Storing Unwise Amounts of Data in JavaScript Bigints"
