@@ -5,13 +5,11 @@ tags = ["programming", "tips", "javascript"]
 slug = "bigints-are-cool"
 [params.cover]
 name = "Study Head of a Boy"
-artist = " Alice Pike Barney"
+artist = "Alice Pike Barney"
 # date = ""
 institution = "Smithsonian American Art Museum"
 institution-url = "https://americanart.si.edu/"
 +++
-
-# Storing Unwise Amounts of Data in JavaScript Bigints
 
 This is a short note to document storing data in JS's `bigint` type.  I tried this out in a project recently, and it's not obviously a terrible idea, as long as you take into account all the caveats that make it only useful for very specific cases.
 
