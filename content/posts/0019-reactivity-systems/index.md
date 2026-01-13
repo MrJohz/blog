@@ -95,3 +95,21 @@ The first problem is wasted work again. If cell A1 references B8, and cell A2 _a
 The result is surprisingly efficient. We can even trade off storage space for performance — if a node is cheap to calculate, or only rarely accessed, we might prefer not to cache that node, and instead recalculate it every time.
 
 However, there is a second problem to deal with. Right now, we don't know which cells are actually going to change, so we're updating all of them. Ideally, we'd only update the cells that change, and leave the rest alone. Unfortunately, this turns out to be surprisingly hard.
+
+To understand why, let's look at React. React uses pull-based reactivity: each component has some state associated with it [^react-state]. The entry point to a React app is a single top-level component that recursively calls all other child components, and each component also fetches that component's state. Whenever state is updated somewhere in the tree, React schedules the top-level component to rerender, recursively calling all other child components again, and in turn allowing each component to access to the new state.
+
+[^react-state]: This is more obvious with old-school class-based components, but the same is true for hooks - each call to `useState` in a component body tells React to add another node to the component's internal state (or fetch that node on rerender).
+
+At least in theory! In practice, React doesn't rerender the entire application, it only renders certain subtrees. If you update a component's state, that component and all its children update, but any parent components don't update.
+
+This works, because React knows that even though the parent component calls each child component, the structure of the VDOM means that each child component forms its own isolated tree. This allows React to schedule an update to only one specific subtree, rather than updating everything. 
+
+But even this is more work than necessary - whenever a parent node is updated, all of its children also need to be fetched and rerendered.  We looked at reducing the impact of this through the use of generation counters earlier, but that only helps when we want to read the same node several times during the same rerender. But here, React only calls each node once per rerender. React's solution is memoisation: if the arguments passed to a component haven't changed, and the state attached to that component or its children hasn't changed, then the child component won't be rerendered [^memoisation-caveats].
+
+[^memoisation-caveats]: There is an additional caveat: the child component must be marked as memo-able using the React.memo wrapper, although the new compiler apparently handles this automatically these days.
+
+This again works because the output of a React component is a specific data structure that ensures that parent components can't be affected by child components. It also requires that the child components be pure (or at least that they do any impure work inside of escape hatches like `useEffect`). This sort of caching isn't a general solution, but depending on the exact nature of the problem, caching can make pull-based reactivity much more efficient than it first appears. 
+
+And this is useful, because pull-based reactivity has its advantages. Firstly, it handles dynamic dependencies just fine - because each dependency is just a function call, it's really easy[^react-snark] to conditionally depend on some piece of state. Secondly, pull-based reactivity is by its nature glitchless. Because the entire tree updates at once, it's only possible to observe the entire tree in a single consistent state.
+
+[^react-snark] unless you're writing React and forget what a closure is...
