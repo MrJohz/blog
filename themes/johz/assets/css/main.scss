@@ -266,6 +266,15 @@ article {
       }
     }
 
+    img {
+      margin-block-start: var(--space-s);
+      max-width: 100%;
+    }
+
+    picture {
+      margin-block-start: 0;
+    }
+
     blockquote {
       position: relative;
       margin-inline: 0em;

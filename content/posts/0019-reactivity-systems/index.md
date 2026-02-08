@@ -12,15 +12,21 @@ institution = "Smithsonian American Art Museum"
 institution-url = "https://americanart.si.edu/"
 +++
 
-# Pushing and Pulling: Three Reactivity Algorithms
-
 It's looking like I'm going to need to build a reactive engine for work, so I'm going to prepare for that by writing down what I know about them. I want to look at three ways of building reactive engines: push reactivity, pull reactivity, and the hybrid push/pull combination that is used in a bunch of web frameworks.
 
 ## The Problem Statement
 
 The simplest way to visualise reactivity, in my opinion, is as a spreadsheet. You have a series of input cells, containing your initial data, and a series of output cells containing the final results. In between are many more cells containing intermediate computations that need to be done to figure out the final results.
 
-[[diagram]]
+<picture>
+    <source media="(prefers-color-scheme: dark)"
+                type="image/svg+xml"
+                srcset="./overview-dark.svg">
+    <source media="(prefers-color-scheme: light)"
+                type="image/svg+xml"
+                srcset="./overview.svg">
+    <img src="./overview.svg" alt="A diagram showing an example reactive graph.  There are three input nodes at the top of the graph.  Below that are five nodes for intermediate computations, and below that are four output nodes.  Arrows join various combinations of nodes from top to bottom, indicating the dependencies each node requires." />
+</picture>
 
 When one of the input cells changes, all the cells that depend on it need to react to that change — the aforementioned reactivity. In practice, though, this is the bare minimum requirement. When building reactive systems, there are usually some additional requirements we impose that make the problem harder:
 
@@ -43,7 +49,15 @@ But for the sake of this article, let's assume we need all these things and look
 
 In push-based reactivity, when a node updates, it notifies (and updates) all of its dependents. We can visualise this as the update being pushed down the chain of dependencies, until it reaches the final node to be updated.
 
-[[diagram]]
+<picture>
+    <source media="(prefers-color-scheme: dark)"
+                type="image/svg+xml"
+                srcset="./push-dark.svg">
+    <source media="(prefers-color-scheme: light)"
+                type="image/svg+xml"
+                srcset="./push.svg">
+    <img src="./push.svg" alt="A diagram showing a different example reactive graph, running left to right.  There are two input nodes, one of which is marked with an asterisk.  Arrows run from these input nodes through various intermediate computation nodes into output nodes.  From the node with an asterisk, all arrows are highlighted with an additional arrow indicating the direction of the pushed updates (i.e. from the input towards the outputs)." />
+</picture>
 
 This is a simple, and therefore very common approach. Generally, most event systems, streams, and observables follow this rough pattern. Even promises/futures/async/await can be thought of as a one-time-only push-based reactive tree — each `.then`/`.map`/`await` call creates a listener to the previous step, and then when the initial promise resolves, the update is pushed through the rest of the system.
 
@@ -51,7 +65,15 @@ The single biggest advantage of push-based reactivity is that it is fine-grained
 
 However, push-based systems typically are not particularly efficient, and it's only with additional work that we can fix that. Let's look at an example of a graph that creates unnecessary work.
 
-[[diagram]]
+<picture>
+    <source media="(prefers-color-scheme: dark)"
+                type="image/svg+xml"
+                srcset="./fail-case-dark.svg">
+    <source media="(prefers-color-scheme: light)"
+                type="image/svg+xml"
+                srcset="./fail-case.svg">
+    <img src="./fail-case.svg" alt="A diagram a simple arrangement of four nodes.  On the left is node A.  Two arrows run from node A to nodes B and C respectively.  An additional arrow runs from node C to node B.  Finally, two arrows run from nodes B and C to node D on the right." />
+</picture>
 
 According to our push-based system, we update the first node in our graph (A). This pushes a signal to (A)'s dependents that they should now update. In this case, both (B) and (C) update. However, (B) depends on both (A) and (C), so when (C) updates, (B) needs to update again, and we discard any previous work we've done there. Similarly, based on just a single update to (A), (D) will receive three different signals to update.
 
@@ -80,7 +102,15 @@ The other problem is that in practice, it's surprisingly easy to write code that
 
 If what we've described above is push-based reactivity, we can draw a diagram of everything happening in reverse and call it pull-based reactivity. But that doesn't necessarily give us an intuition for what pull-based reactivity actually is.
 
-[[diagram]]
+<picture>
+    <source media="(prefers-color-scheme: dark)"
+                type="image/svg+xml"
+                srcset="./pull-dark.svg">
+    <source media="(prefers-color-scheme: light)"
+                type="image/svg+xml"
+                srcset="./pull.svg">
+    <img src="./pull.svg" alt="A diagram showing the same graph as in the 'push' example, running left to right.  One of the input nodes is again marked with an asterisk.  There are still arrows connecting the nodes left to right, but now the additional arrows indicating the flow of the pull-based reactivity are running from the right-hand (output) nodes towards the asterisked input node on the left." />
+</picture>
 
 In push-based reactivity, once a node has finished updating, it calls its dependents. In pull-based reactivity, therefore, we would expect each node to call its dependencies. And because you need your dependencies to update before you can update, we can see how this works: each node updates all of its dependencies, and then updates its own value.
 
@@ -104,7 +134,19 @@ I'm not going to go into the depths of caching in pull-based reactivity, but as 
 
 [^multiple-cache-types]: And of course, you can mix and match these caching strategies within the same graph. One node might be entirely trivial to calculate, and not worth caching at all, while another might require the most heavy-duty caching you can get your hands on. Some nodes might need to always be up-to-date, but maybe others can take a stale-while-revalidate approach (being wary of glitches in that case!).
 
-However, there is a second problem to deal with. Right now, we don't know which cells are actually going to change, so we're updating all of them. Ideally, we'd only update the cells that change, and leave the rest alone. Unfortunately, this turns out to be surprisingly hard.
+However, there is a second problem to deal with. Right now, we don't know which cells are actually going to change, so we're updating all of them. The actual pull-reactivity diagram probably looks something more like this:
+
+<picture>
+    <source media="(prefers-color-scheme: dark)"
+                type="image/svg+xml"
+                srcset="./pull-corrected-dark.svg">
+    <source media="(prefers-color-scheme: light)"
+                type="image/svg+xml"
+                srcset="./pull-corrected.svg">
+    <img src="./pull-corrected.svg" alt="A diagram showing the same graph as in the 'push' example, running left to right.  One of the input nodes is again marked with an asterisk.  There are still arrows connecting the nodes left to right, but now the additional arrows indicating the flow of the pull-based reactivity are running from the right-hand (output) nodes towards the asterisked input node on the left." />
+</picture>
+
+Ideally, we'd only update the cells that change, and leave the rest alone. Unfortunately, this turns out to be surprisingly hard.
 
 We can change the problem a bit. React, for example, uses a pull-based reactivity system, but can isolate certain components in the rendered tree and say "only this component and all its children should update". I want to look a bit more into how that works in a future blog post, but the main idea is that the VDOM structure returned by components ensures that a dependent node (i.e. a child component) can only affect its parent in limited ways.
 
