@@ -39,7 +39,7 @@ The first two requirements ("Efficient" and "Fine-grained") are important for pe
 
 The third requirement ("Glitchless") is important for correctness. We don't want intermediate states to be observable — if this were possible, then we can end up with invalid states. Consider two neighbouring cells, one that contains a country's ISO country code (UK, DE, BE, etc), and another that contains the full name of that country. We don't want to be able to observe the state where the two cells are out-of-sync with each other.
 
-The fourth requirement ("Dynamic") is ensures that we only create dependencies when they are actually needed. This is easiest to see with conditional formulas, so something like `IF(<condition>, slow_calculation(B1))`. If the condition is true, this formula returns the value of (and therefore depends on) the cell B1. But if the condition is false, the formula returns nothing — and if B1 changes, this cell should not be updated. This is a dynamic dependency — the dependency only exists if `<condition>` is true.
+The fourth requirement ("Dynamic") ensures that we only create dependencies when they are actually needed. This is easiest to see with conditional formulas, so something like `IF(<condition>, slow_calculation(B1))`. If the condition is true, this formula returns the value of (and therefore depends on) the cell B1. But if the condition is false, the formula returns nothing — and if B1 changes, this cell should not be updated. This is a dynamic dependency — the dependency only exists if `<condition>` is true.
 
 These requirements will hopefully become more clear as we start trying out different algorithms, and seeing examples of their successes and failure modes. Before we get too deep in the weeds, though, I want to emphasise that not all reactive systems are the same, and some don't need all of these requirements. For example, lots of simple reactive systems work just fine with static dependencies only, trading off some efficiency wins for implementation simplicity. Similarly, glitches are only important if they are actually observed, so some reactive systems will be glitch-y by default, but provide tools for syncing nodes together if the user actually needs them to be in sync.
 
@@ -88,7 +88,7 @@ In this version, each node only updates once. We could do this, because we could
 
 Part of the value of push-based systems is that each node only needs to keep track of its own dependencies and dependents, which makes analysing each node locally easy, but analysing the system as a whole hard. In the extreme case, you might dynamically create and destroy nodes in the tree depending on previous values — this doesn't make sense for our spreadsheet analogy, but is essentially what's happening with RxJS's `switchMap` operator. Essentially, the more dynamism we want in our system, the harder it is to achieve efficient updates, and the more we want efficient updates, the more we need to specify our dependency graphs up-front.
 
-[^topological-sort]: This is known as a topological sort — a way of sorting a graph such that we visit all nodes exactly once, and we always visit a node's dependencies before we visit this graph.
+[^topological-sort]: This is known as a topological sort — a way of sorting a graph such that we visit all nodes exactly once, and we always visit a node's dependencies before we visit the node itself.
 
 The other challenge for push-based reactivity is glitches. As I mentioned earlier, glitches are when we can observe two nodes being out of sync with each other. In push-based reactivity, this is very easy to achieve — any code that runs after the first node has been updated, but before the final node has been updated has the opportunity to "see" glitches.
 
@@ -148,7 +148,7 @@ However, there is a second problem to deal with. Right now, we don't know which 
 
 Ideally, we'd only update the cells that change, and leave the rest alone. Unfortunately, this turns out to be surprisingly hard.
 
-We can change the problem a bit. React, for example, uses a pull-based reactivity system, but can isolate certain components in the rendered tree and say "only this component and all its children should update". I want to look a bit more into how that works in a future blog post, but the main idea is that the VDOM structure returned by components ensures that a dependent node (i.e. a child component) can only affect its parent in limited ways.
+We can change the problem a bit. React, for example, uses a pull-based reactivity system, but can isolate certain components in the rendered tree and say "only this component and all its children should update".  This means that instead of having to re-render the entire world, it only needs to re-render a given component and its children.  The mechanism by this works is interesting, but I'll explore that in a follow-up post because this one is already getting too long!
 
 In general, though, we can't solve this problem with pull-only reactivity. The input node that gets updated just doesn't have the information to tell us what its dependants are, and therefore what output nodes are eventually going to need to change. But we could try a different approach, where we do try and store that information. A combination of pushing and pulling — some kind of ~~suicide squad~~ push-pull reactivity?
 
@@ -205,7 +205,7 @@ Let's look at our requirements again, and see how well push-pull reactivity does
 - Efficiency: When we push, we only visit each node once. When we pull, we again only visit each node once. This is about as efficient as things can get.
 - Fine-grained: When we push, we make a list of exactly the nodes that need to be updated. When we pull, we only recalculate those nodes and leave all the others alone.
 - Glitchless: Because the recalculation happens during the pull step, we share the same benefits of pull-based reactivity here, which means that if we can guarantee that we don't change any input during the pull step, then the calculation must be glitchless.
-- Dynamic: Pulling is always dynamic, as we discussed before. But because we don't need any global ordering of nodes, we can make the push step dynamic as well, by making it easy to register and unregister dependencies on different nodes as needed.
+- Dynamic: Pulling is always dynamic, as we discussed before. But because we don't need any global ordering of nodes, it's very easy to have a dynamic push step as well, as each node only needs to keep a list of its upstream and downstream immediate neighbours.  This structure is typically much easier to manipulate than maintaining a globally ordered list (and a lot cheaper than performing a fresh topological sort every time we want to evaluate nodes).
 
 Nice!
 
