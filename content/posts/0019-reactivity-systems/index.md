@@ -148,7 +148,7 @@ However, there is a second problem to deal with. Right now, we don't know which 
 
 Ideally, we'd only update the cells that change, and leave the rest alone. Unfortunately, this turns out to be surprisingly hard.
 
-We can change the problem a bit. React, for example, uses a pull-based reactivity system, but can isolate certain components in the rendered tree and say "only this component and all its children should update".  This means that instead of having to re-render the entire world, it only needs to re-render a given component and its children.  The mechanism by this works is interesting, but I'll explore that in a follow-up post because this one is already getting too long!
+We can change the problem a bit. React, for example, uses a pull-based reactivity system, but can isolate certain components in the rendered tree and say "only this component and all its children should update".  This means that instead of having to re-render the entire world, it only needs to re-render a given component and its children.  The mechanism by which this works is interesting, but I'll explore that in a follow-up post because this one is already getting too long!
 
 In general, though, we can't solve this problem with pull-only reactivity. The input node that gets updated just doesn't have the information to tell us what its dependants are, and therefore what output nodes are eventually going to need to change. But we could try a different approach, where we do try and store that information. A combination of pushing and pulling — some kind of ~~suicide squad~~ push-pull reactivity?
 
