@@ -5,11 +5,11 @@ tags = ["programming", "design-patterns", "reactivity"]
 slug = "reactivity-algorithms"
 draft = true
 [params.cover]
-name = "No. 2"
-artist = "Will Henry Stevens"
-date = "1939"
-institution = "Smithsonian American Art Museum"
-institution-url = "https://americanart.si.edu/"
+name = "Rain, Steam and Speed"
+artist = "J. M. W. Turner"
+date = "1844"
+institution = "National Gallery"
+institution-url = "https://www.nationalgallery.org.uk/"
 +++
 
 It's looking like I'm going to need to build a reactive engine for work, so I'm going to prepare for that by writing down what I know about them. I want to look at three ways of building reactive engines: push reactivity, pull reactivity, and the hybrid push/pull combination that is used in a bunch of web frameworks.
