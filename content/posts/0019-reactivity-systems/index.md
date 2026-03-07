@@ -158,7 +158,15 @@ Push-pull reactivity is so named because it does both things: first we push, and
 
 Let's start with pushing. Consider a tree of nodes. If we update one of the input nodes, our goal now is to find out which child (and output) nodes need to be updated. We're not actually going to do the updating, we're just going to find out which ones need updating.
 
-[[diagram]]
+<picture>
+    <source media="(prefers-color-scheme: dark)"
+                type="image/svg+xml"
+                srcset="./push-pull-dark.svg">
+    <source media="(prefers-color-scheme: light)"
+                type="image/svg+xml"
+                srcset="./push-pull.svg">
+    <img src="./push-pull.svg" alt="A diagram showing the same graph as in the 'push' and 'pull' examples, running left to right.  Arrows run from the asterisked input node on the left to the downstream nodes on the right.  Each of the downstream nodes is now also marked with an asterisk." />
+</picture>
 
 We can do this by adding a boolean `dirty` flag to each node. If it's set to true, then this is a node that needs to be recalculated. Otherwise, it's up-to-date. Let's start with these flags all set to false — we have an up-to-date tree. Now, when we update the input node, we can iterate over all the children of that node, and follow a simple algorithm:
 
@@ -173,7 +181,15 @@ Eventually, we'll have a tree with mixed dirty and clean nodes, where only the d
 
 [^try-it-out]: If you're not convinced by this, try it out. Use the diagram from the push-based reactivity section and try out the dirty algorithm in any order you like. You can even try out the difference between depth-first and breadth-first versions of the algorithm — it'll change the order of the nodes you visit, but you'll still visit all of them exactly once.
 
-[[diagram]]
+<picture>
+    <source media="(prefers-color-scheme: dark)"
+                type="image/svg+xml"
+                srcset="./push-pull-2-dark.svg">
+    <source media="(prefers-color-scheme: light)"
+                type="image/svg+xml"
+                srcset="./push-pull-2.svg">
+    <img src="./push-pull-2.svg" alt="The same diagram as before with the additional asterisks from the push part of the push-pull algorithm, but now the arrows indicating the flow of the algorithm are reversed, going from right to left.  The arrows only visit the nodes with asterisks (the dirty nodes) and don't touch any of the other nodes." />
+</picture>
 
 Now let's try pulling. Last time, one of the issues with pull-based reactivity was that we didn't know which nodes needed to be updated. But now we do know that — any dirty output node needs to be updated. We even made a list of these nodes while we were marking the nodes as dirty!
 
