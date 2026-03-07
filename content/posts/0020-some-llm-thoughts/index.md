@@ -27,8 +27,20 @@ When I got back to work, I was excited to try out this new "agentic" thing I'd b
 
 I did a course in Natural Language Processing in Uni, and it was disappointing. We spent ages learning Prolog so we could construct syntax trees for English expressions, and then explored how English grammar worked so that we could break it down properly. Then the final lecture was just a list of ambiguous cases that could never be parsed using this approach, and which meant none of techniques we'd learned were particularly useful in the end. The final exam was mostly just "pretend you're a Prolog interpreter and draw out all the logical steps for this complicated program".
 
-In that context, LLMs are amazing. They can not only take natural language inputs and respond to them in logical ways, but they can also convert it to structured data. An LLM can take a question like "where's the train station?" and figure out what actions need to take place to produce an answer. If you're building a navigation tool, you don't need to write down in advance every possible way that a human might ask for directions (c.f. [Alexa's skills system](https://developer.amazon.com/en-US/docs/alexa/custom-skills/create-intents-utterances-and-slots.html#create-intent)), the LLM just "understands" what you want.
+In that context, LLMs are amazing. They can not only take natural language inputs and respond to them in logical ways, but they can also convert it to structured data. An LLM can take a question like "where's the train station?" and figure out what actions need to take place to produce an answer. If you're building a navigation tool, you don't need to write down in advance every possible way that a human might ask for directions (c.f. [Alexa's skills system](https://developer.amazon.com/en-US/docs/alexa/custom-skills/create-intents-utterances-and-slots.html#create-intent)), because all of that information — the entirety of "how language works" — is already embedded in the LLM.
 
-## Usefulness
+I think this is an underrated facet of LLMs.  Leave aside questions of whether LLMs can code or not, or whether the information they provide is accurate — I have never had an LLM fail to understand me.  Fail to give me the right answer, sure, but fail to interpret my words grammatically, even if what I've written is littered with spelling mistakes?  Never.  It feels kind of crazy that that's something we can just take for granted.
 
-One of the things I use LLMs for regularly is understanding an existing codebase. For that
+## Searching
+
+One of the things I use LLMs for regularly is understanding an existing codebase. For example, a project I work on ran into performance issues, and I could see what was wrong, but I couldn't figure out a good way of solving it.  So I figured I could see how existing codebases worked.
+
+My work pays for a GitHub Copilot subscription, which integrates nicely with GitHub's codespaces feature.  I could open a project's GitHub page, ask a few questions, and very quickly find the data structure that the project was using that turned my O(n^2) computations into O(log(N)) ones.  Copilot was able to spit out the exact location where the data structure was used, and explain in a fair amount of detail how it worked.
+
+This kind of search is quite incredible.  Google is great if you want 
+
+## Dependency
+
+One of the things that is so unique about software development, compared to other engineering disciplines, is that it's typically been so cheap to start.  The one upfront cost is a computer, but these days you probably already have one of those, and there's a long history of cheaper educational devices like the Raspberry Pi, or initiatives to get computers into the school as with the BBC Micro.  Beyond that, you can run a free compiler on your free operating system, edit files with your free IDE, look up documentation with your free browser, and so on.
+
+One of my biggest worries as the use of LLMs grows is that they are — almost necessarily, at least at the moment — subscription-based tools hosted elsewhere.  There are models that can be run on your computer, but they tend to be much 
