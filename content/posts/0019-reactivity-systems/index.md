@@ -3,7 +3,6 @@ title = "Pushing and Pulling: Three Reactivity Algorithms"
 date = 2026-03-06
 tags = ["programming", "design-patterns", "reactivity"]
 slug = "reactivity-algorithms"
-draft = true
 [params.cover]
 name = "Rain, Steam and Speed"
 artist = "J. M. W. Turner"
