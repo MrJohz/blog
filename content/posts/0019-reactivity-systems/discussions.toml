@@ -1,4 +1,11 @@
 [[discussions]]
+title = "Pushing and Pulling: Three Reactivity Algorithms"
+url = "https://news.ycombinator.com/item?id=47299763"
+site = "Hacker News"
+timestamp = 2026-03-08T18:33:54.000Z
+comment_count = 0
+
+[[discussions]]
 title = "Pushing and pulling: three reactivity algorithms"
 url = "https://news.ycombinator.com/item?id=47295924"
 site = "Hacker News"
@@ -6,11 +13,11 @@ timestamp = 2026-03-08T09:42:04.000Z
 comment_count = 0
 
 [[discussions]]
-title = "Pushing and Pulling: Three Reactivity Algorithms"
+title = "Pushing and Pulling: Three reactivity algorithms"
 url = "https://news.ycombinator.com/item?id=47293195"
 site = "Hacker News"
 timestamp = 2026-03-08T00:57:57.000Z
-comment_count = 0
+comment_count = 1
 
 [[discussions]]
 title = "Pushing and Pulling: Three Reactivity Algorithms"
@@ -24,4 +31,4 @@ title = "Pushing and Pulling: Three Reactivity Algorithms"
 url = "https://lobste.rs/s/2zk3oe/pushing_pulling_three_reactivity"
 site = "Lobsters"
 timestamp = 2026-03-07T16:52:29.000Z
-comment_count = 26
+comment_count = 31
