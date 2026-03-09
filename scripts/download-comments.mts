@@ -11,11 +11,13 @@ const STANDARD_HEADERS = {
 
 type DiscussionsToml = {
   title: string;
-  hidden?: boolean;
   url: string;
   site: string;
   timestamp: Date;
   comment_count: number;
+  auto_hidden?: boolean;
+  hidden_override?: boolean;
+  legacy_hidden?: boolean;
 };
 
 type ScraperResult = { slug: string; toml: DiscussionsToml };
@@ -53,7 +55,13 @@ type RawDiscussionsToml = {
   site: string;
   timestamp: TOML.TomlDate;
   comment_count: number;
+  hidden?: boolean;
+  auto_hidden?: boolean;
+  hidden_override?: boolean;
 };
+
+const RECENT_CUTOFF_MS = 48 * 60 * 60 * 1000;
+const INTERESTING_COMMENT_COUNT = 2;
 
 async function scrapeLobsters(): Promise<ScraperResult[]> {
   console.info("Scraping Lobsters");
@@ -307,8 +315,14 @@ async function loadExistingDiscussionLinks() {
           };
           discussions.push(
             ...file.discussions.map((each) => ({
-              ...each,
+              title: each.title,
+              url: each.url,
+              site: each.site,
               timestamp: each.timestamp,
+              comment_count: each.comment_count,
+              auto_hidden: each.auto_hidden,
+              hidden_override: each.hidden_override,
+              legacy_hidden: each.hidden,
             }))
           );
         } catch {}
@@ -329,11 +343,85 @@ async function loadExistingDiscussionLinks() {
   );
 }
 
-function shouldHide(record: DiscussionsToml) {
-  if (+record.timestamp > +new Date() - 48 * 60 * 60 * 1000) return false;
-  return record.comment_count <= 1;
+function isInteresting(record: DiscussionsToml) {
+  return record.comment_count >= INTERESTING_COMMENT_COUNT;
 }
 
+function isRecent(record: DiscussionsToml, now = new Date()) {
+  return +record.timestamp > +now - RECENT_CUTOFF_MS;
+}
+
+function wasAutoHiddenUnderLegacyRule(record: DiscussionsToml, now = new Date()) {
+  return !isRecent(record, now) && record.comment_count <= 1;
+}
+
+function visibleDiscussionUrls(discussions: DiscussionsToml[], now = new Date()) {
+  const visible = new Set<string>();
+  const recentBySite = new Map<string, DiscussionsToml[]>();
+
+  for (const discussion of discussions) {
+    if (!isRecent(discussion, now)) {
+      if (isInteresting(discussion)) visible.add(discussion.url);
+      continue;
+    }
+
+    const siteDiscussions = recentBySite.get(discussion.site);
+    if (siteDiscussions) {
+      siteDiscussions.push(discussion);
+    } else {
+      recentBySite.set(discussion.site, [discussion]);
+    }
+  }
+
+  for (const siteDiscussions of recentBySite.values()) {
+    siteDiscussions.sort((a, b) => +b.timestamp - +a.timestamp);
+
+    if (siteDiscussions.length === 1) {
+      visible.add(siteDiscussions[0].url);
+      continue;
+    }
+
+    const interestingDiscussions = siteDiscussions.filter(isInteresting);
+    if (interestingDiscussions.length > 0) {
+      for (const discussion of interestingDiscussions) {
+        visible.add(discussion.url);
+      }
+      continue;
+    }
+
+    visible.add(siteDiscussions[0].url);
+  }
+
+  return visible;
+}
+
+function updateVisibility(records: Record<string, BlogPost>) {
+  const now = new Date();
+
+  for (const post of Object.values(records)) {
+    for (const discussion of post.discussions) {
+      const previousAutoHidden =
+        discussion.auto_hidden ?? wasAutoHiddenUnderLegacyRule(discussion, now);
+
+      if (
+        discussion.hidden_override == null &&
+        discussion.legacy_hidden != null &&
+        discussion.legacy_hidden !== previousAutoHidden
+      ) {
+        discussion.hidden_override = discussion.legacy_hidden;
+      }
+    }
+
+    const visibleUrls = visibleDiscussionUrls(post.discussions, now);
+
+    for (const discussion of post.discussions) {
+      discussion.auto_hidden = !visibleUrls.has(discussion.url);
+      discussion.legacy_hidden = undefined;
+    }
+  }
+
+  return records;
+}
 function roughlyEqual(scoreA: number, scoreB: number): boolean {
   const diff = Math.abs(scoreA - scoreB);
   const epsilon = Math.min(scoreA, scoreB) * 0.05;
@@ -353,9 +441,6 @@ function mergeRecords(
       continue;
     }
 
-    if (record.toml.hidden == null && shouldHide(record.toml))
-      record.toml.hidden = true;
-
     let found = false;
     for (const existing of existingRecords[record.slug].discussions) {
       if (existing.url !== record.toml.url) continue;
@@ -367,12 +452,16 @@ function mergeRecords(
       // to make a difference.
       const changed =
         !roughlyEqual(existing.comment_count, record.toml.comment_count) ||
-        existing.hidden !== record.toml.hidden ||
         +existing.timestamp !== +record.toml.timestamp ||
-        existing.title !== record.toml.title;
+        existing.title !== record.toml.title ||
+        existing.site !== record.toml.site;
       if (!changed) continue;
 
-      Object.assign(existing, record.toml);
+      existing.title = record.toml.title;
+      existing.url = record.toml.url;
+      existing.site = record.toml.site;
+      existing.timestamp = record.toml.timestamp;
+      existing.comment_count = record.toml.comment_count;
     }
     if (!found) {
       existingRecords[record.slug].discussions.push(record.toml);
@@ -382,7 +471,21 @@ function mergeRecords(
     );
   }
 
-  return existingRecords;
+  return updateVisibility(existingRecords);
+}
+
+function serialiseDiscussion(discussion: DiscussionsToml) {
+  return {
+    title: discussion.title,
+    url: discussion.url,
+    site: discussion.site,
+    timestamp: discussion.timestamp,
+    comment_count: discussion.comment_count,
+    ...(discussion.auto_hidden ? { auto_hidden: true } : {}),
+    ...(discussion.hidden_override != null
+      ? { hidden_override: discussion.hidden_override }
+      : {}),
+  };
 }
 
 async function writeDiscussionLinks(records: Record<string, BlogPost>) {
@@ -394,7 +497,9 @@ async function writeDiscussionLinks(records: Record<string, BlogPost>) {
       );
       await fs.writeFile(
         record.discussionPath,
-        TOML.stringify({ discussions: record.discussions }),
+        TOML.stringify({
+          discussions: record.discussions.map(serialiseDiscussion),
+        }),
         "utf-8"
       );
     })

@@ -82,7 +82,11 @@
         <p><strong>Previous Discussions</strong></p>
         <ul>
         {{ range (index (. | transform.Unmarshal) "discussions") }}
-          {{ if (not (index . "hidden")) }}
+          {{ $shown := not (index . "auto_hidden") }}
+          {{ if eq (printf "%T" (index . "hidden_override")) "bool" }}
+            {{ $shown = not (index . "hidden_override") }}
+          {{ end }}
+          {{ if $shown }}
           <li class="discussion-link">
             <a href="{{ index . "url" }}"><strong>{{ index . "title" }}</strong></a> <em>({{ humanize (index . "timestamp").Day }} {{ index . "timestamp" | time.Format "January 2006"}})</em> on {{ index . "site" }}
             <em>({{ index . "comment_count"}} comments)</em>

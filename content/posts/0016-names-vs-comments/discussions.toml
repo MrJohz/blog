@@ -11,7 +11,7 @@ url = "https://news.ycombinator.com/item?id=44474134"
 site = "Hacker News"
 timestamp = 2025-07-05T17:19:42.000Z
 comment_count = 1
-hidden = true
+auto_hidden = true
 
 [[discussions]]
 title = "Overly Long Variable Name Could Have Been a Comment"

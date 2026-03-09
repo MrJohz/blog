@@ -11,7 +11,7 @@ url = "https://www.reddit.com/r/ThePrimeagenReact/comments/1cq7lth/new_disposabl
 site = "Reddit (/r/ThePrimeagenReact)"
 timestamp = 2024-05-12T13:13:59.000Z
 comment_count = 0
-hidden = true
+auto_hidden = true
 
 [[discussions]]
 title = "New Disposable APIs in JavaScript"
@@ -19,7 +19,7 @@ url = "https://news.ycombinator.com/item?id=40275139"
 site = "Hacker News"
 timestamp = 2024-05-06T14:31:28.000Z
 comment_count = 0
-hidden = true
+auto_hidden = true
 
 [[discussions]]
 title = "The new disposable APIs in Javascript"
@@ -34,4 +34,3 @@ url = "https://www.reddit.com/r/javascript/comments/1cky712/the_new_disposable_a
 site = "Reddit (/r/javascript)"
 timestamp = 2024-05-05T18:43:41.000Z
 comment_count = 27
-score = 117

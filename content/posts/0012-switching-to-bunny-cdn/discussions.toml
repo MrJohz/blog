@@ -4,7 +4,7 @@ url = "https://www.reddit.com/r/hackernews/comments/1jbtjmc/switching_to_bunnycd
 site = "Reddit (/r/hackernews)"
 timestamp = 2025-03-15T12:00:03.000Z
 comment_count = 1
-hidden = true
+auto_hidden = true
 
 [[discussions]]
 title = "Switching to BunnyCDN in Less Than 2 Hours"

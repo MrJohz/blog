@@ -11,7 +11,7 @@ url = "https://news.ycombinator.com/item?id=40779593"
 site = "Hacker News"
 timestamp = 2024-06-24T19:12:58.000Z
 comment_count = 0
-hidden = true
+auto_hidden = true
 
 [[discussions]]
 title = "Why Test?"
