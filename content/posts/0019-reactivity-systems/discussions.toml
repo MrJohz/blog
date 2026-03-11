@@ -4,6 +4,7 @@ url = "https://www.reddit.com/r/programming/comments/1rpd8az/pushing_and_pulling
 site = "Reddit (/r/programming)"
 timestamp = 2026-03-09T21:23:05.000Z
 comment_count = 0
+auto_hidden = true
 
 [[discussions]]
 title = "Pushing and Pulling: Three reactivity algorithms"
