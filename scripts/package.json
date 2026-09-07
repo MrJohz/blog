@@ -6,7 +6,8 @@
   "author": "Jonathan Frere",
   "license": "MPL-2.0",
   "scripts": {
-    "download-comments": "tsx download-comments.mts"
+    "download-comments": "tsx download-comments.mts",
+    "test": "node --import tsx --test download-comments.test.mts"
   },
   "devDependencies": {
     "@types/node": "^20.14.13",

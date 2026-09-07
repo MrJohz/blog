@@ -1,6 +1,7 @@
 import type { Dirent } from "node:fs";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
+import { fileURLToPath } from "node:url";
 import * as TOML from "smol-toml";
 
 const DOMAIN = "jonathan-frere.com";
@@ -15,6 +16,7 @@ type DiscussionsToml = {
   site: string;
   timestamp: Date;
   comment_count: number;
+  counted_comments?: number;
   auto_hidden?: boolean;
   hidden_override?: boolean;
   legacy_hidden?: boolean;
@@ -55,13 +57,20 @@ type RawDiscussionsToml = {
   site: string;
   timestamp: TOML.TomlDate;
   comment_count: number;
+  counted_comments?: number;
   hidden?: boolean;
   auto_hidden?: boolean;
   hidden_override?: boolean;
 };
 
 const RECENT_CUTOFF_MS = 48 * 60 * 60 * 1000;
-const INTERESTING_COMMENT_COUNT = 2;
+const INTERESTING_COMMENT_COUNT = 1;
+const COUNT_CONCURRENCY = 4;
+const BOT_AUTHORS = new Set(["automoderator"]);
+
+export function isBot(author: string | null | undefined) {
+  return author != null && BOT_AUTHORS.has(author.toLowerCase());
+}
 
 async function scrapeLobsters(): Promise<ScraperResult[]> {
   console.info("Scraping Lobsters");
@@ -154,8 +163,12 @@ async function authReddit(): Promise<string> {
   });
 
   const data = await response.json();
+  if (typeof data.access_token !== "string") {
+    throw new Error(`Reddit returned no access token (${response.status})`);
+  }
+
   console.info("Reddit Authorized");
-  return data.access_token;
+  return data.access_token as string;
 }
 
 async function scrapeRedditOnce(
@@ -200,10 +213,11 @@ async function scrapeRedditOnce(
   });
 }
 
-async function scrapeReddit(): Promise<ScraperResult[]> {
+async function scrapeReddit(token: string | null): Promise<ScraperResult[]> {
   console.info("Scraping Reddit");
 
-  const token = await authReddit();
+  if (token == null) throw new Error("Reddit is not authorized");
+
   const scrapes = (
     await Promise.allSettled(
       Array.from({ length: 10 }, (_, i) => scrapeRedditOnce(token, i + 1))
@@ -250,7 +264,7 @@ async function scrapeReddit(): Promise<ScraperResult[]> {
   });
 }
 
-async function scrape() {
+async function scrape(token: string | null) {
   console.info("Scraping Discussion Sites");
   return (
     await Promise.all([
@@ -262,12 +276,247 @@ async function scrape() {
         console.warn("Lobsters scraper failed", err);
         return [];
       }),
-      scrapeReddit().catch((err) => {
+      scrapeReddit(token).catch((err) => {
         console.warn("Reddit scraper failed", err);
         return [];
       }),
     ])
   ).flat();
+}
+
+// [An LLM generated the comments in this section.]
+//
+// The search endpoints used above only report a total comment count, which
+// includes the submitter's own replies, AutoModerator boilerplate, and
+// downvoted comments.  Each site also has a per-thread endpoint that returns
+// the comment list along with the submitter, and the functions below use those
+// to work out how many comments are actual discussion.
+
+type DetailRef =
+  | { kind: "lobsters"; shortId: string }
+  | { kind: "hackernews"; storyId: string }
+  | { kind: "reddit"; id: string };
+
+type LobstersStory = {
+  submitter_user: string;
+  comments: {
+    commenting_user: string;
+    score: number;
+    is_deleted: boolean;
+    is_moderated: boolean;
+  }[];
+};
+
+type HnItem = {
+  type: string;
+  author: string | null;
+  text: string | null;
+  children?: HnItem[];
+};
+
+type RedditListing = {
+  kind: string;
+  data: { children: RedditThing[] };
+};
+
+type RedditThing = {
+  kind: string;
+  data: {
+    author: string;
+    body: string;
+    score: number;
+    score_hidden?: boolean;
+    is_submitter?: boolean;
+    distinguished?: string | null;
+    replies?: RedditListing | "";
+  };
+};
+
+export function detailRefFromUrl(url: string): DetailRef | null {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return null;
+  }
+
+  if (parsed.hostname === "lobste.rs" || parsed.hostname.endsWith(".lobste.rs")) {
+    const match = /^\/s\/([^/]+)/.exec(parsed.pathname);
+    return match ? { kind: "lobsters", shortId: match[1] } : null;
+  }
+
+  if (parsed.hostname.endsWith("news.ycombinator.com")) {
+    const storyId = parsed.searchParams.get("id");
+    return storyId ? { kind: "hackernews", storyId } : null;
+  }
+
+  if (parsed.hostname === "reddit.com" || parsed.hostname.endsWith(".reddit.com")) {
+    const match = /\/comments\/([^/]+)/.exec(parsed.pathname);
+    return match ? { kind: "reddit", id: match[1] } : null;
+  }
+
+  return null;
+}
+
+export function countLobstersComments(story: LobstersStory) {
+  return story.comments.filter(
+    (comment) =>
+      !comment.is_deleted &&
+      !comment.is_moderated &&
+      comment.commenting_user !== story.submitter_user &&
+      !isBot(comment.commenting_user) &&
+      comment.score >= 0
+  ).length;
+}
+
+// Hacker News does not publish per-comment scores — `points` is null on every
+// comment in this endpoint — so the score rule cannot be applied here.  Deleted
+// comments come back with a null author and null text.
+export function countHnComments(story: HnItem) {
+  let count = 0;
+  const queue = [...(story.children ?? [])];
+
+  while (queue.length > 0) {
+    const item = queue.pop()!;
+    queue.push(...(item.children ?? []));
+
+    if (item.type !== "comment") continue;
+    if (item.author == null || item.text == null) continue;
+    if (item.author === story.author) continue;
+    if (isBot(item.author)) continue;
+
+    count += 1;
+  }
+
+  return count;
+}
+
+// `truncated` reports that Reddit replaced part of the tree with a "load more"
+// marker, which means the count is a lower bound.
+export function countRedditComments(listing: RedditListing) {
+  let count = 0;
+  let truncated = false;
+  const queue = [...listing.data.children];
+
+  while (queue.length > 0) {
+    const thing = queue.pop()!;
+    if (thing.kind === "more") {
+      truncated = true;
+      continue;
+    }
+
+    const comment = thing.data;
+    if (comment.replies) queue.push(...comment.replies.data.children);
+
+    if (comment.is_submitter) continue;
+    if (isBot(comment.author)) continue;
+    if (comment.distinguished === "moderator") continue;
+    if (comment.body === "[removed]" || comment.body === "[deleted]") continue;
+    // A hidden score is an unknown score, not a negative one.
+    if (!comment.score_hidden && comment.score < 0) continue;
+
+    count += 1;
+  }
+
+  return { count, truncated };
+}
+
+async function fetchJson(url: string, headers: Record<string, string>) {
+  const response = await fetch(url, { headers });
+  if (!response.ok) {
+    throw new Error(`${url} returned ${response.status} ${response.statusText}`);
+  }
+  return response.json();
+}
+
+async function countComments(
+  ref: DetailRef,
+  token: string | null
+): Promise<number | null> {
+  switch (ref.kind) {
+    case "lobsters": {
+      const story = (await fetchJson(
+        `https://lobste.rs/s/${ref.shortId}.json`,
+        STANDARD_HEADERS
+      )) as LobstersStory;
+      return countLobstersComments(story);
+    }
+
+    case "hackernews": {
+      const story = (await fetchJson(
+        `https://hn.algolia.com/api/v1/items/${ref.storyId}`,
+        STANDARD_HEADERS
+      )) as HnItem;
+      return countHnComments(story);
+    }
+
+    case "reddit": {
+      if (token == null) return null;
+
+      const query = new URLSearchParams({
+        limit: "500",
+        depth: "15",
+        sort: "top",
+        raw_json: "1",
+      });
+      const [, comments] = (await fetchJson(
+        `https://oauth.reddit.com/comments/${ref.id}?${query}`,
+        { ...STANDARD_HEADERS, Authorization: `bearer ${token}` }
+      )) as [RedditListing, RedditListing];
+
+      const { count, truncated } = countRedditComments(comments);
+      if (truncated) {
+        console.warn(
+          `Reddit thread ${ref.id} has more comments than were downloaded`
+        );
+      }
+      return count;
+    }
+  }
+}
+
+async function mapWithConcurrency<T>(
+  items: T[],
+  limit: number,
+  fn: (item: T) => Promise<void>
+) {
+  let index = 0;
+  await Promise.all(
+    Array.from({ length: Math.min(limit, items.length) }, async () => {
+      while (index < items.length) {
+        const item = items[index];
+        index += 1;
+        await fn(item);
+      }
+    })
+  );
+}
+
+// Counts are resolved from the stored URL rather than from the scrape results,
+// so that threads which have dropped out of the search endpoints still get
+// counted.  A thread that cannot be counted keeps whatever count it already had.
+async function updateCountedComments(
+  records: Record<string, BlogPost>,
+  token: string | null
+) {
+  const discussions = Object.values(records).flatMap((post) => post.discussions);
+
+  await mapWithConcurrency(discussions, COUNT_CONCURRENCY, async (discussion) => {
+    const ref = detailRefFromUrl(discussion.url);
+    if (ref == null) {
+      console.warn(`Cannot count comments for unrecognised url ${discussion.url}`);
+      return;
+    }
+
+    try {
+      const count = await countComments(ref, token);
+      if (count != null) discussion.counted_comments = count;
+    } catch (err) {
+      console.warn(`Could not count comments for ${discussion.url}`, err);
+    }
+  });
+
+  return records;
 }
 
 async function* walk(dir: string): AsyncGenerator<Dirent, void, undefined> {
@@ -320,6 +569,7 @@ async function loadExistingDiscussionLinks() {
               site: each.site,
               timestamp: each.timestamp,
               comment_count: each.comment_count,
+              counted_comments: each.counted_comments,
               auto_hidden: each.auto_hidden,
               hidden_override: each.hidden_override,
               legacy_hidden: each.hidden,
@@ -343,19 +593,30 @@ async function loadExistingDiscussionLinks() {
   );
 }
 
-function isInteresting(record: DiscussionsToml) {
-  return record.comment_count >= INTERESTING_COMMENT_COUNT;
+export function isInteresting(record: DiscussionsToml) {
+  // `counted_comments` is missing when the thread has never been counted, either
+  // because it predates this field or because every attempt to fetch its comments
+  // failed.  Falling back to the site's own count keeps such a thread visible.
+  return (
+    (record.counted_comments ?? record.comment_count) >= INTERESTING_COMMENT_COUNT
+  );
 }
 
-function isRecent(record: DiscussionsToml, now = new Date()) {
+export function isRecent(record: DiscussionsToml, now = new Date()) {
   return +record.timestamp > +now - RECENT_CUTOFF_MS;
 }
 
+// This describes the rule that applied before `auto_hidden` existed, so that a
+// hand-written `hidden` that disagreed with it can be preserved as an override.
+// It must keep using the site's own count and the old threshold.
 function wasAutoHiddenUnderLegacyRule(record: DiscussionsToml, now = new Date()) {
   return !isRecent(record, now) && record.comment_count <= 1;
 }
 
-function visibleDiscussionUrls(discussions: DiscussionsToml[], now = new Date()) {
+export function visibleDiscussionUrls(
+  discussions: DiscussionsToml[],
+  now = new Date()
+) {
   const visible = new Set<string>();
   const recentBySite = new Map<string, DiscussionsToml[]>();
 
@@ -395,7 +656,7 @@ function visibleDiscussionUrls(discussions: DiscussionsToml[], now = new Date())
   return visible;
 }
 
-function updateVisibility(records: Record<string, BlogPost>) {
+export function updateVisibility(records: Record<string, BlogPost>) {
   const now = new Date();
 
   for (const post of Object.values(records)) {
@@ -422,7 +683,7 @@ function updateVisibility(records: Record<string, BlogPost>) {
 
   return records;
 }
-function roughlyEqual(scoreA: number, scoreB: number): boolean {
+export function roughlyEqual(scoreA: number, scoreB: number): boolean {
   const diff = Math.abs(scoreA - scoreB);
   const epsilon = Math.min(scoreA, scoreB) * 0.05;
   return diff <= epsilon;
@@ -471,7 +732,7 @@ function mergeRecords(
     );
   }
 
-  return updateVisibility(existingRecords);
+  return existingRecords;
 }
 
 function serialiseDiscussion(discussion: DiscussionsToml) {
@@ -481,6 +742,9 @@ function serialiseDiscussion(discussion: DiscussionsToml) {
     site: discussion.site,
     timestamp: discussion.timestamp,
     comment_count: discussion.comment_count,
+    ...(discussion.counted_comments != null
+      ? { counted_comments: discussion.counted_comments }
+      : {}),
     ...(discussion.auto_hidden ? { auto_hidden: true } : {}),
     ...(discussion.hidden_override != null
       ? { hidden_override: discussion.hidden_override }
@@ -508,13 +772,24 @@ async function writeDiscussionLinks(records: Record<string, BlogPost>) {
 
 async function main() {
   console.info("Downloading Comments");
+  const token = await authReddit().catch((err) => {
+    console.warn("Reddit authorization failed", err);
+    return null;
+  });
+
   const [scrapedRecords, existingRecords] = await Promise.all([
-    scrape(),
+    scrape(token),
     loadExistingDiscussionLinks(),
   ]);
 
   console.info("Merging Records");
   const discussionLinks = mergeRecords(scrapedRecords, existingRecords);
+
+  console.info("Counting Comments");
+  await updateCountedComments(discussionLinks, token);
+
+  console.info("Updating Visibility");
+  updateVisibility(discussionLinks);
 
   console.info("Writing Discussions to Files");
   await writeDiscussionLinks(discussionLinks);
@@ -522,9 +797,11 @@ async function main() {
   console.info("Done");
 }
 
-await main();
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  await main();
+}
 
-function normaliseSlug(url: URL) {
+export function normaliseSlug(url: URL) {
   if (url.pathname.endsWith("/")) return url.pathname;
   return url.pathname + "/";
 }
