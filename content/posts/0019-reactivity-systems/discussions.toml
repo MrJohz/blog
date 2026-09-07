@@ -4,6 +4,8 @@ url = "https://www.reddit.com/r/SoftwareEngineering/comments/1v7wpqa/pushing_and
 site = "Reddit (/r/SoftwareEngineering)"
 timestamp = 2026-07-27T10:40:42.000Z
 comment_count = 3
+counted_comments = 0
+auto_hidden = true
 
 [[discussions]]
 title = "Pushing and Pulling: Three Reactivity Algorithms"
@@ -11,6 +13,7 @@ url = "https://www.reddit.com/r/webdev/comments/1v6mali/pushing_and_pulling_thre
 site = "Reddit (/r/webdev)"
 timestamp = 2026-07-25T22:43:44.000Z
 comment_count = 2
+counted_comments = 1
 
 [[discussions]]
 title = "Pushing and Pulling: Three Reactivity Algorithms"
@@ -18,6 +21,7 @@ url = "https://www.reddit.com/r/programming/comments/1v5qsjv/pushing_and_pulling
 site = "Reddit (/r/programming)"
 timestamp = 2026-07-24T22:53:32.000Z
 comment_count = 4
+counted_comments = 2
 
 [[discussions]]
 title = "Pushing and Pulling: Three Reactivity Algorithms"
@@ -25,6 +29,7 @@ url = "https://www.reddit.com/r/softwarecrafters/comments/1v20kch/pushing_and_pu
 site = "Reddit (/r/softwarecrafters)"
 timestamp = 2026-07-20T22:46:56.000Z
 comment_count = 1
+counted_comments = 0
 auto_hidden = true
 
 [[discussions]]
@@ -33,6 +38,7 @@ url = "https://www.reddit.com/r/programming/comments/1rpd8az/pushing_and_pulling
 site = "Reddit (/r/programming)"
 timestamp = 2026-03-09T21:23:05.000Z
 comment_count = 0
+counted_comments = 0
 auto_hidden = true
 
 [[discussions]]
@@ -41,6 +47,7 @@ url = "https://www.reddit.com/r/hackernews/comments/1row4u3/pushing_and_pulling_
 site = "Reddit (/r/hackernews)"
 timestamp = 2026-03-09T10:03:40.000Z
 comment_count = 1
+counted_comments = 0
 auto_hidden = true
 
 [[discussions]]
@@ -49,6 +56,7 @@ url = "https://www.reddit.com/r/hypeurls/comments/1roghwf/pushing_and_pulling_th
 site = "Reddit (/r/hypeurls)"
 timestamp = 2026-03-08T21:06:37.000Z
 comment_count = 0
+counted_comments = 0
 auto_hidden = true
 hidden_override = true
 
@@ -58,6 +66,7 @@ url = "https://news.ycombinator.com/item?id=47299763"
 site = "Hacker News"
 timestamp = 2026-03-08T18:33:54.000Z
 comment_count = 0
+counted_comments = 0
 auto_hidden = true
 
 [[discussions]]
@@ -66,6 +75,7 @@ url = "https://news.ycombinator.com/item?id=47295924"
 site = "Hacker News"
 timestamp = 2026-03-08T09:42:04.000Z
 comment_count = 0
+counted_comments = 0
 auto_hidden = true
 
 [[discussions]]
@@ -74,6 +84,7 @@ url = "https://news.ycombinator.com/item?id=47293195"
 site = "Hacker News"
 timestamp = 2026-03-08T00:57:57.000Z
 comment_count = 20
+counted_comments = 20
 
 [[discussions]]
 title = "Pushing and Pulling: Three Reactivity Algorithms"
@@ -81,6 +92,7 @@ url = "https://news.ycombinator.com/item?id=47289310"
 site = "Hacker News"
 timestamp = 2026-03-07T16:55:09.000Z
 comment_count = 0
+counted_comments = 0
 auto_hidden = true
 
 [[discussions]]
@@ -89,3 +101,4 @@ url = "https://lobste.rs/s/2zk3oe/pushing_pulling_three_reactivity"
 site = "Lobsters"
 timestamp = 2026-03-07T16:52:29.000Z
 comment_count = 31
+counted_comments = 24

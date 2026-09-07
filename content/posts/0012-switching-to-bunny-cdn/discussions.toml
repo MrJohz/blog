@@ -4,6 +4,7 @@ url = "https://www.reddit.com/r/hackernews/comments/1jbtjmc/switching_to_bunnycd
 site = "Reddit (/r/hackernews)"
 timestamp = 2025-03-15T12:00:03.000Z
 comment_count = 1
+counted_comments = 0
 auto_hidden = true
 
 [[discussions]]
@@ -12,3 +13,4 @@ url = "https://news.ycombinator.com/item?id=43330796"
 site = "Hacker News"
 timestamp = 2025-03-11T09:48:14.000Z
 comment_count = 69
+counted_comments = 69
