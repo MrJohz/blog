@@ -4,6 +4,7 @@ url = "https://news.ycombinator.com/item?id=27686818"
 site = "Hacker News"
 timestamp = 2021-06-30T10:14:33.000Z
 comment_count = 61
+counted_comments = 61
 
 [[discussions]]
 title = "An Alternative to \"Clean Code\": A Philosophy of Software Design"
@@ -11,6 +12,7 @@ url = "https://www.reddit.com/r/programming/comments/lb8zrn/an_alternative_to_cl
 site = "Reddit (/r/programming)"
 timestamp = 2021-02-02T22:51:38.000+00:00
 comment_count = 113
+counted_comments = 100
 
 [[discussions]]
 title = "Book Review: A Philosophy of Software Design"
@@ -18,6 +20,7 @@ url = "https://lobste.rs/s/cw5ulb/book_review_philosophy_software_design"
 site = "Lobsters"
 timestamp = 2020-07-01T09:15:25.000-05:00
 comment_count = 10
+counted_comments = 10
 
 [[discussions]]
 title = "An Alternative to \"Clean Code\": A Philosophy of Software Design"
@@ -25,3 +28,4 @@ url = "https://www.reddit.com/r/programming/comments/hjasqj/an_alternative_to_cl
 site = "Reddit (/r/programming)"
 timestamp = 2020-07-01T14:04:20.000+00:00
 comment_count = 113
+counted_comments = 99

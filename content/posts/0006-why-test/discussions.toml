@@ -4,6 +4,7 @@ url = "https://lobste.rs/s/prowkp/why_test"
 site = "Lobsters"
 timestamp = 2024-06-25T12:14:58.000Z
 comment_count = 15
+counted_comments = 14
 
 [[discussions]]
 title = "Why Test?"
@@ -11,6 +12,7 @@ url = "https://news.ycombinator.com/item?id=40779593"
 site = "Hacker News"
 timestamp = 2024-06-24T19:12:58.000Z
 comment_count = 0
+counted_comments = 0
 auto_hidden = true
 
 [[discussions]]
@@ -19,3 +21,4 @@ url = "https://www.reddit.com/r/programming/comments/1dnlnfr/why_test/"
 site = "Reddit (/r/programming)"
 timestamp = 2024-06-24T19:11:32.000Z
 comment_count = 8
+counted_comments = 5
