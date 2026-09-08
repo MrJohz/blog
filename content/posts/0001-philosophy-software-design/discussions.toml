@@ -12,7 +12,7 @@ url = "https://www.reddit.com/r/programming/comments/lb8zrn/an_alternative_to_cl
 site = "Reddit (/r/programming)"
 timestamp = 2021-02-02T22:51:38.000+00:00
 comment_count = 113
-counted_comments = 100
+counted_comments = 99
 
 [[discussions]]
 title = "Book Review: A Philosophy of Software Design"
