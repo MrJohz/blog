@@ -4,6 +4,7 @@ import { describe, it } from "node:test";
 import * as assert from "node:assert/strict";
 
 import {
+  countComments,
   countHnComments,
   countLobstersComments,
   countRedditComments,
@@ -254,6 +255,67 @@ describe("countRedditComments", () => {
 
     assert.equal(count, 1);
     assert.equal(truncated, true);
+  });
+});
+
+describe("countComments, for Reddit", () => {
+  function withStubs(payload: unknown, run: () => Promise<void>) {
+    const realFetch = globalThis.fetch;
+    const realWarn = console.warn;
+    const warnings: string[] = [];
+
+    globalThis.fetch = (async () => ({
+      ok: true,
+      status: 200,
+      statusText: "OK",
+      json: async () => payload,
+    })) as unknown as typeof globalThis.fetch;
+    console.warn = (...args: unknown[]) => void warnings.push(args.join(" "));
+
+    return run()
+      .then(() => warnings)
+      .finally(() => {
+        globalThis.fetch = realFetch;
+        console.warn = realWarn;
+      });
+  }
+
+  function listing(children: unknown[]) {
+    return [
+      { kind: "Listing", data: { children: [] } },
+      { kind: "Listing", data: { children } },
+    ];
+  }
+
+  it("returns the count when the whole thread arrived", async () => {
+    let result: number | null = -1;
+    await withStubs(listing([redditComment({ author: "reader" })]), async () => {
+      result = await countComments({ kind: "reddit", id: "abc123" }, "token");
+    });
+
+    assert.equal(result, 1);
+  });
+
+  // A partial count moves between runs, because Reddit chooses what to withhold
+  // by score and scores are fuzzed.  Returning null keeps the stored count.
+  it("returns null when Reddit withheld part of the thread", async () => {
+    let result: number | null = -1;
+    const warnings = await withStubs(
+      listing([
+        redditComment({ author: "reader" }),
+        { kind: "more", data: { author: "", body: "", score: 0 } },
+      ]),
+      async () => {
+        result = await countComments({ kind: "reddit", id: "lb8zrn" }, "token");
+      }
+    );
+
+    assert.equal(result, null);
+    assert.match(warnings.join("\n"), /lb8zrn.*keeping the stored count/);
+  });
+
+  it("returns null when there is no token", async () => {
+    assert.equal(await countComments({ kind: "reddit", id: "abc123" }, null), null);
   });
 });
 

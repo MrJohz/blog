@@ -429,7 +429,7 @@ async function fetchJson(url: string, headers: Record<string, string>) {
   return response.json();
 }
 
-async function countComments(
+export async function countComments(
   ref: DetailRef,
   token: string | null
 ): Promise<number | null> {
@@ -466,9 +466,14 @@ async function countComments(
 
       const { count, truncated } = countRedditComments(comments);
       if (truncated) {
+        // Reddit withholds part of the tree behind "load more" markers, and
+        // chooses what to withhold by score.  Scores carry anti-manipulation
+        // fuzz, so the part that arrives changes between runs and the count
+        // moves with it.  A partial count is not worth the churn it causes.
         console.warn(
-          `Reddit thread ${ref.id} has more comments than were downloaded`
+          `Reddit thread ${ref.id} has more comments than were downloaded; keeping the stored count`
         );
+        return null;
       }
       return count;
     }
