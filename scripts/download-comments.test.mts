@@ -213,12 +213,11 @@ describe("countRedditComments", () => {
     assert.equal(count, 1);
   });
 
-  it("ignores downvoted and removed comments", () => {
+  it("ignores removed comments", () => {
     const { count } = countRedditComments({
       kind: "Listing",
       data: {
         children: [
-          redditComment({ author: "grump", score: -1 }),
           redditComment({ author: "gone", body: "[removed]" }),
           redditComment({ author: "also_gone", body: "[deleted]" }),
           redditComment({ author: "reader" }),
@@ -229,17 +228,21 @@ describe("countRedditComments", () => {
     assert.equal(count, 1);
   });
 
-  it("counts a comment whose score is still hidden", () => {
+  // Reddit fuzzes scores, so a downvoted comment cannot be told apart from a
+  // comment near zero that the fuzz pushed below it.  Score is not read.
+  it("counts downvoted comments, whatever the score says", () => {
     const { count } = countRedditComments({
       kind: "Listing",
       data: {
         children: [
+          redditComment({ author: "grump", score: -1 }),
+          redditComment({ author: "very_grump", score: -25 }),
           redditComment({ author: "fresh", score: 0, score_hidden: true }),
         ],
       },
     });
 
-    assert.equal(count, 1);
+    assert.equal(count, 3);
   });
 
   it("reports a truncated thread", () => {

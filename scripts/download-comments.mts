@@ -412,8 +412,10 @@ export function countRedditComments(listing: RedditListing) {
     if (isBot(comment.author)) continue;
     if (comment.distinguished === "moderator") continue;
     if (comment.body === "[removed]" || comment.body === "[deleted]") continue;
-    // A hidden score is an unknown score, not a negative one.
-    if (!comment.score_hidden && comment.score < 0) continue;
+    // Score is deliberately not read here.  Reddit fuzzes it to frustrate vote
+    // manipulation, so a comment sitting near zero crosses any threshold at
+    // random between runs and moves the count with it.  Lobsters scores are
+    // stable, and so the rule still applies there.
 
     count += 1;
   }
